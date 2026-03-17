@@ -28267,7 +28267,7 @@ void CLOCK_Initialize(void);
 # 40 "./mcc_generated_files/system/config_bits.h" 2
 # 42 "./mcc_generated_files/system/system.h" 2
 # 1 "./mcc_generated_files/system/../system/pins.h" 1
-# 98 "./mcc_generated_files/system/../system/pins.h"
+# 818 "./mcc_generated_files/system/../system/pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -28278,8 +28278,8 @@ void PIN_MANAGER_Initialize (void);
 
 void PIN_MANAGER_IOC(void);
 # 43 "./mcc_generated_files/system/system.h" 2
-# 1 "./mcc_generated_files/system/../i2c_host/i2c1.h" 1
-# 53 "./mcc_generated_files/system/../i2c_host/i2c1.h"
+# 1 "./mcc_generated_files/system/../i2c_host/i2c2.h" 1
+# 53 "./mcc_generated_files/system/../i2c_host/i2c2.h"
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_event_types.h" 1
 # 39 "./mcc_generated_files/system/../i2c_host/i2c_host_event_types.h"
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_types.h" 1
@@ -28315,8 +28315,8 @@ typedef struct
     i2c_host_error_t errorState;
 } i2c_host_event_status_t;
 
-extern volatile i2c_host_event_status_t i2c1Status;
-# 54 "./mcc_generated_files/system/../i2c_host/i2c1.h" 2
+extern volatile i2c_host_event_status_t i2c2Status;
+# 54 "./mcc_generated_files/system/../i2c_host/i2c2.h" 2
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_interface.h" 1
 # 48 "./mcc_generated_files/system/../i2c_host/i2c_host_interface.h"
 typedef struct
@@ -28332,25 +28332,25 @@ typedef struct
     void (*CallbackRegister)(void (*callback)(void));
     void (*Tasks)(void);
 }i2c_host_interface_t;
-# 55 "./mcc_generated_files/system/../i2c_host/i2c1.h" 2
-# 79 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-extern const i2c_host_interface_t I2C1_Host;
-# 89 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_Initialize(void);
-# 98 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_Deinitialize(void);
-# 129 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
-# 160 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
-# 196 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
-# 207 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-i2c_host_error_t I2C1_ErrorGet(void);
-# 217 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_IsBusy(void);
-# 226 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_CallbackRegister(void (*callbackHandler)(void));
+# 55 "./mcc_generated_files/system/../i2c_host/i2c2.h" 2
+# 79 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+extern const i2c_host_interface_t I2C2_Host;
+# 89 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_Initialize(void);
+# 98 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_Deinitialize(void);
+# 129 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_Write(uint16_t address, uint8_t *data, size_t dataLength);
+# 160 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_Read(uint16_t address, uint8_t *data, size_t dataLength);
+# 196 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
+# 207 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+i2c_host_error_t I2C2_ErrorGet(void);
+# 217 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_IsBusy(void);
+# 226 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_CallbackRegister(void (*callbackHandler)(void));
 
 
 
@@ -28358,7 +28358,7 @@ void I2C1_CallbackRegister(void (*callbackHandler)(void));
 
 
 
-void I2C1_ISR(void);
+void I2C2_ISR(void);
 
 
 
@@ -28366,7 +28366,7 @@ void I2C1_ISR(void);
 
 
 
-void I2C1_ERROR_ISR(void);
+void I2C2_ERROR_ISR(void);
 
 
 
@@ -28374,7 +28374,7 @@ void I2C1_ERROR_ISR(void);
 
 
 
-void I2C1_RX_ISR(void);
+void I2C2_RX_ISR(void);
 
 
 
@@ -28382,8 +28382,107 @@ void I2C1_RX_ISR(void);
 
 
 
-void I2C1_TX_ISR(void);
+void I2C2_TX_ISR(void);
 # 44 "./mcc_generated_files/system/system.h" 2
+# 1 "./mcc_generated_files/system/../nvm/nvm.h" 1
+# 78 "./mcc_generated_files/system/../nvm/nvm.h"
+typedef uint8_t flash_data_t;
+
+
+
+
+typedef uint24_t flash_address_t;
+
+
+
+
+
+typedef uint8_t eeprom_data_t;
+
+
+
+
+typedef uint24_t eeprom_address_t;
+
+
+
+
+
+
+typedef enum
+{
+    NVM_OK,
+    NVM_ERROR
+} nvm_status_t;
+
+
+
+
+
+
+
+void NVM_Initialize(void);
+# 122 "./mcc_generated_files/system/../nvm/nvm.h"
+_Bool NVM_IsBusy(void);
+# 131 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t NVM_StatusGet(void);
+
+
+
+
+
+
+
+void NVM_StatusClear(void);
+
+
+
+
+
+
+
+void NVM_UnlockKeySet(uint16_t unlockKey);
+
+
+
+
+
+
+
+void NVM_UnlockKeyClear(void);
+
+
+
+
+
+
+
+flash_data_t FLASH_Read(flash_address_t address);
+# 178 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t FLASH_RowWrite(flash_address_t address, flash_data_t *dataBuffer);
+# 188 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t FLASH_PageErase(flash_address_t address);
+
+
+
+
+
+
+
+flash_address_t FLASH_PageAddressGet(flash_address_t address);
+
+
+
+
+
+
+
+uint16_t FLASH_PageOffsetGet(flash_address_t address);
+# 216 "./mcc_generated_files/system/../nvm/nvm.h"
+eeprom_data_t EEPROM_Read(eeprom_address_t address);
+# 229 "./mcc_generated_files/system/../nvm/nvm.h"
+void EEPROM_Write(eeprom_address_t address, eeprom_data_t data);
+# 45 "./mcc_generated_files/system/system.h" 2
 # 1 "./mcc_generated_files/system/../system/interrupt.h" 1
 # 69 "./mcc_generated_files/system/../system/interrupt.h"
 void INTERRUPT_Initialize (void);
@@ -28417,8 +28516,219 @@ void INT2_SetInterruptHandler(void (* InterruptHandler)(void));
 extern void (*INT2_InterruptHandler)(void);
 # 347 "./mcc_generated_files/system/../system/interrupt.h"
 void INT2_DefaultInterruptHandler(void);
-# 45 "./mcc_generated_files/system/system.h" 2
+# 46 "./mcc_generated_files/system/system.h" 2
 
+# 1 "./mcc_generated_files/system/../spi/spi1.h" 1
+# 46 "./mcc_generated_files/system/../spi/spi1.h"
+# 1 "./mcc_generated_files/system/../spi/spi_interface.h" 1
+# 39 "./mcc_generated_files/system/../spi/spi_interface.h"
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 1 3
+# 19 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 3
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 1 3
+# 138 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 3
+typedef int ptrdiff_t;
+# 20 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 2 3
+# 40 "./mcc_generated_files/system/../spi/spi_interface.h" 2
+
+
+
+
+
+
+struct SPI_INTERFACE
+{
+    void (*Initialize)(void);
+    void (*Deinitialize)(void);
+    _Bool (*Open)(uint8_t spiConfigIndex);
+    void (*Close)(void);
+    void (*Transfer)(const void *txBuffer, void *rxBuffer, size_t bufferSize);
+    void (*BufferExchange)(void *bufferData, size_t bufferSize);
+    void (*BufferRead)(void *bufferData, size_t bufferSize);
+    void (*BufferWrite)(void *bufferData, size_t bufferSize);
+    uint8_t (*ByteExchange)(uint8_t byteData);
+    uint8_t (*ByteRead)(void);
+    void (*ByteWrite)(uint8_t byteData);
+    _Bool (*IsRxReady)(void);
+    _Bool (*IsTxReady)(void);
+    void (*RxCompleteCallbackRegister)(void (*callbackHandler)(void));
+    void (*TxCompleteCallbackRegister)(void (*callbackHandler)(void));
+};
+# 47 "./mcc_generated_files/system/../spi/spi1.h" 2
+
+
+
+
+
+
+extern const struct SPI_INTERFACE SPI1_Host;
+# 127 "./mcc_generated_files/system/../spi/spi1.h"
+typedef enum
+{
+    HOST_CONFIG,
+    SPI1_DEFAULT
+} spi1_configuration_name_t;
+
+
+
+
+
+
+
+void SPI1_Initialize(void);
+
+
+
+
+
+
+
+void SPI1_Deinitialize(void);
+# 157 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_Open(uint8_t spiConfigIndex);
+
+
+
+
+
+
+
+void SPI1_Close(void);
+# 175 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_Transfer(const void * txBuffer, void * rxBuffer, size_t bufferSize);
+# 184 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferExchange(void * bufferData, size_t bufferSize);
+# 193 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferWrite(void * bufferData, size_t bufferSize);
+# 202 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferRead(void * bufferData, size_t bufferSize);
+
+
+
+
+
+
+
+uint8_t SPI1_ByteExchange(uint8_t byteData);
+
+
+
+
+
+
+
+void SPI1_ByteWrite(uint8_t byteData);
+
+
+
+
+
+
+
+uint8_t SPI1_ByteRead(void);
+# 235 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_IsRxReady(void);
+# 244 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_IsTxReady(void);
+# 48 "./mcc_generated_files/system/system.h" 2
+# 1 "./mcc_generated_files/system/../timer/tmr0.h" 1
+# 40 "./mcc_generated_files/system/../timer/tmr0.h"
+# 1 "./mcc_generated_files/system/../timer/timer_interface.h" 1
+# 63 "./mcc_generated_files/system/../timer/timer_interface.h"
+struct TIMER_INTERFACE
+{
+    void (*Initialize)(void);
+
+
+    void (*Deinitialize)(void);
+
+
+    void (*Start)(void);
+
+
+    void (*Stop)(void);
+
+
+
+
+
+
+
+    void (*PeriodSet)(uint32_t count);
+
+
+ uint32_t (*PeriodGet)(void);
+
+
+    uint32_t (*CounterGet)(void);
+
+
+    void (*CounterSet)(uint32_t count);
+
+
+    uint32_t (*MaxCountGet)(void);
+
+
+
+
+
+
+
+    void (*TimeoutCallbackRegister)(void (*CallbackHandler)(void));
+
+
+    void (*Tasks)(void);
+
+};
+# 41 "./mcc_generated_files/system/../timer/tmr0.h" 2
+# 142 "./mcc_generated_files/system/../timer/tmr0.h"
+extern const struct TIMER_INTERFACE Timer0;
+# 151 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Initialize(void);
+
+
+
+
+
+
+
+void TMR0_Deinitialize(void);
+# 168 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Start(void);
+# 177 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Stop(void);
+# 186 "./mcc_generated_files/system/../timer/tmr0.h"
+uint32_t TMR0_CounterGet(void);
+# 195 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_CounterSet(uint32_t counterValue);
+# 204 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_PeriodSet(uint32_t periodCount);
+# 213 "./mcc_generated_files/system/../timer/tmr0.h"
+uint32_t TMR0_PeriodGet(void);
+
+
+
+
+
+
+
+uint32_t TMR0_MaxCountGet(void);
+
+
+
+
+
+
+
+void TMR0_ISR(void);
+
+
+
+
+
+
+
+ void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+# 49 "./mcc_generated_files/system/system.h" 2
 
 
 
@@ -28488,38 +28798,513 @@ size_t strxfrm_l (char *restrict, const char *restrict, size_t, locale_t);
 
 void *memccpy (void *restrict, const void *restrict, int, size_t);
 # 44 "./as1115.h" 2
-# 144 "./as1115.h"
+# 146 "./as1115.h"
 void AS1115_Write(uint8_t reg, uint8_t data);
 void AS1115_Init();
 uint8_t AS1115_Read_Reg(uint8_t reg);
 # 37 "main.c" 2
+# 1 "./rotoryenc.h" 1
+# 14 "./rotoryenc.h"
+typedef struct {
+    uint8_t value;
+    uint8_t maxValue;
+    int8_t lastDirection;
+    uint32_t lastChangeTime;
+    uint8_t lastState;
+    uint8_t fastStep;
+    uint8_t slowStep;
+} Encoder_t;
+_Bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, uint32_t *systemTicks);
+# 38 "main.c" 2
+
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 1 3
+# 15 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 3
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 1 3
+# 39 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 3
+typedef float float_t;
 
 
 
 
-int main(void)
+typedef double double_t;
+# 16 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 2 3
+# 42 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 3
+int __fpclassifyf(float);
+
+
+
+
+
+
+
+int __signbitf(float);
+# 59 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 3
+double acos(double);
+float acosf(float);
+long double acosl(long double);
+
+
+
+double acosh(double);
+float acoshf(float);
+long double acoshl(long double);
+
+
+
+double asin(double);
+float asinf(float);
+long double asinl(long double);
+
+
+
+double asinh(double);
+float asinhf(float);
+long double asinhl(long double);
+
+
+
+double atan(double);
+float atanf(float);
+long double atanl(long double);
+
+
+
+double atan2(double, double);
+float atan2f(float, float);
+long double atan2l(long double, long double);
+
+
+
+double atanh(double);
+float atanhf(float);
+long double atanhl(long double);
+
+
+
+double cbrt(double);
+float cbrtf(float);
+long double cbrtl(long double);
+
+
+
+double ceil(double);
+float ceilf(float);
+long double ceill(long double);
+
+
+
+double copysign(double, double);
+float copysignf(float, float);
+long double copysignl(long double, long double);
+
+
+
+double cos(double);
+float cosf(float);
+long double cosl(long double);
+
+
+
+double cosh(double);
+float coshf(float);
+long double coshl(long double);
+
+
+
+double erf(double);
+float erff(float);
+long double erfl(long double);
+
+
+
+double erfc(double);
+float erfcf(float);
+long double erfcl(long double);
+
+
+
+double exp(double);
+float expf(float);
+long double expl(long double);
+
+
+
+double exp2(double);
+float exp2f(float);
+long double exp2l(long double);
+
+
+
+double expm1(double);
+float expm1f(float);
+long double expm1l(long double);
+
+
+
+double fabs(double);
+float fabsf(float);
+long double fabsl(long double);
+
+
+
+double fdim(double, double);
+float fdimf(float, float);
+long double fdiml(long double, long double);
+
+
+
+double floor(double);
+float floorf(float);
+long double floorl(long double);
+
+
+
+double fma(double, double, double);
+float fmaf(float, float, float);
+long double fmal(long double, long double, long double);
+
+
+
+double fmax(double, double);
+float fmaxf(float, float);
+long double fmaxl(long double, long double);
+
+
+
+double fmin(double, double);
+float fminf(float, float);
+long double fminl(long double, long double);
+
+
+
+double fmod(double, double);
+float fmodf(float, float);
+long double fmodl(long double, long double);
+
+
+
+double frexp(double, int *);
+float frexpf(float, int *);
+long double frexpl(long double, int *);
+
+
+
+double hypot(double, double);
+float hypotf(float, float);
+long double hypotl(long double, long double);
+
+
+
+int ilogb(double);
+int ilogbf(float);
+int ilogbl(long double);
+
+
+
+double ldexp(double, int);
+float ldexpf(float, int);
+long double ldexpl(long double, int);
+
+
+
+
+double lgamma(double);
+float lgammaf(float);
+long double lgammal(long double);
+
+
+
+
+long long llrint(double);
+long long llrintf(float);
+long long llrintl(long double);
+
+
+
+long long llround(double);
+long long llroundf(float);
+long long llroundl(long double);
+
+
+
+
+double log(double);
+float logf(float);
+long double logl(long double);
+
+
+
+double log10(double);
+float log10f(float);
+long double log10l(long double);
+
+
+
+double log1p(double);
+float log1pf(float);
+long double log1pl(long double);
+
+
+
+double log2(double);
+float log2f(float);
+long double log2l(long double);
+
+
+
+double logb(double);
+float logbf(float);
+long double logbl(long double);
+
+
+
+long lrint(double);
+long lrintf(float);
+long lrintl(long double);
+
+
+
+long lround(double);
+long lroundf(float);
+long lroundl(long double);
+
+
+
+double modf(double, double *);
+float modff(float, float *);
+long double modfl(long double, long double *);
+
+
+
+double nan(const char *);
+float nanf(const char *);
+long double nanl(const char *);
+
+
+
+double nearbyint(double);
+float nearbyintf(float);
+long double nearbyintl(long double);
+
+
+
+double nextafter(double, double);
+float nextafterf(float, float);
+long double nextafterl(long double, long double);
+
+
+
+double nexttoward(double, long double);
+float nexttowardf(float, long double);
+long double nexttowardl(long double, long double);
+# 326 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 3
+double pow(double, double);
+__attribute__((nonreentrant)) float powf(float, float);
+long double powl(long double, long double);
+
+
+
+double remainder(double, double);
+float remainderf(float, float);
+long double remainderl(long double, long double);
+
+
+
+double remquo(double, double, int *);
+float remquof(float, float, int *);
+long double remquol(long double, long double, int *);
+
+
+
+double rint(double);
+float rintf(float);
+long double rintl(long double);
+
+
+
+double round(double);
+float roundf(float);
+long double roundl(long double);
+
+
+
+double scalbln(double, long);
+float scalblnf(float, long);
+long double scalblnl(long double, long);
+
+
+
+double scalbn(double, int);
+float scalbnf(float, int);
+long double scalbnl(long double, int);
+
+
+
+double sin(double);
+float sinf(float);
+long double sinl(long double);
+
+
+
+double sinh(double);
+float sinhf(float);
+long double sinhl(long double);
+
+
+
+double sqrt(double);
+float sqrtf(float);
+long double sqrtl(long double);
+
+
+
+double tan(double);
+float tanf(float);
+long double tanl(long double);
+
+
+
+double tanh(double);
+float tanhf(float);
+long double tanhl(long double);
+
+
+
+double tgamma(double);
+float tgammaf(float);
+long double tgammal(long double);
+
+
+
+double trunc(double);
+float truncf(float);
+long double truncl(long double);
+# 431 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/math.h" 3
+extern int signgam;
+
+double j0(double);
+double j1(double);
+double jn(int, double);
+
+double y0(double);
+double y1(double);
+double yn(int, double);
+# 40 "main.c" 2
+# 49 "main.c"
+volatile uint8_t volume_val = 0;
+volatile uint8_t balance_val = 0;
+volatile uint32_t systemTicks = 0;
+
+void AS1115_DisplayNumber(uint32_t number);
+void vol_Write(uint8_t address, uint8_t data);
+void AS1115_DisplayData(const uint8_t* data, uint8_t len);
+
+Encoder_t volumeKnob = {0, 254, 1, 0, 0, 5, 1};
+Encoder_t balanceKnob = {127, 254, 1, 0, 0, 4, 4};
+Encoder_t* displayEncoder = ((void*)0);
+
+const uint8_t balanceLevels[9][3] = {
+    {1, 10, 9}, {2, 10, 8}, {3, 10, 7},
+    {4, 10, 6}, {5, 10, 5}, {6, 10, 4},
+    {7, 10, 3}, {8, 10, 2}, {9, 10, 1}
+};
+void MyTimerCallback(void) {
+    systemTicks++;
+}
+void DisplayVolume()
 {
+   uint8_t displayVol = (uint8_t)roundf((volumeKnob.value / 254.0) * 100);
+
+
+   AS1115_DisplayNumber(displayVol);
+    displayEncoder = &volumeKnob;
+}
+int main(void) {
     SYSTEM_Initialize();
 
 
 
 
-
     (INTCON0bits.GIE = 1);
+    TMR0_Start();
+    TMR0_OverflowCallbackRegister(MyTimerCallback);
 
 
 
-
-    _delay((unsigned long)((1000)*(64000000U/4000.0)));
+    _delay((unsigned long)((100)*(64000000U/4000.0)));
      AS1115_Init();
-    while(1)
-    {
-        uint8_t digit = 0x0E;
-        AS1115_Write(0x0B, 0x02);
-        AS1115_Write(0x09, 0x07);
-        AS1115_Write(0x0E, 0x00);
-        _delay((unsigned long)((200)*(64000000U/4000.0)));
-        AS1115_Write(0x01, digit);
-        _delay((unsigned long)((1000)*(64000000U/4000.0)));
+     _delay((unsigned long)((100)*(64000000U/4000.0)));
+    AS1115_Write(0x0B, 0x06);
+    AS1115_Write(0x09, 0x7F);
+
+    AS1115_Write(0x0E, 0x00);
+
+    uint32_t displayTimer = 0;
+    DisplayVolume();
+    while(1) {
+        LATFbits.LATF6 = 1;
+
+
+        if (ROTARYENC_Process(&volumeKnob, PORTCbits.RC5, PORTCbits.RC6, &systemTicks)) {
+            DisplayVolume();
+        }
+
+
+        if (ROTARYENC_Process(&balanceKnob, PORTBbits.RB5, PORTBbits.RB4, &systemTicks)) {
+            uint8_t balIndex = (uint8_t)roundf((balanceKnob.value / 254.0) * 8);
+            AS1115_DisplayData(balanceLevels[balIndex], 3);
+            displayEncoder = &balanceKnob;
+            displayTimer = systemTicks;
+        }
+
+
+        if (displayEncoder != &volumeKnob) {
+            uint32_t timeDelta = systemTicks - displayTimer;
+
+
+            if (timeDelta >= 4000) {
+                DisplayVolume();
+            }
+        }
+    }
+}
+
+
+
+void vol_Write(uint8_t address, uint8_t data) {
+    LATAbits.LATA0 = 0;
+    SPI1_ByteExchange(address);
+    SPI1_ByteExchange(data);
+    LATAbits.LATA0 = 1;
+}
+# 165 "main.c"
+void AS1115_DisplayNumber(uint32_t number) {
+
+    uint8_t digits[8] = {0};
+    uint8_t dcount = 0;
+    uint8_t i = 1;
+    uint8_t sz = 1;
+    for (i = 1; number > 0; i++) {
+        digits[i] = number % 10;
+        number /= 10;
+        sz = i ;
+        dcount++;
+    }
+
+    for (uint8_t d = 0; d <= i; d++) {
+        if (d <= i){
+        AS1115_Write(d, digits[d]);
+        }
+        else if(d>=1 && !digits[d] )
+        {
+
+        AS1115_Write(d, 0x0F);
+        }
+
+    }
+}
+void AS1115_DisplayData(const uint8_t* data, uint8_t len) {
+    for(uint8_t i = 0; i < len; i++) {
+        AS1115_Write(i + 1, data[i]);
     }
 }

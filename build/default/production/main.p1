@@ -1,7 +1,17 @@
 Version 4.0 HI-TECH Software Intermediate Code
+"14 ./rotoryenc.h
+[; ;./rotoryenc.h: 14: typedef struct {
+[s S2327 `uc 1 `uc 1 `c 1 `ul 1 `uc 1 `uc 1 `uc 1 ]
+[n S2327 . value maxValue lastDirection lastChangeTime lastState fastStep slowStep ]
+"351 C:\Program Files\Microchip\xc8\v3.10\pic\include\c99/math.h
+[; ;C:\Program Files\Microchip\xc8\v3.10\pic\include\c99/math.h: 351: float roundf(float);
+[v _roundf `(f ~T0 @X0 0 ef1`f ]
+"53 main.c
+[; ;main.c: 53: void AS1115_DisplayNumber(uint32_t number);
+[v _AS1115_DisplayNumber `(v ~T0 @X0 0 ef1`ul ]
 [p mainexit ]
-"53 ./mcc_generated_files/system/system.h
-[; ;./mcc_generated_files/system/system.h: 53: void SYSTEM_Initialize(void);
+"56 ./mcc_generated_files/system/system.h
+[; ;./mcc_generated_files/system/system.h: 56: void SYSTEM_Initialize(void);
 [v _SYSTEM_Initialize `(v ~T0 @X0 0 ef ]
 "48655 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48655:     struct {
@@ -18,16 +28,84 @@ Version 4.0 HI-TECH Software Intermediate Code
 "48669
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48669: extern volatile INTCON0bits_t INTCON0bits __attribute__((address(0x3FD2)));
 [v _INTCON0bits `VS2196 ~T0 @X0 0 e@16338 ]
+"168 ./mcc_generated_files/system/../timer/tmr0.h
+[; ;./mcc_generated_files/system/../timer/tmr0.h: 168: void TMR0_Start(void);
+[v _TMR0_Start `(v ~T0 @X0 0 ef ]
+[v F17023 `(v ~T0 @X0 0 tf ]
+"237
+[; ;./mcc_generated_files/system/../timer/tmr0.h: 237:  void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+[v _TMR0_OverflowCallbackRegister `(v ~T0 @X0 0 ef1`*F17023 ]
 [v F205 `(v ~T0 @X0 1 tf1`ul ]
 "20 C:\Program Files\Microchip\xc8\v3.10\pic\include/builtins.h
 [v __delay `JF205 ~T0 @X0 0 e ]
 [p i __delay ]
-"145 ./as1115.h
-[; ;./as1115.h: 145: void AS1115_Init();
+"147 ./as1115.h
+[; ;./as1115.h: 147: void AS1115_Init();
 [v _AS1115_Init `(v ~T0 @X0 0 e? ]
-"144
-[; ;./as1115.h: 144: void AS1115_Write(uint8_t reg, uint8_t data);
+"146
+[; ;./as1115.h: 146: void AS1115_Write(uint8_t reg, uint8_t data);
 [v _AS1115_Write `(v ~T0 @X0 0 ef2`uc`uc ]
+"47853 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47853:     struct {
+[s S2170 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2170 . LATF0 LATF1 LATF2 LATF3 LATF4 LATF5 LATF6 LATF7 ]
+"47863
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47863:     struct {
+[s S2171 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2171 . LF0 LF1 LF2 LF3 LF4 LF5 LF6 LF7 ]
+"47852
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47852: typedef union {
+[u S2169 `S2170 1 `S2171 1 ]
+[n S2169 . . . ]
+"47874
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47874: extern volatile LATFbits_t LATFbits __attribute__((address(0x3FBF)));
+[v _LATFbits `VS2169 ~T0 @X0 0 e@16319 ]
+"23 ./rotoryenc.h
+[; ;./rotoryenc.h: 23: _Bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, uint32_t *systemTicks);
+[v _ROTARYENC_Process `(a ~T0 @X0 0 ef4`*S2327`uc`uc`*ul ]
+"48431 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48431:     struct {
+[s S2189 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2189 . RC0 RC1 RC2 RC3 RC4 RC5 RC6 RC7 ]
+"48430
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48430: typedef union {
+[u S2188 `S2189 1 ]
+[n S2188 . . ]
+"48442
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48442: extern volatile PORTCbits_t PORTCbits __attribute__((address(0x3FCC)));
+[v _PORTCbits `VS2188 ~T0 @X0 0 e@16332 ]
+"48369
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48369:     struct {
+[s S2187 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2187 . RB0 RB1 RB2 RB3 RB4 RB5 RB6 RB7 ]
+"48368
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48368: typedef union {
+[u S2186 `S2187 1 ]
+[n S2186 . . ]
+"48380
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 48380: extern volatile PORTBbits_t PORTBbits __attribute__((address(0x3FCB)));
+[v _PORTBbits `VS2186 ~T0 @X0 0 e@16331 ]
+"55 main.c
+[; ;main.c: 55: void AS1115_DisplayData(const uint8_t* data, uint8_t len);
+[v _AS1115_DisplayData `(v ~T0 @X0 0 ef2`*Cuc`uc ]
+"47353 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47353:     struct {
+[s S2155 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2155 . LATA0 LATA1 LATA2 LATA3 LATA4 LATA5 LATA6 LATA7 ]
+"47363
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47363:     struct {
+[s S2156 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 :1 `uc 1 ]
+[n S2156 . LA0 LA1 LA2 LA3 LA4 LA5 LA6 LA7 ]
+"47352
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47352: typedef union {
+[u S2154 `S2155 1 `S2156 1 ]
+[n S2154 . . . ]
+"47374
+[; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 47374: extern volatile LATAbits_t LATAbits __attribute__((address(0x3FBA)));
+[v _LATAbits `VS2154 ~T0 @X0 0 e@16314 ]
+"210 ./mcc_generated_files/system/../spi/spi1.h
+[; ;./mcc_generated_files/system/../spi/spi1.h: 210: uint8_t SPI1_ByteExchange(uint8_t byteData);
+[v _SPI1_ByteExchange `(uc ~T0 @X0 0 ef1`uc ]
 "192 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 192: __asm("STATUS_CSHAD equ 03880h");
 [; <" STATUS_CSHAD equ 03880h ;# ">
@@ -2338,62 +2416,420 @@ Version 4.0 HI-TECH Software Intermediate Code
 "50089
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 50089: __asm("TOSU equ 03FFFh");
 [; <" TOSU equ 03FFFh ;# ">
+"49 main.c
+[; ;main.c: 49: volatile uint8_t volume_val = 0;
+[v _volume_val `Vuc ~T0 @X0 1 e ]
+[i _volume_val
+-> -> 0 `i `uc
+]
+"50
+[; ;main.c: 50: volatile uint8_t balance_val = 0;
+[v _balance_val `Vuc ~T0 @X0 1 e ]
+[i _balance_val
+-> -> 0 `i `uc
+]
+"51
+[; ;main.c: 51: volatile uint32_t systemTicks = 0;
+[v _systemTicks `Vul ~T0 @X0 1 e ]
+[i _systemTicks
+-> -> -> 0 `i `l `ul
+]
+"57
+[; ;main.c: 57: Encoder_t volumeKnob = {0, 254, 1, 0, 0, 5, 1};
+[v _volumeKnob `S2327 ~T0 @X0 1 e ]
+[i _volumeKnob
+:U ..
+:U ..
+-> -> 0 `i `uc
+-> -> 254 `i `uc
+-> -> 1 `i `c
+-> -> -> 0 `i `l `ul
+-> -> 0 `i `uc
+-> -> 5 `i `uc
+-> -> 1 `i `uc
+..
+..
+]
+"58
+[; ;main.c: 58: Encoder_t balanceKnob = {127, 254, 1, 0, 0, 4, 4};
+[v _balanceKnob `S2327 ~T0 @X0 1 e ]
+[i _balanceKnob
+:U ..
+:U ..
+-> -> 127 `i `uc
+-> -> 254 `i `uc
+-> -> 1 `i `c
+-> -> -> 0 `i `l `ul
+-> -> 0 `i `uc
+-> -> 4 `i `uc
+-> -> 4 `i `uc
+..
+..
+]
+"59
+[; ;main.c: 59: Encoder_t* displayEncoder = ((void*)0);
+[v _displayEncoder `*S2327 ~T0 @X0 1 e ]
+[i _displayEncoder
+-> -> -> 0 `i `*v `*S2327
+]
+[v F17653 `Cuc ~T0 @X0 -> 3 `i t ]
+"61
+[; ;main.c: 61: const uint8_t balanceLevels[9][3] = {
+[v _balanceLevels `F17653 ~T0 @X0 -> 9 `i e ]
+[i _balanceLevels
+:U ..
+:U ..
+-> -> 1 `i `uc
+-> -> 10 `i `uc
+-> -> 9 `i `uc
+..
+:U ..
+-> -> 2 `i `uc
+-> -> 10 `i `uc
+-> -> 8 `i `uc
+..
+:U ..
+-> -> 3 `i `uc
+-> -> 10 `i `uc
+-> -> 7 `i `uc
+..
+:U ..
+-> -> 4 `i `uc
+-> -> 10 `i `uc
+-> -> 6 `i `uc
+..
+:U ..
+-> -> 5 `i `uc
+-> -> 10 `i `uc
+-> -> 5 `i `uc
+..
+:U ..
+-> -> 6 `i `uc
+-> -> 10 `i `uc
+-> -> 4 `i `uc
+..
+:U ..
+-> -> 7 `i `uc
+-> -> 10 `i `uc
+-> -> 3 `i `uc
+..
+:U ..
+-> -> 8 `i `uc
+-> -> 10 `i `uc
+-> -> 2 `i `uc
+..
+:U ..
+-> -> 9 `i `uc
+-> -> 10 `i `uc
+-> -> 1 `i `uc
+..
+..
+]
+"66
+[; ;main.c: 66: void MyTimerCallback(void) {
+[v _MyTimerCallback `(v ~T0 @X0 1 ef ]
+{
+[e :U _MyTimerCallback ]
+[f ]
+"67
+[; ;main.c: 67:     systemTicks++;
+[e ++ _systemTicks -> -> 1 `i `Vul ]
+"68
+[; ;main.c: 68: }
+[e :UE 2328 ]
+}
+"69
+[; ;main.c: 69: void DisplayVolume()
+[v _DisplayVolume `(v ~T0 @X0 1 ef ]
+"70
+[; ;main.c: 70: {
+{
+[e :U _DisplayVolume ]
+[f ]
+"71
+[; ;main.c: 71:    uint8_t displayVol = (uint8_t)roundf((volumeKnob.value / 254.0) * 100);
+[v _displayVol `uc ~T0 @X0 1 a ]
+[e = _displayVol -> ( _roundf (1 -> * / -> -> . _volumeKnob 0 `i `d .254.0 -> -> 100 `i `d `f `uc ]
+"74
+[; ;main.c: 74:    AS1115_DisplayNumber(displayVol);
+[e ( _AS1115_DisplayNumber (1 -> _displayVol `ul ]
+"75
+[; ;main.c: 75:     displayEncoder = &volumeKnob;
+[e = _displayEncoder &U _volumeKnob ]
+"76
+[; ;main.c: 76: }
+[e :UE 2329 ]
+}
 [v $root$_main `(v ~T0 @X0 0 e ]
-"41 main.c
-[; ;main.c: 41: int main(void)
+"77
+[; ;main.c: 77: int main(void) {
 [v _main `(i ~T0 @X0 1 ef ]
-"42
-[; ;main.c: 42: {
 {
 [e :U _main ]
 [f ]
-"43
-[; ;main.c: 43:     SYSTEM_Initialize();
+"78
+[; ;main.c: 78:     SYSTEM_Initialize();
 [e ( _SYSTEM_Initialize ..  ]
-"49
-[; ;main.c: 49:     (INTCON0bits.GIE = 1);
+"83
+[; ;main.c: 83:     (INTCON0bits.GIE = 1);
 [e = . . _INTCON0bits 0 6 -> -> 1 `i `uc ]
-"54
-[; ;main.c: 54:     _delay((unsigned long)((1000)*(64000000U/4000.0)));
-[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"55
-[; ;main.c: 55:      AS1115_Init();
+"84
+[; ;main.c: 84:     TMR0_Start();
+[e ( _TMR0_Start ..  ]
+"85
+[; ;main.c: 85:     TMR0_OverflowCallbackRegister(MyTimerCallback);
+[e ( _TMR0_OverflowCallbackRegister (1 &U _MyTimerCallback ]
+"89
+[; ;main.c: 89:     _delay((unsigned long)((100)*(64000000U/4000.0)));
+[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
+"90
+[; ;main.c: 90:      AS1115_Init();
 [e ( _AS1115_Init ..  ]
-"56
-[; ;main.c: 56:     while(1)
-[e :U 2327 ]
-"57
-[; ;main.c: 57:     {
-{
-"58
-[; ;main.c: 58:         uint8_t digit = 0x0E;
-[v _digit `uc ~T0 @X0 1 a ]
-[e = _digit -> -> 14 `i `uc ]
-"59
-[; ;main.c: 59:         AS1115_Write(0x0B, 0x02);
-[e ( _AS1115_Write (2 , -> -> 11 `i `uc -> -> 2 `i `uc ]
-"60
-[; ;main.c: 60:         AS1115_Write(0x09, 0x07);
-[e ( _AS1115_Write (2 , -> -> 9 `i `uc -> -> 7 `i `uc ]
-"61
-[; ;main.c: 61:         AS1115_Write(0x0E, 0x00);
+"91
+[; ;main.c: 91:      _delay((unsigned long)((100)*(64000000U/4000.0)));
+[e ( __delay (1 -> * -> -> 100 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
+"92
+[; ;main.c: 92:     AS1115_Write(0x0B, 0x06);
+[e ( _AS1115_Write (2 , -> -> 11 `i `uc -> -> 6 `i `uc ]
+"93
+[; ;main.c: 93:     AS1115_Write(0x09, 0x7F);
+[e ( _AS1115_Write (2 , -> -> 9 `i `uc -> -> 127 `i `uc ]
+"95
+[; ;main.c: 95:     AS1115_Write(0x0E, 0x00);
 [e ( _AS1115_Write (2 , -> -> 14 `i `uc -> -> 0 `i `uc ]
-"62
-[; ;main.c: 62:         _delay((unsigned long)((200)*(64000000U/4000.0)));
-[e ( __delay (1 -> * -> -> 200 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"63
-[; ;main.c: 63:         AS1115_Write(0x01, digit);
-[e ( _AS1115_Write (2 , -> -> 1 `i `uc _digit ]
-"64
-[; ;main.c: 64:         _delay((unsigned long)((1000)*(64000000U/4000.0)));
-[e ( __delay (1 -> * -> -> 1000 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"65
-[; ;main.c: 65:     }
+"97
+[; ;main.c: 97:     uint32_t displayTimer = 0;
+[v _displayTimer `ul ~T0 @X0 1 a ]
+[e = _displayTimer -> -> -> 0 `i `l `ul ]
+"98
+[; ;main.c: 98:     DisplayVolume();
+[e ( _DisplayVolume ..  ]
+"99
+[; ;main.c: 99:     while(1) {
+[e :U 2332 ]
+{
+"100
+[; ;main.c: 100:         LATFbits.LATF6 = 1;
+[e = . . _LATFbits 0 6 -> -> 1 `i `uc ]
+"103
+[; ;main.c: 103:         if (ROTARYENC_Process(&volumeKnob, PORTCbits.RC5, PORTCbits.RC6, &systemTicks)) {
+[e $ ! != -> ( _ROTARYENC_Process (4 , , , &U _volumeKnob . . _PORTCbits 0 5 . . _PORTCbits 0 6 -> &U _systemTicks `*ul `i -> 0 `i 2334  ]
+{
+"104
+[; ;main.c: 104:             DisplayVolume();
+[e ( _DisplayVolume ..  ]
+"105
+[; ;main.c: 105:         }
 }
-[e :U 2326 ]
-[e $U 2327  ]
-[e :U 2328 ]
-"66
-[; ;main.c: 66: }
-[e :UE 2325 ]
+[e :U 2334 ]
+"108
+[; ;main.c: 108:         if (ROTARYENC_Process(&balanceKnob, PORTBbits.RB5, PORTBbits.RB4, &systemTicks)) {
+[e $ ! != -> ( _ROTARYENC_Process (4 , , , &U _balanceKnob . . _PORTBbits 0 5 . . _PORTBbits 0 4 -> &U _systemTicks `*ul `i -> 0 `i 2335  ]
+{
+"109
+[; ;main.c: 109:             uint8_t balIndex = (uint8_t)roundf((balanceKnob.value / 254.0) * 8);
+[v _balIndex `uc ~T0 @X0 1 a ]
+[e = _balIndex -> ( _roundf (1 -> * / -> -> . _balanceKnob 0 `i `d .254.0 -> -> 8 `i `d `f `uc ]
+"110
+[; ;main.c: 110:             AS1115_DisplayData(balanceLevels[balIndex], 3);
+[e ( _AS1115_DisplayData (2 , &U *U + &U _balanceLevels * -> _balIndex `ux -> * -> # *U &U *U &U _balanceLevels `ui -> -> 3 `i `ui `ux -> -> 3 `i `uc ]
+"111
+[; ;main.c: 111:             displayEncoder = &balanceKnob;
+[e = _displayEncoder &U _balanceKnob ]
+"112
+[; ;main.c: 112:             displayTimer = systemTicks;
+[e = _displayTimer _systemTicks ]
+"113
+[; ;main.c: 113:         }
+}
+[e :U 2335 ]
+"116
+[; ;main.c: 116:         if (displayEncoder != &volumeKnob) {
+[e $ ! != _displayEncoder &U _volumeKnob 2336  ]
+{
+"117
+[; ;main.c: 117:             uint32_t timeDelta = systemTicks - displayTimer;
+[v _timeDelta `ul ~T0 @X0 1 a ]
+[e = _timeDelta - _systemTicks _displayTimer ]
+"120
+[; ;main.c: 120:             if (timeDelta >= 4000) {
+[e $ ! >= _timeDelta -> -> -> 4000 `i `l `ul 2337  ]
+{
+"121
+[; ;main.c: 121:                 DisplayVolume();
+[e ( _DisplayVolume ..  ]
+"122
+[; ;main.c: 122:             }
+}
+[e :U 2337 ]
+"123
+[; ;main.c: 123:         }
+}
+[e :U 2336 ]
+"124
+[; ;main.c: 124:     }
+}
+[e :U 2331 ]
+[e $U 2332  ]
+[e :U 2333 ]
+"125
+[; ;main.c: 125: }
+[e :UE 2330 ]
+}
+"129
+[; ;main.c: 129: void vol_Write(uint8_t address, uint8_t data) {
+[v _vol_Write `(v ~T0 @X0 1 ef2`uc`uc ]
+{
+[e :U _vol_Write ]
+[v _address `uc ~T0 @X0 1 r1 ]
+[v _data `uc ~T0 @X0 1 r2 ]
+[f ]
+"130
+[; ;main.c: 130:     LATAbits.LATA0 = 0;
+[e = . . _LATAbits 0 0 -> -> 0 `i `uc ]
+"131
+[; ;main.c: 131:     SPI1_ByteExchange(address);
+[e ( _SPI1_ByteExchange (1 _address ]
+"132
+[; ;main.c: 132:     SPI1_ByteExchange(data);
+[e ( _SPI1_ByteExchange (1 _data ]
+"133
+[; ;main.c: 133:     LATAbits.LATA0 = 1;
+[e = . . _LATAbits 0 0 -> -> 1 `i `uc ]
+"134
+[; ;main.c: 134: }
+[e :UE 2338 ]
+}
+"165
+[; ;main.c: 165: void AS1115_DisplayNumber(uint32_t number) {
+[v _AS1115_DisplayNumber `(v ~T0 @X0 1 ef1`ul ]
+{
+[e :U _AS1115_DisplayNumber ]
+[v _number `ul ~T0 @X0 1 r1 ]
+[f ]
+[v F17668 `uc ~T0 @X0 -> 8 `i s ]
+[i F17668
+:U ..
+"167
+[; ;main.c: 167:     uint8_t digits[8] = {0};
+-> -> 0 `i `uc
+..
+]
+[v _digits `uc ~T0 @X0 -> 8 `i a ]
+[e = _digits F17668 ]
+"168
+[; ;main.c: 168:     uint8_t dcount = 0;
+[v _dcount `uc ~T0 @X0 1 a ]
+[e = _dcount -> -> 0 `i `uc ]
+"169
+[; ;main.c: 169:     uint8_t i = 1;
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 1 `i `uc ]
+"170
+[; ;main.c: 170:     uint8_t sz = 1;
+[v _sz `uc ~T0 @X0 1 a ]
+[e = _sz -> -> 1 `i `uc ]
+"171
+[; ;main.c: 171:     for (i = 1; number > 0; i++) {
+{
+[e = _i -> -> 1 `i `uc ]
+[e $ > _number -> -> -> 0 `i `l `ul 2340  ]
+[e $U 2341  ]
+[e :U 2340 ]
+{
+"172
+[; ;main.c: 172:         digits[i] = number % 10;
+[e = *U + &U _digits * -> _i `ux -> -> # *U &U _digits `ui `ux -> % _number -> -> -> 10 `i `l `ul `uc ]
+"173
+[; ;main.c: 173:         number /= 10;
+[e =/ _number -> -> -> 10 `i `l `ul ]
+"174
+[; ;main.c: 174:         sz = i ;
+[e = _sz _i ]
+"175
+[; ;main.c: 175:         dcount++;
+[e ++ _dcount -> -> 1 `i `uc ]
+"176
+[; ;main.c: 176:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e $ > _number -> -> -> 0 `i `l `ul 2340  ]
+[e :U 2341 ]
+}
+"178
+[; ;main.c: 178:     for (uint8_t d = 0; d <= i; d++) {
+{
+[v _d `uc ~T0 @X0 1 a ]
+[e = _d -> -> 0 `i `uc ]
+[e $U 2346  ]
+[e :U 2343 ]
+{
+"179
+[; ;main.c: 179:         if (d <= i){
+[e $ ! <= -> _d `i -> _i `i 2347  ]
+{
+"180
+[; ;main.c: 180:         AS1115_Write(d, digits[d]);
+[e ( _AS1115_Write (2 , _d *U + &U _digits * -> _d `ux -> -> # *U &U _digits `ui `ux ]
+"181
+[; ;main.c: 181:         }
+}
+[e $U 2348  ]
+"182
+[; ;main.c: 182:         else if(d>=1 && !digits[d] )
+[e :U 2347 ]
+[e $ ! && >= -> _d `i -> 1 `i ! != -> *U + &U _digits * -> _d `ux -> -> # *U &U _digits `ui `ux `i -> 0 `i 2349  ]
+"183
+[; ;main.c: 183:         {
+{
+"185
+[; ;main.c: 185:         AS1115_Write(d, 0x0F);
+[e ( _AS1115_Write (2 , _d -> -> 15 `i `uc ]
+"186
+[; ;main.c: 186:         }
+}
+[e :U 2349 ]
+[e :U 2348 ]
+"188
+[; ;main.c: 188:     }
+}
+[e ++ _d -> -> 1 `i `uc ]
+[e :U 2346 ]
+[e $ <= -> _d `i -> _i `i 2343  ]
+[e :U 2344 ]
+}
+"189
+[; ;main.c: 189: }
+[e :UE 2339 ]
+}
+"190
+[; ;main.c: 190: void AS1115_DisplayData(const uint8_t* data, uint8_t len) {
+[v _AS1115_DisplayData `(v ~T0 @X0 1 ef2`*Cuc`uc ]
+{
+[e :U _AS1115_DisplayData ]
+[v _data `*Cuc ~T0 @X0 1 r1 ]
+[v _len `uc ~T0 @X0 1 r2 ]
+[f ]
+"191
+[; ;main.c: 191:     for(uint8_t i = 0; i < len; i++) {
+{
+[v _i `uc ~T0 @X0 1 a ]
+[e = _i -> -> 0 `i `uc ]
+[e $U 2354  ]
+[e :U 2351 ]
+{
+"192
+[; ;main.c: 192:         AS1115_Write(i + 1, data[i]);
+[e ( _AS1115_Write (2 , -> + -> _i `i -> 1 `i `uc *U + _data * -> _i `ux -> -> # *U _data `ui `ux ]
+"193
+[; ;main.c: 193:     }
+}
+[e ++ _i -> -> 1 `i `uc ]
+[e :U 2354 ]
+[e $ < -> _i `i -> _len `i 2351  ]
+[e :U 2352 ]
+}
+"194
+[; ;main.c: 194: }
+[e :UE 2350 ]
 }

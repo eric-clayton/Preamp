@@ -1,15 +1,15 @@
 /**
- * I2C1 Generated Driver API Header File
+ * I2C2 Generated Driver API Header File
  *
- * @file i2c1.h
+ * @file i2c2.h
  *
- * @defgroup i2c_host I2C1_HOST
+ * @defgroup i2c_host I2C2_HOST
  *
- * @brief This header file contains API prototypes and other data types for the I2C1 driver.
+ * @brief This header file contains API prototypes and other data types for the I2C2 driver.
  *
- * @version I2C1 Driver Version 2.1.3
+ * @version I2C2 Driver Version 2.1.3
  * 
- * @version I2C1 Package Version 6.1.4
+ * @version I2C2 Package Version 6.1.4
  */
 
 /*
@@ -33,8 +33,8 @@
     THIS SOFTWARE.
 */
 
-#ifndef I2C1_H
-#define I2C1_H
+#ifndef I2C2_H
+#define I2C2_H
 
 /**
  * @misradeviation {@advisory,2.5} For false positives, which include 
@@ -54,17 +54,17 @@
 #include "i2c_host_interface.h"
 
 
-#define i2c1_host_host_interface I2C1_Host
+#define i2c2_host_host_interface I2C2_Host
 
 
-#define I2C1_Host_Initialize I2C1_Initialize
-#define I2C1_Host_Deinitialize I2C1_Deinitialize
-#define I2C1_Host_Write I2C1_Write
-#define I2C1_Host_Read I2C1_Read
-#define I2C1_Host_WriteRead I2C1_WriteRead
-#define I2C1_Host_ErrorGet I2C1_ErrorGet
-#define I2C1_Host_CallbackRegister I2C1_CallbackRegister
-#define I2C1_Host_IsBusy I2C1_IsBusy
+#define I2C2_Host_Initialize I2C2_Initialize
+#define I2C2_Host_Deinitialize I2C2_Deinitialize
+#define I2C2_Host_Write I2C2_Write
+#define I2C2_Host_Read I2C2_Read
+#define I2C2_Host_WriteRead I2C2_WriteRead
+#define I2C2_Host_ErrorGet I2C2_ErrorGet
+#define I2C2_Host_CallbackRegister I2C2_CallbackRegister
+#define I2C2_Host_IsBusy I2C2_IsBusy
 
 
 
@@ -74,28 +74,28 @@
 
 /**
  * @ingroup i2c_host
- * @brief External object for I2C1_Host.
+ * @brief External object for I2C2_Host.
  */
-extern const i2c_host_interface_t I2C1_Host;
+extern const i2c_host_interface_t I2C2_Host;
 
 /**
  * @ingroup i2c_host
- * @brief Initializes the I2C1 driver and module.
- *        This routine will be called before any other I2C1 routine is called.
+ * @brief Initializes the I2C2 driver and module.
+ *        This routine will be called before any other I2C2 routine is called.
  *        This routine will only be called once during system initialization.
  * @param None.
  * @return None.
  */
-void I2C1_Initialize(void);
+void I2C2_Initialize(void);
 
 /**
  * @ingroup i2c_host
- * @brief Deinitializes the I2C1 driver.
- *        This routine disables the I2C1 module.
+ * @brief Deinitializes the I2C2 driver.
+ *        This routine disables the I2C2 module.
  * @param None.
  * @return None.
  */
-void I2C1_Deinitialize(void);
+void I2C2_Deinitialize(void);
 
 /**
  * @ingroup i2c_host
@@ -105,12 +105,12 @@ void I2C1_Deinitialize(void);
  *        The I2C Host will generate a Start condition, write the data and then
  *        generate a Stop Condition. If the Client NAKs the request or a bus 
  *        error was encountered on the bus, the transfer is terminated.
- *        The application can call the I2C1_ErrorGet() function to
+ *        The application can call the I2C2_ErrorGet() function to
  *        know that the cause of the error.
  *
  *        The function is non-blocking. It initiates bus activity and returns
  *        immediately. The transfer is then completed in the peripheral 
- *        interrupt. For the Polling mode, the user has to call  I2C1_Tasks
+ *        interrupt. For the Polling mode, the user has to call  I2C2_Tasks
  *        in the while loop. A transfer request cannot be placed when another 
  *        transfer is in progress. Calling this function when another function 
  *        is already in progress will cause the function to return false.
@@ -126,7 +126,7 @@ void I2C1_Deinitialize(void);
  *         false - The request fails, if there was already a transfer in
  *                 progress when this function was called.
  */
-bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
+bool I2C2_Write(uint16_t address, uint8_t *data, size_t dataLength);
 
 /**
  * @ingroup i2c_host
@@ -136,12 +136,12 @@ bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
  *        The I2C Host generates a Start condition, reads the data and then 
  *        generates a Stop Condition. If the Client NAKs the request or a bus 
  *        error is encountered on the bus, the transfer is terminated. 
- *        The application will call I2C1_ErrorGet() function to know
+ *        The application will call I2C2_ErrorGet() function to know
  *        that the cause of the error.
  *
  *        The function is non-blocking. It initiates the bus activity and returns
  *        immediately. The transfer is then completed in the peripheral 
- *        interrupt. For the Polling mode, the user has to call  I2C1_Tasks
+ *        interrupt. For the Polling mode, the user has to call  I2C2_Tasks
  *        in the while loop. A transfer request cannot be placed when another 
  *        transfer is in progress. Calling this function when another function 
  *        is already in progress will cause the function to return false.
@@ -157,7 +157,7 @@ bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
  *         false - The request fails, if there was already a transfer in
  *                 progress when this function was called.
  */
-bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
+bool I2C2_Read(uint16_t address, uint8_t *data, size_t dataLength);
 
 /**
  * @ingroup i2c_host
@@ -172,11 +172,11 @@ bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
  *
  *        If the Client NAKs the request or a bus error was encountered on 
  *        the bus, the transfer is terminated. The application will call the
- *        I2C1_ErrorGet() function to know that the cause of the error.
+ *        I2C2_ErrorGet() function to know that the cause of the error.
  *
  *        The function is non-blocking. It initiates the bus activity and returns
  *        immediately. The transfer is then completed in the peripheral 
- *        interrupt. For the Polling mode, the user has to call I2C1_Tasks
+ *        interrupt. For the Polling mode, the user has to call I2C2_Tasks
  *        in the while loop. A transfer request cannot be placed when another 
  *        transfer is in progress. Calling this function when another function 
  *        is already in progress will cause the function to return false.
@@ -193,7 +193,7 @@ bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
  *         false - The request fails, if there was already a transfer in
  *                 progress when this function was called.
  */
-bool I2C1_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
+bool I2C2_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
 
 /**
  * @ingroup i2c_host
@@ -204,17 +204,17 @@ bool I2C1_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, ui
  *         I2C_ERROR_NACK - Client returned NACK
  *         I2C_ERROR_BUS_COLLISION - Bus Collision Error
  */
-i2c_host_error_t I2C1_ErrorGet(void);
+i2c_host_error_t I2C2_ErrorGet(void);
 
 /**
  * @ingroup i2c_host
  * @brief Checks if the I2C is busy.
- *        The I2C will be initialized with @ref I2C1_Initialize() 
+ *        The I2C will be initialized with @ref I2C2_Initialize() 
  *        before calling this API.
  * @param None.
  * @return true - if I2C is busy; false - if I2C is free
  */
-bool I2C1_IsBusy(void);
+bool I2C2_IsBusy(void);
 
 /**
  * @ingroup i2c_host
@@ -223,39 +223,39 @@ bool I2C1_IsBusy(void);
  * @return None.
  *
  */
-void I2C1_CallbackRegister(void (*callbackHandler)(void));
+void I2C2_CallbackRegister(void (*callbackHandler)(void));
 
 /**
- * @ingroup I2C1_host
- * @brief This function is ISR function for I2C1 Common interrupts
+ * @ingroup I2C2_host
+ * @brief This function is ISR function for I2C2 Common interrupts
  * @param void
  * @return void
  */
-void I2C1_ISR(void);
+void I2C2_ISR(void);
 
 /**
- * @ingroup I2C1_host
- * @brief This function is ISR function for I2C1 Error interrupts
+ * @ingroup I2C2_host
+ * @brief This function is ISR function for I2C2 Error interrupts
  * @param void
  * @return void
  */
-void I2C1_ERROR_ISR(void);
+void I2C2_ERROR_ISR(void);
 
 /**
- * @ingroup I2C1_host
- * @brief This function is ISR function for I2C1 Receive interrupts
+ * @ingroup I2C2_host
+ * @brief This function is ISR function for I2C2 Receive interrupts
  * @param void
  * @return void
  */
-void I2C1_RX_ISR(void);
+void I2C2_RX_ISR(void);
 
 /**
- * @ingroup I2C1_host
- * @brief This function is ISR function for I2C1 Transmit interrupts
+ * @ingroup I2C2_host
+ * @brief This function is ISR function for I2C2 Transmit interrupts
  * @param void
  * @return void
  */
-void I2C1_TX_ISR(void);
+void I2C2_TX_ISR(void);
 
  
-#endif //I2C1_H
+#endif //I2C2_H

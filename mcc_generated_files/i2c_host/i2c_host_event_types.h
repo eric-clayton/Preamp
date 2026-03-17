@@ -7,9 +7,9 @@
  *
  * @brief This header file provides the helper structures for the I2C driver.
  *
- * @version I2C1 Driver Version 2.1.3
+ * @version I2C2 Driver Version 2.1.3
  * 
- * @version I2C1 Package Version 6.1.4
+ * @version I2C2 Package Version 6.1.4
  */
 
 /*
@@ -55,7 +55,7 @@ typedef struct
     i2c_host_error_t errorState; /**< Error State*/
 } i2c_host_event_status_t;
 
-extern volatile i2c_host_event_status_t i2c1Status;
+extern volatile i2c_host_event_status_t i2c2Status;
 
 
 #endif //I2C_EVENT_TYPES_H 

@@ -7,9 +7,9 @@
  *
  * @brief This header file provides helper structures for the I2C driver.
  *
- * @version I2C1 Driver Version 2.1.3
+ * @version I2C2 Driver Version 2.1.3
  * 
- * @version I2C1 Package Version 6.1.4
+ * @version I2C2 Package Version 6.1.4
  */
 
 /*

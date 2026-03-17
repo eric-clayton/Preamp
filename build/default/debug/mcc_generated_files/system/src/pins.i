@@ -28256,7 +28256,7 @@ unsigned char __t1rd16on(void);
 unsigned char __t3rd16on(void);
 # 34 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include/xc.h" 2 3
 # 39 "mcc_generated_files/system/src/../pins.h" 2
-# 98 "mcc_generated_files/system/src/../pins.h"
+# 818 "mcc_generated_files/system/src/../pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -28275,8 +28275,8 @@ void PIN_MANAGER_Initialize(void)
 
 
     LATA = 0x0;
-    LATB = 0x0;
-    LATC = 0x18;
+    LATB = 0x6;
+    LATC = 0x0;
     LATD = 0x0;
     LATE = 0x0;
     LATF = 0x0;
@@ -28284,8 +28284,8 @@ void PIN_MANAGER_Initialize(void)
 
 
     ODCONA = 0x0;
-    ODCONB = 0x0;
-    ODCONC = 0x18;
+    ODCONB = 0x6;
+    ODCONC = 0x0;
     ODCOND = 0x0;
     ODCONE = 0x0;
     ODCONF = 0x0;
@@ -28293,22 +28293,22 @@ void PIN_MANAGER_Initialize(void)
 
 
 
-    TRISA = 0xFF;
-    TRISB = 0xFF;
-    TRISC = 0xE7;
-    TRISD = 0xFF;
-    TRISE = 0x7;
-    TRISF = 0xFF;
+    TRISA = 0x50;
+    TRISB = 0xF9;
+    TRISC = 0xEC;
+    TRISD = 0xF3;
+    TRISE = 0x0;
+    TRISF = 0xB0;
 
 
 
 
-    ANSELA = 0xFF;
-    ANSELB = 0xFF;
-    ANSELC = 0xE7;
-    ANSELD = 0xFF;
-    ANSELE = 0x7;
-    ANSELF = 0xFF;
+    ANSELA = 0x50;
+    ANSELB = 0xC0;
+    ANSELC = 0x0;
+    ANSELD = 0x1;
+    ANSELE = 0x0;
+    ANSELF = 0x0;
 
 
 
@@ -28318,7 +28318,7 @@ void PIN_MANAGER_Initialize(void)
     WPUC = 0x0;
     WPUD = 0x0;
     WPUE = 0x0;
-    WPUF = 0x0;
+    WPUF = 0x80;
 
 
 
@@ -28353,10 +28353,15 @@ void PIN_MANAGER_Initialize(void)
 
 
 
-    I2C1SCLPPS = 0x13;
-    RC3PPS = 0x21;
-    I2C1SDAPPS = 0x14;
-    RC4PPS = 0x22;
+    INT1PPS = 0x19;
+    SPI1SDIPPS = 0x13;
+    RC4PPS = 0x1F;
+    I2C2SCLPPS = 0x9;
+    RB1PPS = 0x23;
+    I2C2SDAPPS = 0xA;
+    RB2PPS = 0x24;
+    SPI1SCKPPS = 0x12;
+    RC2PPS = 0x1E;
 
 
 

@@ -1,17 +1,20 @@
 Version 4.0 HI-TECH Software Intermediate Code
-"134 ./as1115.h
-[; ;./as1115.h: 134: void AS1115_Write(uint8_t reg, uint8_t data);
+"146 ./as1115.h
+[; ;./as1115.h: 146: void AS1115_Write(uint8_t reg, uint8_t data);
 [v _AS1115_Write `(v ~T0 @X0 0 ef2`uc`uc ]
 [v F205 `(v ~T0 @X0 1 tf1`ul ]
 "20 C:\Program Files\Microchip\xc8\v3.10\pic\include/builtins.h
 [v __delay `JF205 ~T0 @X0 0 e ]
 [p i __delay ]
-"129 ./mcc_generated_files/system/../i2c_host/i2c1.h
-[; ;./mcc_generated_files/system/../i2c_host/i2c1.h: 129: _Bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
-[v _I2C1_Write `(a ~T0 @X0 0 ef3`us`*uc`ui ]
+"217 ./mcc_generated_files/system/../i2c_host/i2c2.h
+[; ;./mcc_generated_files/system/../i2c_host/i2c2.h: 217: _Bool I2C2_IsBusy(void);
+[v _I2C2_IsBusy `(a ~T0 @X0 0 ef ]
+"129
+[; ;./mcc_generated_files/system/../i2c_host/i2c2.h: 129: _Bool I2C2_Write(uint16_t address, uint8_t *data, size_t dataLength);
+[v _I2C2_Write `(a ~T0 @X0 0 ef3`us`*uc`ui ]
 "160
-[; ;./mcc_generated_files/system/../i2c_host/i2c1.h: 160: _Bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
-[v _I2C1_Read `(a ~T0 @X0 0 ef3`us`*uc`ui ]
+[; ;./mcc_generated_files/system/../i2c_host/i2c2.h: 160: _Bool I2C2_Read(uint16_t address, uint8_t *data, size_t dataLength);
+[v _I2C2_Read `(a ~T0 @X0 0 ef3`us`*uc`ui ]
 "192 C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 192: __asm("STATUS_CSHAD equ 03880h");
 [; <" STATUS_CSHAD equ 03880h ;# ">
@@ -2322,103 +2325,101 @@ Version 4.0 HI-TECH Software Intermediate Code
 "50089
 [; ;C:/Program Files/Microchip/MPLABX/v6.30/packs/Microchip/PIC18F-K_DFP/1.15.303/xc8\pic\include\proc/pic18lf56k42.h: 50089: __asm("TOSU equ 03FFFh");
 [; <" TOSU equ 03FFFh ;# ">
-"23 as1115.c
-[; ;as1115.c: 23: void AS1115_Init() {
+"17 as1115.c
+[; ;as1115.c: 17: void AS1115_Init() {
 [v _AS1115_Init `(v ~T0 @X0 1 ef ]
 {
 [e :U _AS1115_Init ]
 [f ]
-"24
-[; ;as1115.c: 24:     AS1115_Write(0x0C, 0x01);
+"18
+[; ;as1115.c: 18:     AS1115_Write(0x0C, 0x01);
 [e ( _AS1115_Write (2 , -> -> 12 `i `uc -> -> 1 `i `uc ]
-"25
-[; ;as1115.c: 25:     AS1115_Write(0x0B, 0x00);
+"19
+[; ;as1115.c: 19:     AS1115_Write(0x0B, 0x00);
 [e ( _AS1115_Write (2 , -> -> 11 `i `uc -> -> 0 `i `uc ]
-"26
-[; ;as1115.c: 26:     AS1115_Write(0x09, 0x01);
+"20
+[; ;as1115.c: 20:     AS1115_Write(0x09, 0x01);
 [e ( _AS1115_Write (2 , -> -> 9 `i `uc -> -> 1 `i `uc ]
-"27
-[; ;as1115.c: 27:     AS1115_Write(0x0A, 0x07);
+"21
+[; ;as1115.c: 21:     AS1115_Write(0x0A, 0x07);
 [e ( _AS1115_Write (2 , -> -> 10 `i `uc -> -> 7 `i `uc ]
-"28
-[; ;as1115.c: 28:     AS1115_Write(0x0F, 1);
-[e ( _AS1115_Write (2 , -> -> 15 `i `uc -> -> 1 `i `uc ]
-"29
-[; ;as1115.c: 29:   _delay((unsigned long)((200)*(64000000U/4000.0)));
+"23
+[; ;as1115.c: 23:   _delay((unsigned long)((200)*(64000000U/4000.0)));
 [e ( __delay (1 -> * -> -> 200 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"30
-[; ;as1115.c: 30: }
-[e :UE 2325 ]
+"24
+[; ;as1115.c: 24: }
+[e :UE 2327 ]
 }
-"33
-[; ;as1115.c: 33: void AS1115_Write(uint8_t reg, uint8_t data) {
+"27
+[; ;as1115.c: 27: void AS1115_Write(uint8_t reg, uint8_t data) {
 [v _AS1115_Write `(v ~T0 @X0 1 ef2`uc`uc ]
 {
 [e :U _AS1115_Write ]
 [v _reg `uc ~T0 @X0 1 r1 ]
 [v _data `uc ~T0 @X0 1 r2 ]
 [f ]
-[v F17051 `uc ~T0 @X0 -> 2 `i s ]
-[i F17051
-:U ..
-"34
-[; ;as1115.c: 34:     uint8_t buffer[2] = {reg, data};
--> -> 0 `i `uc
--> -> 0 `i `uc
-..
-]
-[v _buffer `uc ~T0 @X0 -> 2 `i a ]
-[e = _buffer F17051 ]
-[e ; = *U + &U _buffer * -> -> -> 0 `i `ui `ux -> -> # *U &U _buffer `ui `ux _reg = *U + &U _buffer * -> -> -> 1 `i `ui `ux -> -> # *U &U _buffer `ui `ux _data ]
+"28
+[; ;as1115.c: 28:     static uint8_t buffer[2];
+[v F17204 `uc ~T0 @X0 -> 2 `i s buffer ]
+"30
+[; ;as1115.c: 30:     while(I2C2_IsBusy());
+[e $U 2329  ]
+[e :U 2330 ]
+[e :U 2329 ]
+[e $ != -> ( _I2C2_IsBusy ..  `i -> 0 `i 2330  ]
+[e :U 2331 ]
+"32
+[; ;as1115.c: 32:     buffer[0] = reg;
+[e = *U + &U F17204 * -> -> -> 0 `i `ui `ux -> -> # *U &U F17204 `ui `ux _reg ]
+"33
+[; ;as1115.c: 33:     buffer[1] = data;
+[e = *U + &U F17204 * -> -> -> 1 `i `ui `ux -> -> # *U &U F17204 `ui `ux _data ]
 "35
-[; ;as1115.c: 35:     I2C1_Write(0x0000, buffer, 2);
-[e ( _I2C1_Write (3 , , -> -> 0 `i `us &U _buffer -> -> 2 `i `ui ]
+[; ;as1115.c: 35:     I2C2_Write(0x0000, buffer, 2);
+[e ( _I2C2_Write (3 , , -> -> 0 `i `us &U F17204 -> -> 2 `i `ui ]
 "36
-[; ;as1115.c: 36:     _delay((unsigned long)((50)*(64000000U/4000.0)));
-[e ( __delay (1 -> * -> -> 50 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"37
-[; ;as1115.c: 37: }
-[e :UE 2326 ]
+[; ;as1115.c: 36: }
+[e :UE 2328 ]
 }
-"38
-[; ;as1115.c: 38: void AS1115_Read(uint8_t *buffer) {
+"37
+[; ;as1115.c: 37: void AS1115_Read(uint8_t *buffer) {
 [v _AS1115_Read `(v ~T0 @X0 1 ef1`*uc ]
 {
 [e :U _AS1115_Read ]
 [v _buffer `*uc ~T0 @X0 1 r1 ]
 [f ]
+"38
+[; ;as1115.c: 38:     I2C2_Read(0x0000, buffer, 2);
+[e ( _I2C2_Read (3 , , -> -> 0 `i `us _buffer -> -> 2 `i `ui ]
 "39
-[; ;as1115.c: 39:     I2C1_Read(0x0000, buffer, 2);
-[e ( _I2C1_Read (3 , , -> -> 0 `i `us _buffer -> -> 2 `i `ui ]
-"40
-[; ;as1115.c: 40:     _delay((unsigned long)((50)*(64000000U/4000.0)));
+[; ;as1115.c: 39:     _delay((unsigned long)((50)*(64000000U/4000.0)));
 [e ( __delay (1 -> * -> -> 50 `i `d / -> -> 64000000 `ul `d .4000.0 `ul ]
-"41
-[; ;as1115.c: 41: }
-[e :UE 2327 ]
+"40
+[; ;as1115.c: 40: }
+[e :UE 2332 ]
 }
-"42
-[; ;as1115.c: 42: uint8_t AS1115_Read_Reg(uint8_t reg) {
+"41
+[; ;as1115.c: 41: uint8_t AS1115_Read_Reg(uint8_t reg) {
 [v _AS1115_Read_Reg `(uc ~T0 @X0 1 ef1`uc ]
 {
 [e :U _AS1115_Read_Reg ]
 [v _reg `uc ~T0 @X0 1 r1 ]
 [f ]
-"43
-[; ;as1115.c: 43:     uint8_t val = 0;
+"42
+[; ;as1115.c: 42:     uint8_t val = 0;
 [v _val `uc ~T0 @X0 1 a ]
 [e = _val -> -> 0 `i `uc ]
+"43
+[; ;as1115.c: 43:     I2C2_Write(0x0000, &reg, 1);
+[e ( _I2C2_Write (3 , , -> -> 0 `i `us &U _reg -> -> 1 `i `ui ]
 "44
-[; ;as1115.c: 44:     I2C1_Write(0x0000, &reg, 1);
-[e ( _I2C1_Write (3 , , -> -> 0 `i `us &U _reg -> -> 1 `i `ui ]
+[; ;as1115.c: 44:     I2C2_Read(0x0000, &val, 1);
+[e ( _I2C2_Read (3 , , -> -> 0 `i `us &U _val -> -> 1 `i `ui ]
 "45
-[; ;as1115.c: 45:     I2C1_Read(0x0000, &val, 1);
-[e ( _I2C1_Read (3 , , -> -> 0 `i `us &U _val -> -> 1 `i `ui ]
-"46
-[; ;as1115.c: 46:     return val;
+[; ;as1115.c: 45:     return val;
 [e ) _val ]
-[e $UE 2328  ]
-"47
-[; ;as1115.c: 47: }
-[e :UE 2328 ]
+[e $UE 2333  ]
+"46
+[; ;as1115.c: 46: }
+[e :UE 2333 ]
 }

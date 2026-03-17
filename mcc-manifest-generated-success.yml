@@ -2,7 +2,7 @@
 
 manifest_file_version: 1.0.0
 project: I2CTest4
-creation_date: 2026-02-07T16:34:01.020-05:00[America/New_York]
+creation_date: 2026-03-10T15:51:18.313-04:00[America/New_York]
 operating_system: Windows 10
 mcc_mode: IDE
 mcc_mode_version: v6.30
@@ -25,4 +25,9 @@ modules:
 - {name: '@mchp-mcc/pin-content-processor', type: MELODY, version: 3.11.0}
 - {name: '@mchp-mcc/scf-pic8-i2c-v1', type: MELODY, version: 6.1.4}
 - {name: '@mchp-mcc/scf-pic8-interrupt-v1', type: MELODY, version: 5.2.11}
+- {name: '@mchp-mcc/scf-pic8-memory-v4', type: MELODY, version: 1.0.3}
 - {name: '@mchp-mcc/scf-pic8-osc-v1', type: MELODY, version: 4.4.0}
+- {name: '@mchp-mcc/scf-pic8-spi-v1', type: MELODY, version: 5.2.0}
+- {name: '@mchp-mcc/scf-pic8-tmr0-v1', type: MELODY, version: 5.1.1}
+- {name: '@mchp-mcc/spi-host-driver', type: MELODY, version: 1.3.1}
+- {name: '@mchp-mcc/timer', type: MELODY, version: 1.2.4}

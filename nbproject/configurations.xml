@@ -9,9 +9,17 @@
                      projectFiles="true">
         <logicalFolder name="i2c_host" displayName="i2c_host" projectFiles="true">
           <itemPath>mcc_generated_files/i2c_host/i2c_host_interface.h</itemPath>
-          <itemPath>mcc_generated_files/i2c_host/i2c1.h</itemPath>
           <itemPath>mcc_generated_files/i2c_host/i2c_host_types.h</itemPath>
           <itemPath>mcc_generated_files/i2c_host/i2c_host_event_types.h</itemPath>
+          <itemPath>mcc_generated_files/i2c_host/i2c2.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
+          <itemPath>mcc_generated_files/nvm/nvm.h</itemPath>
+        </logicalFolder>
+        <logicalFolder name="spi" displayName="spi" projectFiles="true">
+          <itemPath>mcc_generated_files/spi/spi1.h</itemPath>
+          <itemPath>mcc_generated_files/spi/spi_polling_types.h</itemPath>
+          <itemPath>mcc_generated_files/spi/spi_interface.h</itemPath>
         </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
           <itemPath>mcc_generated_files/system/pins.h</itemPath>
@@ -20,8 +28,13 @@
           <itemPath>mcc_generated_files/system/config_bits.h</itemPath>
           <itemPath>mcc_generated_files/system/system.h</itemPath>
         </logicalFolder>
+        <logicalFolder name="timer" displayName="timer" projectFiles="true">
+          <itemPath>mcc_generated_files/timer/timer_interface.h</itemPath>
+          <itemPath>mcc_generated_files/timer/tmr0.h</itemPath>
+        </logicalFolder>
       </logicalFolder>
       <itemPath>as1115.h</itemPath>
+      <itemPath>rotoryenc.h</itemPath>
     </logicalFolder>
     <logicalFolder name="ExternalFiles"
                    displayName="Important Files"
@@ -41,7 +54,17 @@
                      projectFiles="true">
         <logicalFolder name="i2c_host" displayName="i2c_host" projectFiles="true">
           <logicalFolder name="src" displayName="src" projectFiles="true">
-            <itemPath>mcc_generated_files/i2c_host/src/i2c1.c</itemPath>
+            <itemPath>mcc_generated_files/i2c_host/src/i2c2.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="nvm" displayName="nvm" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/nvm/src/nvm.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
+        <logicalFolder name="spi" displayName="spi" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/spi/src/spi1.c</itemPath>
           </logicalFolder>
         </logicalFolder>
         <logicalFolder name="system" displayName="system" projectFiles="true">
@@ -53,9 +76,15 @@
             <itemPath>mcc_generated_files/system/src/system.c</itemPath>
           </logicalFolder>
         </logicalFolder>
+        <logicalFolder name="timer" displayName="timer" projectFiles="true">
+          <logicalFolder name="src" displayName="src" projectFiles="true">
+            <itemPath>mcc_generated_files/timer/src/tmr0.c</itemPath>
+          </logicalFolder>
+        </logicalFolder>
       </logicalFolder>
       <itemPath>main.c</itemPath>
       <itemPath>as1115.c</itemPath>
+      <itemPath>rotoryenc.c</itemPath>
     </logicalFolder>
   </logicalFolder>
   <sourceRootList>
@@ -106,6 +135,7 @@
       </makeCustomizationType>
       <HI-TECH-COMP>
         <property key="additional-warnings" value="true"/>
+        <property key="appendMe" value=""/>
         <property key="asmlist" value="true"/>
         <property key="call-prologues" value="false"/>
         <property key="default-bitfield-type" value="true"/>
@@ -136,7 +166,7 @@
         <property key="use-iar" value="false"/>
         <property key="verbose" value="false"/>
         <property key="warning-level" value="-3"/>
-        <property key="what-to-do" value="ignore"/>
+        <property key="what-to-do" value="require"/>
       </HI-TECH-COMP>
       <HI-TECH-LINK>
         <property key="additional-options-checksum" value=""/>
@@ -303,6 +333,8 @@
         <property key="memories.programmemory" value="true"/>
         <property key="memories.programmemory.ranges" value="0-ffff"/>
         <property key="poweroptions.powerenable" value="false"/>
+        <property key="programmerToGoFilePath"
+                  value="C:/Users/dclayton/MPLABXProjects/I2CTest4.X/debug/default/I2CTest4_ptg"/>
         <property key="programmerToGoImageName" value="I2CTest4_ptg"/>
         <property key="programoptions.donoteraseauxmem" value="false"/>
         <property key="programoptions.eraseb4program" value="true"/>

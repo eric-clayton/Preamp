@@ -58,7 +58,7 @@ void  INTERRUPT_Initialize (void)
     EXT_INT1_risingEdgeSet();    
     // Set Default Interrupt Handler
     INT1_SetInterruptHandler(INT1_DefaultInterruptHandler);
-    // EXT_INT1_InterruptEnable();
+    EXT_INT1_InterruptEnable();
 
     // Clear the interrupt flag
     // Set the external interrupt edge detect
@@ -80,21 +80,29 @@ void  INTERRUPT_Initialize (void)
 void __interrupt() INTERRUPT_InterruptManager (void)
 {
     // interrupt handler
-    if(PIE3bits.I2C1EIE == 1 && PIR3bits.I2C1EIF == 1)
+    if(PIE5bits.INT1IE == 1 && PIR5bits.INT1IF == 1)
     {
-        I2C1_ERROR_ISR();
+        INT1_ISR();
     }
-    else if(PIE2bits.I2C1RXIE == 1 && PIR2bits.I2C1RXIF == 1)
+    else if(PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1)
     {
-        I2C1_RX_ISR();
+        TMR0_ISR();
     }
-    else if(PIE3bits.I2C1IE == 1 && PIR3bits.I2C1IF == 1)
+    else if(PIE6bits.I2C2EIE == 1 && PIR6bits.I2C2EIF == 1)
     {
-        I2C1_ISR();
+        I2C2_ERROR_ISR();
     }
-    else if(PIE3bits.I2C1TXIE == 1 && PIR3bits.I2C1TXIF == 1)
+    else if(PIE5bits.I2C2RXIE == 1 && PIR5bits.I2C2RXIF == 1)
     {
-        I2C1_TX_ISR();
+        I2C2_RX_ISR();
+    }
+    else if(PIE6bits.I2C2IE == 1 && PIR6bits.I2C2IF == 1)
+    {
+        I2C2_ISR();
+    }
+    else if(PIE5bits.I2C2TXIE == 1 && PIR5bits.I2C2TXIF == 1)
+    {
+        I2C2_TX_ISR();
     }
     else
     {

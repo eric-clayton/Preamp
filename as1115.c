@@ -7,12 +7,6 @@
 
 
 #include <xc.h>
-
-//void main(void) {
-//    return;
-//}
-
-
 #include "as1115.h"
 
 
@@ -31,18 +25,23 @@ void AS1115_Init() {
 
 // Send I2C Commands
 void AS1115_Write(uint8_t reg, uint8_t data) {
-    uint8_t buffer[2] = {reg, data};
-    I2C1_Write(AS1115_I2C_ADDRESS, buffer, 2);
-    __delay_ms(50);
+    static uint8_t buffer[2];
+    
+    while(I2C2_IsBusy());
+    
+    buffer[0] = reg;
+    buffer[1] = data;
+    
+    I2C2_Write(AS1115_I2C_ADDRESS, buffer, 2);
 }
 void AS1115_Read(uint8_t *buffer) {
-    I2C1_Read(AS1115_I2C_ADDRESS, buffer, 2);
+    I2C2_Read(AS1115_I2C_ADDRESS, buffer, 2);
     __delay_ms(50);
 }
 uint8_t AS1115_Read_Reg(uint8_t reg) {
     uint8_t val = 0;
-    I2C1_Write(AS1115_I2C_ADDRESS, &reg, 1); // Point to register
-    I2C1_Read(AS1115_I2C_ADDRESS, &val, 1);  // Read the value
+    I2C2_Write(AS1115_I2C_ADDRESS, &reg, 1); // Point to register
+    I2C2_Read(AS1115_I2C_ADDRESS, &val, 1);  // Read the value
     return val;
 }
 //Function to write a string to OLED, passed string

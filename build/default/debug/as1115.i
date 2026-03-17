@@ -28261,12 +28261,6 @@ unsigned char __t1rd16on(void);
 unsigned char __t3rd16on(void);
 # 34 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include/xc.h" 2 3
 # 10 "as1115.c" 2
-
-
-
-
-
-
 # 1 "./as1115.h" 1
 # 42 "./as1115.h"
 # 1 "./mcc_generated_files/system/system.h" 1
@@ -28281,7 +28275,7 @@ void CLOCK_Initialize(void);
 # 40 "./mcc_generated_files/system/config_bits.h" 2
 # 42 "./mcc_generated_files/system/system.h" 2
 # 1 "./mcc_generated_files/system/../system/pins.h" 1
-# 98 "./mcc_generated_files/system/../system/pins.h"
+# 818 "./mcc_generated_files/system/../system/pins.h"
 void PIN_MANAGER_Initialize (void);
 
 
@@ -28292,8 +28286,8 @@ void PIN_MANAGER_Initialize (void);
 
 void PIN_MANAGER_IOC(void);
 # 43 "./mcc_generated_files/system/system.h" 2
-# 1 "./mcc_generated_files/system/../i2c_host/i2c1.h" 1
-# 53 "./mcc_generated_files/system/../i2c_host/i2c1.h"
+# 1 "./mcc_generated_files/system/../i2c_host/i2c2.h" 1
+# 53 "./mcc_generated_files/system/../i2c_host/i2c2.h"
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_event_types.h" 1
 # 39 "./mcc_generated_files/system/../i2c_host/i2c_host_event_types.h"
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_types.h" 1
@@ -28329,8 +28323,8 @@ typedef struct
     i2c_host_error_t errorState;
 } i2c_host_event_status_t;
 
-extern volatile i2c_host_event_status_t i2c1Status;
-# 54 "./mcc_generated_files/system/../i2c_host/i2c1.h" 2
+extern volatile i2c_host_event_status_t i2c2Status;
+# 54 "./mcc_generated_files/system/../i2c_host/i2c2.h" 2
 # 1 "./mcc_generated_files/system/../i2c_host/i2c_host_interface.h" 1
 # 48 "./mcc_generated_files/system/../i2c_host/i2c_host_interface.h"
 typedef struct
@@ -28346,25 +28340,25 @@ typedef struct
     void (*CallbackRegister)(void (*callback)(void));
     void (*Tasks)(void);
 }i2c_host_interface_t;
-# 55 "./mcc_generated_files/system/../i2c_host/i2c1.h" 2
-# 79 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-extern const i2c_host_interface_t I2C1_Host;
-# 89 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_Initialize(void);
-# 98 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_Deinitialize(void);
-# 129 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_Write(uint16_t address, uint8_t *data, size_t dataLength);
-# 160 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_Read(uint16_t address, uint8_t *data, size_t dataLength);
-# 196 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
-# 207 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-i2c_host_error_t I2C1_ErrorGet(void);
-# 217 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-_Bool I2C1_IsBusy(void);
-# 226 "./mcc_generated_files/system/../i2c_host/i2c1.h"
-void I2C1_CallbackRegister(void (*callbackHandler)(void));
+# 55 "./mcc_generated_files/system/../i2c_host/i2c2.h" 2
+# 79 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+extern const i2c_host_interface_t I2C2_Host;
+# 89 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_Initialize(void);
+# 98 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_Deinitialize(void);
+# 129 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_Write(uint16_t address, uint8_t *data, size_t dataLength);
+# 160 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_Read(uint16_t address, uint8_t *data, size_t dataLength);
+# 196 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_WriteRead(uint16_t address, uint8_t *writeData, size_t writeLength, uint8_t *readData, size_t readLength);
+# 207 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+i2c_host_error_t I2C2_ErrorGet(void);
+# 217 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+_Bool I2C2_IsBusy(void);
+# 226 "./mcc_generated_files/system/../i2c_host/i2c2.h"
+void I2C2_CallbackRegister(void (*callbackHandler)(void));
 
 
 
@@ -28372,7 +28366,7 @@ void I2C1_CallbackRegister(void (*callbackHandler)(void));
 
 
 
-void I2C1_ISR(void);
+void I2C2_ISR(void);
 
 
 
@@ -28380,7 +28374,7 @@ void I2C1_ISR(void);
 
 
 
-void I2C1_ERROR_ISR(void);
+void I2C2_ERROR_ISR(void);
 
 
 
@@ -28388,7 +28382,7 @@ void I2C1_ERROR_ISR(void);
 
 
 
-void I2C1_RX_ISR(void);
+void I2C2_RX_ISR(void);
 
 
 
@@ -28396,8 +28390,107 @@ void I2C1_RX_ISR(void);
 
 
 
-void I2C1_TX_ISR(void);
+void I2C2_TX_ISR(void);
 # 44 "./mcc_generated_files/system/system.h" 2
+# 1 "./mcc_generated_files/system/../nvm/nvm.h" 1
+# 78 "./mcc_generated_files/system/../nvm/nvm.h"
+typedef uint8_t flash_data_t;
+
+
+
+
+typedef uint24_t flash_address_t;
+
+
+
+
+
+typedef uint8_t eeprom_data_t;
+
+
+
+
+typedef uint24_t eeprom_address_t;
+
+
+
+
+
+
+typedef enum
+{
+    NVM_OK,
+    NVM_ERROR
+} nvm_status_t;
+
+
+
+
+
+
+
+void NVM_Initialize(void);
+# 122 "./mcc_generated_files/system/../nvm/nvm.h"
+_Bool NVM_IsBusy(void);
+# 131 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t NVM_StatusGet(void);
+
+
+
+
+
+
+
+void NVM_StatusClear(void);
+
+
+
+
+
+
+
+void NVM_UnlockKeySet(uint16_t unlockKey);
+
+
+
+
+
+
+
+void NVM_UnlockKeyClear(void);
+
+
+
+
+
+
+
+flash_data_t FLASH_Read(flash_address_t address);
+# 178 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t FLASH_RowWrite(flash_address_t address, flash_data_t *dataBuffer);
+# 188 "./mcc_generated_files/system/../nvm/nvm.h"
+nvm_status_t FLASH_PageErase(flash_address_t address);
+
+
+
+
+
+
+
+flash_address_t FLASH_PageAddressGet(flash_address_t address);
+
+
+
+
+
+
+
+uint16_t FLASH_PageOffsetGet(flash_address_t address);
+# 216 "./mcc_generated_files/system/../nvm/nvm.h"
+eeprom_data_t EEPROM_Read(eeprom_address_t address);
+# 229 "./mcc_generated_files/system/../nvm/nvm.h"
+void EEPROM_Write(eeprom_address_t address, eeprom_data_t data);
+# 45 "./mcc_generated_files/system/system.h" 2
 # 1 "./mcc_generated_files/system/../system/interrupt.h" 1
 # 69 "./mcc_generated_files/system/../system/interrupt.h"
 void INTERRUPT_Initialize (void);
@@ -28431,8 +28524,219 @@ void INT2_SetInterruptHandler(void (* InterruptHandler)(void));
 extern void (*INT2_InterruptHandler)(void);
 # 347 "./mcc_generated_files/system/../system/interrupt.h"
 void INT2_DefaultInterruptHandler(void);
-# 45 "./mcc_generated_files/system/system.h" 2
+# 46 "./mcc_generated_files/system/system.h" 2
 
+# 1 "./mcc_generated_files/system/../spi/spi1.h" 1
+# 46 "./mcc_generated_files/system/../spi/spi1.h"
+# 1 "./mcc_generated_files/system/../spi/spi_interface.h" 1
+# 39 "./mcc_generated_files/system/../spi/spi_interface.h"
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 1 3
+# 19 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 3
+# 1 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 1 3
+# 138 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/bits/alltypes.h" 3
+typedef int ptrdiff_t;
+# 20 "C:\\Program Files\\Microchip\\xc8\\v3.10\\pic\\include\\c99/stddef.h" 2 3
+# 40 "./mcc_generated_files/system/../spi/spi_interface.h" 2
+
+
+
+
+
+
+struct SPI_INTERFACE
+{
+    void (*Initialize)(void);
+    void (*Deinitialize)(void);
+    _Bool (*Open)(uint8_t spiConfigIndex);
+    void (*Close)(void);
+    void (*Transfer)(const void *txBuffer, void *rxBuffer, size_t bufferSize);
+    void (*BufferExchange)(void *bufferData, size_t bufferSize);
+    void (*BufferRead)(void *bufferData, size_t bufferSize);
+    void (*BufferWrite)(void *bufferData, size_t bufferSize);
+    uint8_t (*ByteExchange)(uint8_t byteData);
+    uint8_t (*ByteRead)(void);
+    void (*ByteWrite)(uint8_t byteData);
+    _Bool (*IsRxReady)(void);
+    _Bool (*IsTxReady)(void);
+    void (*RxCompleteCallbackRegister)(void (*callbackHandler)(void));
+    void (*TxCompleteCallbackRegister)(void (*callbackHandler)(void));
+};
+# 47 "./mcc_generated_files/system/../spi/spi1.h" 2
+
+
+
+
+
+
+extern const struct SPI_INTERFACE SPI1_Host;
+# 127 "./mcc_generated_files/system/../spi/spi1.h"
+typedef enum
+{
+    HOST_CONFIG,
+    SPI1_DEFAULT
+} spi1_configuration_name_t;
+
+
+
+
+
+
+
+void SPI1_Initialize(void);
+
+
+
+
+
+
+
+void SPI1_Deinitialize(void);
+# 157 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_Open(uint8_t spiConfigIndex);
+
+
+
+
+
+
+
+void SPI1_Close(void);
+# 175 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_Transfer(const void * txBuffer, void * rxBuffer, size_t bufferSize);
+# 184 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferExchange(void * bufferData, size_t bufferSize);
+# 193 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferWrite(void * bufferData, size_t bufferSize);
+# 202 "./mcc_generated_files/system/../spi/spi1.h"
+void SPI1_BufferRead(void * bufferData, size_t bufferSize);
+
+
+
+
+
+
+
+uint8_t SPI1_ByteExchange(uint8_t byteData);
+
+
+
+
+
+
+
+void SPI1_ByteWrite(uint8_t byteData);
+
+
+
+
+
+
+
+uint8_t SPI1_ByteRead(void);
+# 235 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_IsRxReady(void);
+# 244 "./mcc_generated_files/system/../spi/spi1.h"
+_Bool SPI1_IsTxReady(void);
+# 48 "./mcc_generated_files/system/system.h" 2
+# 1 "./mcc_generated_files/system/../timer/tmr0.h" 1
+# 40 "./mcc_generated_files/system/../timer/tmr0.h"
+# 1 "./mcc_generated_files/system/../timer/timer_interface.h" 1
+# 63 "./mcc_generated_files/system/../timer/timer_interface.h"
+struct TIMER_INTERFACE
+{
+    void (*Initialize)(void);
+
+
+    void (*Deinitialize)(void);
+
+
+    void (*Start)(void);
+
+
+    void (*Stop)(void);
+
+
+
+
+
+
+
+    void (*PeriodSet)(uint32_t count);
+
+
+ uint32_t (*PeriodGet)(void);
+
+
+    uint32_t (*CounterGet)(void);
+
+
+    void (*CounterSet)(uint32_t count);
+
+
+    uint32_t (*MaxCountGet)(void);
+
+
+
+
+
+
+
+    void (*TimeoutCallbackRegister)(void (*CallbackHandler)(void));
+
+
+    void (*Tasks)(void);
+
+};
+# 41 "./mcc_generated_files/system/../timer/tmr0.h" 2
+# 142 "./mcc_generated_files/system/../timer/tmr0.h"
+extern const struct TIMER_INTERFACE Timer0;
+# 151 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Initialize(void);
+
+
+
+
+
+
+
+void TMR0_Deinitialize(void);
+# 168 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Start(void);
+# 177 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_Stop(void);
+# 186 "./mcc_generated_files/system/../timer/tmr0.h"
+uint32_t TMR0_CounterGet(void);
+# 195 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_CounterSet(uint32_t counterValue);
+# 204 "./mcc_generated_files/system/../timer/tmr0.h"
+void TMR0_PeriodSet(uint32_t periodCount);
+# 213 "./mcc_generated_files/system/../timer/tmr0.h"
+uint32_t TMR0_PeriodGet(void);
+
+
+
+
+
+
+
+uint32_t TMR0_MaxCountGet(void);
+
+
+
+
+
+
+
+void TMR0_ISR(void);
+
+
+
+
+
+
+
+ void TMR0_OverflowCallbackRegister(void (* CallbackHandler)(void));
+# 49 "./mcc_generated_files/system/system.h" 2
 
 
 
@@ -28500,11 +28804,11 @@ size_t strxfrm_l (char *restrict, const char *restrict, size_t, locale_t);
 
 void *memccpy (void *restrict, const void *restrict, int, size_t);
 # 44 "./as1115.h" 2
-# 134 "./as1115.h"
+# 146 "./as1115.h"
 void AS1115_Write(uint8_t reg, uint8_t data);
 void AS1115_Init();
 uint8_t AS1115_Read_Reg(uint8_t reg);
-# 17 "as1115.c" 2
+# 11 "as1115.c" 2
 
 
 
@@ -28516,23 +28820,28 @@ void AS1115_Init() {
     AS1115_Write(0x0B, 0x00);
     AS1115_Write(0x09, 0x01);
     AS1115_Write(0x0A, 0x07);
-    AS1115_Write(0x0F, 1);
+
   _delay((unsigned long)((200)*(64000000U/4000.0)));
 }
 
 
 void AS1115_Write(uint8_t reg, uint8_t data) {
-    uint8_t buffer[2] = {reg, data};
-    I2C1_Write(0x0000, buffer, 2);
-    _delay((unsigned long)((50)*(64000000U/4000.0)));
+    static uint8_t buffer[2];
+
+    while(I2C2_IsBusy());
+
+    buffer[0] = reg;
+    buffer[1] = data;
+
+    I2C2_Write(0x0000, buffer, 2);
 }
 void AS1115_Read(uint8_t *buffer) {
-    I2C1_Read(0x0000, buffer, 2);
+    I2C2_Read(0x0000, buffer, 2);
     _delay((unsigned long)((50)*(64000000U/4000.0)));
 }
 uint8_t AS1115_Read_Reg(uint8_t reg) {
     uint8_t val = 0;
-    I2C1_Write(0x0000, &reg, 1);
-    I2C1_Read(0x0000, &val, 1);
+    I2C2_Write(0x0000, &reg, 1);
+    I2C2_Read(0x0000, &val, 1);
     return val;
 }

@@ -106,10 +106,12 @@ extern "C" {
 // Decode Mode    
 #define AS1115_NO_DECODE                                   0x00
 #define AS1115_DECODE_DIGIT_0                              0x01
-
+#define AS1115_DECODE_DIGIT_0_1                            0x03
 #define AS1115_DECODE_DIGIT_0_2                            0x07
+#define AS1115_DECODE_DIGIT_0_3                            0x0F
+#define AS1115_DECODE_DIGIT_0_4                            0x1F
 #define AS1115_DECODE_DIGIT_0_5                            0x3F
-#define AS1115_DECODE_DIGIT_0_2_5                          0x25
+#define AS1115_DECODE_DIGIT_0_6                            0x7F
 #define AS1115_DECODE_DIGIT_0_7                            0xFF
     
 // Intensity duty cycles

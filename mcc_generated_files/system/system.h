@@ -40,9 +40,12 @@
 #include <stdbool.h>
 #include "config_bits.h"
 #include "../system/pins.h"
-#include "../i2c_host/i2c1.h"
+#include "../i2c_host/i2c2.h"
+#include "../nvm/nvm.h"
 #include "../system/interrupt.h"
 #include "../system/clock.h"
+#include "../spi/spi1.h"
+#include "../timer/tmr0.h"
 
 /**
  * @ingroup systemdriver
