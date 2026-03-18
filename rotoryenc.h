@@ -8,6 +8,8 @@
 #ifndef ROTORYENC_H
 #define	ROTORYENC_H
 
+#include <stdbool.h>
+#include <stdint.h>
 #ifdef	__cplusplus
 extern "C" {
 #endif
@@ -20,7 +22,7 @@ typedef struct {
     uint8_t fastStep;        // How much to jump when turning fast
     uint8_t slowStep;        // How much to jump when turning slow
 } Encoder_t;
-bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, uint32_t *systemTicks);
+bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, volatile uint32_t *systemTicks);
 
 
 #ifdef	__cplusplus

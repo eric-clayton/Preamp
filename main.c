@@ -125,39 +125,38 @@ int main(void) {
 }
 
 
-// Function to write to Volume pot (address byte + data byte)
-void vol_Write(uint8_t address, uint8_t data) {
-    vol_CS_LAT = 0; // CS low
-    SPI1_ByteExchange(address); // Send register address
-    SPI1_ByteExchange(data); // Send data
-    vol_CS_LAT = 1; // CS high
-}
+// // Function to write to Volume pot (address byte + data byte)
+// void vol_Write(uint8_t address, uint8_t data) {
+//     vol_CS_LAT = 0; // CS low
+//     SPI1_ByteExchange(address); // Send register address
+//     SPI1_ByteExchange(data); // Send data
+//     vol_CS_LAT = 1; // CS high
+// }
 
 
 // Display a number (e.g., 12345678) on 7-segment (BCD mode)
 void AS1115_DisplayNumber(uint32_t number) {
+    uint8_t digits[8];
+    uint32_t temp = number;
+    uint8_t i = 0;
+
+    // 1. Extract digits into the array (Index 0 = Ones place)
+    for (i = 0; i < 8; i++) {
+        digits[i] = temp % 10;
+        temp /= 10;
         
-    uint8_t digits[8] = {0};
-    uint8_t dcount = 0;
-    uint8_t i = 1;
-    uint8_t sz = 1;
-    for (i = 1; number > 0; i++) {
-        digits[i] = number % 10;
-        number /= 10;
-        sz = i ;
-        dcount++;
+        // If we ran out of numbers, fill the rest of the 8 digits with BLANK (0xF)
+        if (temp == 0) {
+            for (uint8_t j = i + 1; j < 8; j++) {
+                digits[j] = 0xF; 
+            }
+            break;
+        }
     }
-    
-    for (uint8_t d = 0; d <= i; d++) {
-        if (d <= i){
-        AS1115_Write(d, digits[d]); // Right-align
-        }
-        else if(d>=1 && !digits[d] )
-        {
-            
-        AS1115_Write(d, 0x0F);
-        }
-        
+
+    // 2. Send to AS1115 (Registers 1-8 map to digits 0-7)
+    for (uint8_t d = 0; d < 8; d++) {
+        AS1115_Write(d + 1, digits[d]);
     }
 }
 void AS1115_DisplayData(const uint8_t* data, uint8_t len) {
