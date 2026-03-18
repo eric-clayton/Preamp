@@ -1,7 +1,5 @@
-#include "mcc_generated_files/system/system.h"
 #include <xc.h>
 #include "rotoryenc.h"
-#include <math.h>
 
 
 // Adjust this based on your MCC settings. 
@@ -12,7 +10,7 @@
 
 // A transition is only valid if it moves from one state to an adjacent valid state.
 int8_t rot_states[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
-bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, uint32_t *systemTicks) 
+bool ROTARYENC_Process(Encoder_t *knob, uint8_t RCA, uint8_t RCB, volatile uint32_t *systemTicks) 
 {
     uint32_t timeDelta = *systemTicks - knob->lastChangeTime;
     
