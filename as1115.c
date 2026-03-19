@@ -8,7 +8,7 @@
 
 #include <xc.h>
 #include "as1115.h"
-
+#include "mcc_generated_files\i2c_host\i2c2.h"
 
 // I2C Function Implementations
 

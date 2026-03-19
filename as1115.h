@@ -40,7 +40,6 @@
 #define AS1115_H
 
 #include "mcc_generated_files/system/system.h"
-#include <string.h>
 #include <xc.h> // include processor files - each processor file is guarded. 
 //#include "font.h"
 

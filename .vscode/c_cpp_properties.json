@@ -3,7 +3,8 @@
         {
             "name": "Win32",
             "includePath": [
-                "${workspaceFolder}/**"
+                "${workspaceFolder}/**",
+                "C:/Program Files/Microchip/xc8/v3.10/pic/include"
             ],
             "defines": [
                 "_DEBUG",
