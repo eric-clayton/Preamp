@@ -1,166 +1,204 @@
- /*
- * MAIN Generated Driver File
- * 
- * @file main.c
- * 
- * @defgroup main MAIN
- * 
- * @brief This is the generated driver implementation file for the MAIN driver.
- *
- * @version MAIN Driver Version 1.0.2
- *
- * @version Package Version: 3.1.2
-*/
-
-/*
-� [2026] Microchip Technology Inc. and its subsidiaries.
-
-    Subject to your compliance with these terms, you may use Microchip 
-    software and any derivatives exclusively with Microchip products. 
-    You are responsible for complying with 3rd party license terms  
-    applicable to your use of 3rd party software (including open source  
-    software) that may accompany Microchip software. SOFTWARE IS ?AS IS.? 
-    NO WARRANTIES, WHETHER EXPRESS, IMPLIED OR STATUTORY, APPLY TO THIS 
-    SOFTWARE, INCLUDING ANY IMPLIED WARRANTIES OF NON-INFRINGEMENT,  
-    MERCHANTABILITY, OR FITNESS FOR A PARTICULAR PURPOSE. IN NO EVENT 
-    WILL MICROCHIP BE LIABLE FOR ANY INDIRECT, SPECIAL, PUNITIVE, 
-    INCIDENTAL OR CONSEQUENTIAL LOSS, DAMAGE, COST OR EXPENSE OF ANY 
-    KIND WHATSOEVER RELATED TO THE SOFTWARE, HOWEVER CAUSED, EVEN IF 
-    MICROCHIP HAS BEEN ADVISED OF THE POSSIBILITY OR THE DAMAGES ARE 
-    FORESEEABLE. TO THE FULLEST EXTENT ALLOWED BY LAW, MICROCHIP?S 
-    TOTAL LIABILITY ON ALL CLAIMS RELATED TO THE SOFTWARE WILL NOT 
-    EXCEED AMOUNT OF FEES, IF ANY, YOU PAID DIRECTLY TO MICROCHIP FOR 
-    THIS SOFTWARE.
-*/
 #include "mcc_generated_files/system/system.h"
 #include "as1115.h"
 #include "rotoryenc.h"
 #include <stdint.h>
 #include <math.h>
 
-
 #define vol_CS_LAT LATAbits.LATA0
 #define vol_CS_TRIS TRISAbits.TRISA0
 
 #define DISPLAY_TIMEOUT 4000
-/*
-    Main application
-*/
-volatile uint8_t volume_val = 0;
-volatile uint8_t balance_val = 0;
+#define MUTE_TIMEOUT 2000
+
 volatile uint32_t systemTicks = 0;
 
-void AS1115_DisplayNumber(uint32_t number);
-void vol_Write(uint8_t address, uint8_t data);
-void AS1115_DisplayData(const uint8_t* data, uint8_t len);
-// Initialize your two knobs with different behaviors
+void AS1115_DisplayPartition(uint32_t number, uint8_t startReg, uint8_t numDigits);
+void AS1115_DisplayDataPartition(const uint8_t* data, uint8_t len, uint8_t startReg);
+void UpdateDigitalPots(void);
+void MCP4262_WriteWiper(uint8_t wiperAddr, uint8_t data);
+
+// Encoders
 Encoder_t volumeKnob = {0, 254, 1, 0, 0, 5, 1};
 Encoder_t balanceKnob = {127, 254, 1, 0, 0, 4, 4}; 
-Encoder_t* displayEncoder = NULL;
-// Corrected 2D array: 9 rows, 3 columns
+Encoder_t lfBoostKnob = {127, 254, 1, 0, 0, 4, 4}; // Low-freq boost/cut
+Encoder_t frequencyKnob = {127, 254, 1, 0, 0, 4, 4}; // Freq boost/cut
+Encoder_t QKnob = {127, 254, 1, 0, 0, 4, 4}; // Q
+Encoder_t hfBoostKnob = {127, 254, 1, 0, 0, 4, 4}; // Hi-freq boost/cut
+
+
+Encoder_t* activeDisplay2Encoder = &volumeKnob;
+uint32_t display2Timer = 0;
+
 const uint8_t balanceLevels[9][3] = {
     {1, 10, 9}, {2, 10, 8}, {3, 10, 7}, 
     {4, 10, 6}, {5, 10, 5}, {6, 10, 4}, 
     {7, 10, 3}, {8, 10, 2}, {9, 10, 1}
 };
+
+
 void MyTimerCallback(void) {
-    systemTicks++; // Increment every 1ms
+    systemTicks++; 
 }    
-void DisplayVolume()
-{
-   uint8_t displayVol = (uint8_t)roundf((volumeKnob.value / 254.0) * 100);
-    //AS1115_DisplayNumber(volumeKnob.value);
-   
-   AS1115_DisplayNumber(displayVol);
-    displayEncoder = &volumeKnob; // Switch state to Volume
+
+void DisplayVolume() {
+    uint8_t displayVol = (uint8_t)roundf((volumeKnob.value / 254.0) * 100);
+    
+    // Write the volume strictly to Digits 1-3 (Regs 1, 2, 3)
+    AS1115_DisplayPartition(displayVol, 1, 3);
+    
+    activeDisplay2Encoder = &volumeKnob;
 }
+
 int main(void) {
     SYSTEM_Initialize();
-    // If using interrupts in PIC18 High/Low Priority Mode you need to enable the Global High and Low Interrupts 
-    // If using interrupts in PIC Mid-Range Compatibility Mode you need to enable the Global Interrupts 
+    
+    // SPI & CS Setup (Ensure TRIS is configured in MCC or here)
+    vol_CS_TRIS = 0; 
+    vol_CS_LAT = 1;
 
-    // Enable the Global Interrupts 
     INTERRUPT_GlobalInterruptEnable(); 
     TMR0_Start();
     TMR0_OverflowCallbackRegister(MyTimerCallback);
 
-    // Disable the Global Interrupts 
-    // INTERRUPT_GlobalInterruptDisable(); 
     __delay_ms(100);
-     AS1115_Init();
-     __delay_ms(100);
-    AS1115_Write(AS1115_REG_SCAN_LIMIT, AS1115_DISPLAY_DIGITS_0_6); // Enable all digits
-    AS1115_Write(AS1115_REG_DECODE_MODE, AS1115_DECODE_DIGIT_0_6); // Set decode on for all digits
+    AS1115_Init();
+    __delay_ms(100);
+    AS1115_Write(AS1115_REG_SCAN_LIMIT, AS1115_DISPLAY_DIGITS_0_6); 
+    AS1115_Write(AS1115_REG_DECODE_MODE, AS1115_DECODE_DIGIT_0_6); 
+    AS1115_Write(AS1115_FEATURE, AS1115_DECODE_SEL_CODE_B); 
     
-    AS1115_Write(AS1115_FEATURE, AS1115_DECODE_SEL_CODE_B); // Enable BCD decode first
-    
-    uint32_t displayTimer = 0;
     DisplayVolume();
-    while(1) {
-        IO_PLED_LAT = 1;
+    UpdateDigitalPots(); // Initial push to SPI
 
-        // 2. Priority 1: If Volume changes, it always takes over immediately
+    while(1) {
+        // --- 1. USER INPUT: BUTTON SCANNING (Placeholder for flowchart logic) ---
+        // if (PORT_IO_PSW == PRESSED) { Trigger 2s mute, toggle IO_POWER state }
+        // if (PORT_IO_INPUT_SEL == PRESSED) { Trigger 2s mute, toggle IO_ISA/ISB }
+
+        // --- 2. ENCODER SCANNING ---
+        // Display 2
         if (ROTARYENC_Process(&volumeKnob, IO_VOLA_PORT, IO_VOLB_PORT, &systemTicks)) {
             DisplayVolume();
+            UpdateDigitalPots(); // Push new volume to hardware
         } 
-
-        // 3. Priority 2: If Balance changes
         if (ROTARYENC_Process(&balanceKnob, IO_BALA_PORT, IO_BALB_PORT, &systemTicks)) {
             uint8_t balIndex = (uint8_t)roundf((balanceKnob.value / 254.0) * 8);
-            AS1115_DisplayData(balanceLevels[balIndex], 3);
-            displayEncoder = &balanceKnob; // Switch state to Balance
-            displayTimer = systemTicks; 
+            
+            // Write array strictly to Digits 1-3 (Regs 1, 2, 3)
+            AS1115_DisplayDataPartition(balanceLevels[balIndex], 3, 1);
+            
+            activeDisplay2Encoder = &balanceKnob;
+            display2Timer = systemTicks; 
+            UpdateDigitalPots(); 
         }
-
-        // 4. Timeout Logic: If we are currently showing Balance, check the clock
-        if (displayEncoder != &volumeKnob) {
-            uint32_t timeDelta = systemTicks - displayTimer;
-
-            // If time is up, revert to volume display
-            if (timeDelta >= DISPLAY_TIMEOUT) {
-                DisplayVolume();
-            }
+        // Display 1
+        // Low Frequency boost cut
+        if (ROTARYENC_Process(&lfBoostKnob, IO_LFA_PORT, IO_LFB_PORT, &systemTicks)) {
+            
+            // Map 0-254 to -6 to +6 dB (example math based on flowchart)
+            // Note: BCD mode on AS1115 handles 0-9, -, E, H, L, P, blank. 
+            // You may need custom decode logic if you want to show a "-" sign, 
+            // but for raw numbers, we send it to Digits 4-7 (Regs 4, 5, 6, 7)
+            AS1115_DisplayPartition(lfBoostKnob.value, 4, 4); 
+            
+            // Notice we DO NOT change activeDisplayEncoder or displayTimer here.
+            // This allows the EQ knobs to stay on screen permanently or have their 
+            // own separate timeout without reverting the Volume side.
         }
-    }
-}
-
-
-// // Function to write to Volume pot (address byte + data byte)
-// void vol_Write(uint8_t address, uint8_t data) {
-//     vol_CS_LAT = 0; // CS low
-//     SPI1_ByteExchange(address); // Send register address
-//     SPI1_ByteExchange(data); // Send data
-//     vol_CS_LAT = 1; // CS high
-// }
-
-
-// Display a number (e.g., 12345678) on 7-segment (BCD mode)
-void AS1115_DisplayNumber(uint32_t number) {
-    uint8_t digits[8];
-    uint32_t temp = number;
-    uint8_t i = 0;
-
-    // 1. Extract digits into the array (Index 0 = Ones place)
-    for (i = 0; i < 8; i++) {
-        digits[i] = temp % 10;
-        temp /= 10;
+        // Frequency
+        if (ROTARYENC_Process(&frequencyKnob, IO_FREQA_PORT, IO_FREQB_PORT, &systemTicks)) {
+            
+            AS1115_DisplayPartition(frequencyKnob.value, 4, 4); 
+        }
+        // Q
+        if (ROTARYENC_Process(&QKnob, IO_RQA_PORT, IO_RQB_PORT, &systemTicks)) {
+            
+            AS1115_DisplayPartition(QKnob.value, 4, 4); 
+        }
+        // High frequency boost cut
+        if (ROTARYENC_Process(&hfBoostKnob, IO_HFA_PORT, IO_HFB_PORT, &systemTicks)) {
+            
+            AS1115_DisplayPartition(hfBoostKnob.value, 4, 4); 
+        }
         
-        // If we ran out of numbers, fill the rest of the 8 digits with BLANK (0xF)
-        if (temp == 0) {
-            for (uint8_t j = i + 1; j < 8; j++) {
-                digits[j] = 0xF; 
+
+        // --- 3. TIMEOUT LOGIC ---
+        // If we are showing anything other than Volume, check the clock
+        if (activeDisplay2Encoder != &volumeKnob) {
+            if ((systemTicks - display2Timer) >= DISPLAY_TIMEOUT) {
+                DisplayVolume(); // Revert to volume
             }
-            break;
         }
     }
+}
 
-    // 2. Send to AS1115 (Registers 1-8 map to digits 0-7)
-    for (uint8_t d = 0; d < 8; d++) {
-        AS1115_Write(d + 1, digits[d]);
+// Calculates Left/Right channels based on flowchart and pushes via SPI
+void UpdateDigitalPots(void) {
+    int16_t baseVol = volumeKnob.value;
+    int16_t bal = balanceKnob.value; // 0 to 254, center is 127
+
+    int16_t leftVol = baseVol;
+    int16_t rightVol = baseVol;
+
+    // Apply Balance Logic (Attenuate the opposite channel)
+    if (bal < 127) {
+        // Panning Left: Reduce Right channel
+        rightVol -= (127 - bal); 
+    } else if (bal > 127) {
+        // Panning Right: Reduce Left channel
+        leftVol -= (bal - 127);
+    }
+
+    // Clamp values to valid 0-254 range
+    if (leftVol < 0) leftVol = 0;
+    if (rightVol < 0) rightVol = 0;
+    if (leftVol > 254) leftVol = 254;
+    if (rightVol > 254) rightVol = 254;
+
+    // Apply Inverse Log Taper (Linear to Audio taper)
+    // uint8_t finalLeft = audioTaper[leftVol];
+    // uint8_t finalRight = audioTaper[rightVol];
+    uint8_t finalLeft = (uint8_t)leftVol;   // Remove this once lookup table is ready
+    uint8_t finalRight = (uint8_t)rightVol; // Remove this once lookup table is ready
+
+    // Write to MCP4262T Digital Pots
+    // Wiper 0 = Left, Wiper 1 = Right
+    //MCP4262_WriteWiper(0x00, finalLeft);
+    //MCP4262_WriteWiper(0x01, finalRight);
+}
+
+// SPI Protocol for MCP4262T (16-bit transfer: [4-bit Addr | 2-bit Cmd | 2-bit Data(MSB)] + [8-bit Data(LSB)])
+void MCP4262_WriteWiper(uint8_t wiperAddr, uint8_t data) {
+    vol_CS_LAT = 0; // CS low
+    
+    // Command Byte: Address (upper 4) + Write Command (00) + Data MSBs (00 for 8-bit pot)
+    uint8_t cmdByte = (wiperAddr << 4) | 0x00; 
+    
+    SPI1_ByteExchange(cmdByte); 
+    SPI1_ByteExchange(data);    
+    
+    vol_CS_LAT = 1; // CS high
+}
+
+// Displays a number constrained to a specific section of the 7-segment display
+void AS1115_DisplayPartition(uint32_t number, uint8_t startReg, uint8_t numDigits) {
+    uint32_t temp = number;
+
+    for (uint8_t i = 0; i < numDigits; i++) {
+        // Always display at least one digit (e.g., '0'), otherwise display if we still have values
+        if (i == 0 || temp > 0) {
+            AS1115_Write(startReg + i, temp % 10);
+            temp /= 10;
+        } else {
+            // Fill remaining assigned digits with BLANK (0xF in BCD mode)
+            AS1115_Write(startReg + i, 0xF); 
+        }
     }
 }
-void AS1115_DisplayData(const uint8_t* data, uint8_t len) {
+
+// Writes raw data arrays (like your Balance visualization) to a specific section
+void AS1115_DisplayDataPartition(const uint8_t* data, uint8_t len, uint8_t startReg) {
     for(uint8_t i = 0; i < len; i++) {
-        AS1115_Write(i + 1, data[i]); 
+        AS1115_Write(startReg + i, data[i]); 
     }
 }
