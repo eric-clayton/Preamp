@@ -2,7 +2,7 @@
 
 manifest_file_version: 1.0.0
 project: I2CTest4
-creation_date: 2026-03-18T18:55:09.993-04:00[America/New_York]
+creation_date: 2026-04-30T19:43:01.235-04:00[America/New_York]
 operating_system: Windows 11
 mcc_mode: VSCodePlugin
 mcc_mode_version: Unknown
@@ -23,11 +23,13 @@ modules:
 - {name: '@mchp-mcc/pic18-configuration-bits-v7', type: MELODY, version: 1.0.4}
 - {name: '@mchp-mcc/pic18-pin-manager', type: MELODY, version: 3.7.1}
 - {name: '@mchp-mcc/pin-content-processor', type: MELODY, version: 3.11.0}
+- {name: '@mchp-mcc/scf-pic8-ccp-v1', type: MELODY, version: 4.1.3}
 - {name: '@mchp-mcc/scf-pic8-i2c-v1', type: MELODY, version: 6.1.4}
 - {name: '@mchp-mcc/scf-pic8-interrupt-v1', type: MELODY, version: 5.2.11}
 - {name: '@mchp-mcc/scf-pic8-memory-v4', type: MELODY, version: 1.0.3}
 - {name: '@mchp-mcc/scf-pic8-osc-v1', type: MELODY, version: 4.4.0}
 - {name: '@mchp-mcc/scf-pic8-spi-v1', type: MELODY, version: 5.2.0}
 - {name: '@mchp-mcc/scf-pic8-tmr0-v1', type: MELODY, version: 5.1.1}
+- {name: '@mchp-mcc/scf-pic8-tmr1-v1', type: MELODY, version: 5.2.2}
 - {name: '@mchp-mcc/spi-host-driver', type: MELODY, version: 1.3.1}
 - {name: '@mchp-mcc/timer', type: MELODY, version: 1.2.4}

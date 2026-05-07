@@ -44,8 +44,10 @@
 #include "../nvm/nvm.h"
 #include "../system/interrupt.h"
 #include "../system/clock.h"
+#include "../capture/ccp1.h"
 #include "../spi/spi1.h"
 #include "../timer/tmr0.h"
+#include "../timer/tmr1.h"
 
 /**
  * @ingroup systemdriver
