@@ -4,7 +4,7 @@
     "configurations": [
         {
             "name": "default",
-            "id": "conf1",
+            "id": "",
             "device": "PIC18LF56K42",
             "imageType": "application",
             "imagePath": "./out/I2CTest4/default.elf",
@@ -13,8 +13,8 @@
             "packs": [
                 {
                     "name": "PIC18F-K_DFP",
-                    "vendor": "Microchip",
-                    "version": "1.15.303"
+                    "version": "1.15.303",
+                    "vendor": "Microchip"
                 }
             ],
             "fileSet": "Project files",
@@ -57,7 +57,9 @@
                 "HI-TECH-COMP.use-iar": false,
                 "HI-TECH-COMP.verbose": false,
                 "HI-TECH-COMP.warning-level": "-3",
-                "HI-TECH-COMP.what-to-do": "require",
+                "HI-TECH-COMP.what-to-do": [
+                    "require"
+                ],
                 "HI-TECH-LINK.additional-options-checksumAVR2": "0",
                 "HI-TECH-LINK.additional-options-extend-address": false,
                 "HI-TECH-LINK.additional-options-fillAVR2": "0",
@@ -109,7 +111,14 @@
                 "XC8-config-global.stack-size-low": "auto",
                 "XC8-config-global.stack-size-main": "auto",
                 "XC8-config-global.stack-type": "compiled",
-                "XC8-config-global.wpo-lto": false
+                "XC8-config-global.wpo-lto": false,
+                "compiler.isolate-each-function": true,
+                "compiler.optimization-level": "-O1",
+                "compiler.place-data-into-section": true,
+                "linker.heap-size": "0",
+                "linker.remove-unused-sections": true,
+                "compiler++.isolate-each-function": true,
+                "compiler++.optimization-level": "-O1"
             }
         },
         {
@@ -155,7 +164,7 @@
                 "programoptions.pgdconfig": "pull down",
                 "programoptions.pgdresistor.value": "4.7",
                 "programoptions.pgmentry.voltage": "low",
-                "programoptions.pgmspeed": "Med",
+                "programoptions.pgmspeed": "Min",
                 "programoptions.preservedataflash": false,
                 "programoptions.preserveeeprom": false,
                 "programoptions.preserveeeprom.ranges": "310000-3103ff",
@@ -178,17 +187,74 @@
         {
             "name": "Project files",
             "files": [
-                "Makefile",
-                "*.c",
-                "*.h",
-                "*.mc3",
-                "mcc_generated_files/i2c_host/**/*",
-                "mcc_generated_files/nvm/**/*",
-                "mcc_generated_files/spi/**/*",
-                "mcc_generated_files/system/**/*",
-                "mcc_generated_files/timer/**/*"
-            ],
-            "encoding": "ISO-8859-1"
+                {
+                    "include": "Makefile",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "*.c",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "*.h",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "*.mc3",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "mcc_generated_files/i2c_host/**/*",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "mcc_generated_files/nvm/**/*",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "mcc_generated_files/spi/**/*",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "mcc_generated_files/system/**/*",
+                    "encoding": "ISO-8859-1"
+                },
+                {
+                    "include": "mcc_generated_files/timer/**/*",
+                    "encoding": "ISO-8859-1"
+                },
+                "mcc_generated_files/capture/ccp1.h",
+                "mcc_generated_files/capture/src/ccp1.c",
+                "mcc_generated_files/system/interrupt.h",
+                "mcc_generated_files/system/src/interrupt.c",
+                "mcc_generated_files/system/src/clock.c",
+                "mcc_generated_files/system/clock.h",
+                "mcc_generated_files/timer/tmr0.h",
+                "mcc_generated_files/timer/timer_interface.h",
+                "mcc_generated_files/timer/src/tmr0.c",
+                "mcc_generated_files/system/src/system.c",
+                "mcc_generated_files/system/config_bits.h",
+                "mcc_generated_files/system/src/config_bits.c",
+                "mcc_generated_files/system/system.h",
+                "mcc_generated_files/system/pins.h",
+                "mcc_generated_files/system/src/pins.c",
+                "mcc_generated_files/i2c_host/i2c2.h",
+                "mcc_generated_files/i2c_host/i2c_host_types.h",
+                "mcc_generated_files/i2c_host/src/i2c2.c",
+                "mcc_generated_files/i2c_host/i2c_host_event_types.h",
+                "mcc_generated_files/i2c_host/i2c_host_interface.h",
+                "mcc_generated_files/spi/spi_polling_types.h",
+                "mcc_generated_files/spi/spi1.h",
+                "mcc_generated_files/spi/spi_interface.h",
+                "mcc_generated_files/spi/src/spi1.c",
+                "mcc_generated_files/nvm/src/nvm.c",
+                "mcc_generated_files/nvm/nvm.h",
+                "mcc_generated_files/timer/src/tmr1.c",
+                "mcc_generated_files/timer/tmr1.h",
+                "mcc_generated_files/timer/tmr1_deprecated.h",
+                "src/*.c",
+                "src/*.h"
+            ]
         }
     ]
 }

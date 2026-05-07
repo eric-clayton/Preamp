@@ -5,6 +5,7 @@ fileVersion: 1.0.0
 device: PIC18LF56K42
 associatedIDEProjects:
   MPLAB:
-    - name: Dev
-      path: ../.vscode
+    - name: I2CTest4
+      path: .vscode
       config: default
+      device: PIC18LF56K42

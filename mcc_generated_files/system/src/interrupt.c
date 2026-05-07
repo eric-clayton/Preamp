@@ -11,7 +11,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+ï¿½ [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -55,7 +55,7 @@ void  INTERRUPT_Initialize (void)
     // Clear the interrupt flag
     // Set the external interrupt edge detect
     EXT_INT1_InterruptFlagClear();   
-    EXT_INT1_risingEdgeSet();    
+    EXT_INT1_fallingEdgeSet();    
     // Set Default Interrupt Handler
     INT1_SetInterruptHandler(INT1_DefaultInterruptHandler);
     EXT_INT1_InterruptEnable();
@@ -83,6 +83,10 @@ void __interrupt() INTERRUPT_InterruptManager (void)
     if(PIE5bits.INT1IE == 1 && PIR5bits.INT1IF == 1)
     {
         INT1_ISR();
+    }
+    else if(PIE4bits.CCP1IE == 1 && PIR4bits.CCP1IF == 1)
+    {
+        CCP1_CaptureISR();
     }
     else if(PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1)
     {
