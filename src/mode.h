@@ -2,7 +2,6 @@
 #define MODE_H
 
 #include "parameters.h"
-#include "buttons.h"
 
 typedef enum {
     MODE_FREQ_LOW, MODE_FREQ_HIGH, MODE_SUB,
@@ -18,6 +17,6 @@ extern uint32_t display2Timer;
 void SwitchMode(SystemMode newMode);
 void UpdateEncoders(void);
 void InitializeNormalMode(void);
-void InitializeSubSettingModes(ButtonType button);
+void InitializeSubSettingModes(SystemMode mode);
 
 #endif

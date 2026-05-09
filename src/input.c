@@ -8,9 +8,51 @@ InputState inputOne = {&inputOneOnKnob, &inputOneOffKnob, 0, 0, IsInputOneOn, To
 InputState inputTwo = {&inputTwoOnKnob, &inputTwoOffKnob, 0, 0, IsInputTwoOn, ToggleInputTwoPower};
 InputState inputThree = {&inputThreeOnKnob, &inputThreeOffKnob, 0, 0, IsInputThreeOn, ToggleInputThreePower};
 InputState inputBt = {&inputBtOnKnob, &inputBtOffKnob, 0, 0, IsInputBtOn, ToggleInputBtPower};
-InputState *inputs[] = {&inputOne, &inputTwo, &inputThree, &inputBt};
-InputState *currentInput = &inputOne;
+InputState *inputs[] = {
+    [INPUT_ONE] = &inputOne, 
+    [INPUT_TWO] = &inputTwo, 
+    [INPUT_THREE] = &inputThree, 
+    [INPUT_BT] = &inputBt
+};
+InputType currentInputType = INPUT_ONE;
 bool isAnyInputInPowerDelay = false;
+
+LEDType MapInputTypeToLedType(InputType button)
+{
+    switch(button)
+    {
+        case INPUT_ONE:
+            return LED_INPUT_ONE;
+        case INPUT_TWO:
+            return LED_INPUT_TWO;
+        case INPUT_THREE:
+            return LED_INPUT_THREE;
+        case INPUT_BT:
+            return LED_INPUT_BT;
+    }
+        
+}
+void InputSet(InputType inputType)
+{
+    Mute_Engage(); // Always mute to prevent pops
+    currentInputType = inputType;
+    switch(inputType) {
+        case INPUT_ONE:  IO_ISA_PORT = 0; IO_ISB_PORT = 0;  break;
+        case INPUT_TWO:  IO_ISA_PORT = 1; IO_ISB_PORT = 0;  break;
+        case INPUT_THREE:  IO_ISA_PORT = 0; IO_ISB_PORT = 1;  break;
+        case INPUT_BT:  IO_ISA_PORT = 1; IO_ISB_PORT = 1;  break;
+        default: return;
+    }
+    // Update the LED for the selected input
+    Display_SetInputLED(MapInputTypeToLedType(currentInputType));
+}
+
+void IntializeInput(InputType inputType)
+{
+    InputSet(inputType);
+    // turn on the input immediately
+    inputs[currentInputType]->TogglePower();
+}
 
 void HandleInputSwitchPower()
 {
@@ -21,7 +63,7 @@ void HandleInputSwitchPower()
     isAnyInputInPowerDelay = false;
     for (uint8_t i = 0; i < 4; i++)
     {
-        if (inputs[i]->powerOffDelay->value != 0 && currentInput != inputs[i] && inputs[i]->IsOn())
+        if (inputs[i]->powerOffDelay->value != 0 && inputs[currentInputType] != inputs[i] && inputs[i]->IsOn())
         {
             uint32_t requiredDelay = ((uint32_t)inputs[i]->powerOffDelay->value * 99000) / 254;
     
@@ -33,7 +75,7 @@ void HandleInputSwitchPower()
                 isAnyInputInPowerDelay = true;
             }
         }
-        if (currentInput == inputs[i])
+        if (inputs[currentInputType] == inputs[i])
         {
             if(!inputs[i]->IsOn())
             {
@@ -48,7 +90,7 @@ void HandleInputSwitchPower()
                 {
                     isAnyInputInPowerDelay = true;
                 }
-            }
+            } 
             else
             {
                 Mute_ScheduleRelease();
@@ -57,44 +99,20 @@ void HandleInputSwitchPower()
         }
     }
 }
-void InputSwitch(ButtonType button)
-{   
+
+void InputSwitch(InputType inputType) {   
+    InputSet(inputType);
+    // --- BUTTON PRESS LOGIC ---
     isAnyInputInPowerDelay = true;
-    Mute_Engage();
     
-    switch(button)
-    {
-        case INPUT_ONE_BUTTON:
-            IO_ISA_PORT = 0;
-            IO_ISB_PORT = 0;
-            currentInput = &inputOne;
-            break;  
-            
-        case INPUT_TWO_BUTTON:
-            IO_ISA_PORT = 1;
-            IO_ISB_PORT = 0;
-            currentInput = &inputTwo;
-            break; 
-            
-        case INPUT_THREE_BUTTON:
-            IO_ISA_PORT = 0;
-            IO_ISB_PORT = 1;
-            currentInput = &inputThree; 
-            break;
-            
-        case INPUT_BT_BUTTON:
-            IO_ISA_PORT = 1;
-            IO_ISB_PORT = 1;
-            currentInput = &inputBt;
-            break;                        
-            
-        default:
-            return;
-    }
-    
-    // Reset all delay timers to start counting from THIS moment
     for(uint8_t i = 0; i < 4; i++) {
         inputs[i]->powerOffStartTime = systemTicks;
         inputs[i]->powerOnStartTime = systemTicks;
     }
+
+}
+
+InputType GetInputType(void)
+{
+    return currentInputType;
 }

@@ -5,9 +5,9 @@
 #include <stdbool.h>
 
 typedef enum {
-    NONE, TONE_BUTTON,
-    INPUT_ONE_BUTTON, INPUT_TWO_BUTTON,
-    INPUT_THREE_BUTTON, INPUT_BT_BUTTON
+    BUTTON_INPUT_ONE, BUTTON_INPUT_TWO,
+    BUTTON_INPUT_THREE, BUTTON_INPUT_BT, 
+    BUTTON_TONE, BUTTON_NONE
 } ButtonType;
 
 typedef struct {
@@ -20,13 +20,11 @@ typedef struct {
 
 extern ButtonType activeButton;
 extern ButtonState_t longPressState;
-extern uint8_t lightMap;
 extern volatile bool buttonEventPending;
 
 void HandleButtonPressed(void);
 void UpdateButton(void);
 void HandleLongPress(void);
 void HandleLEDBlink(void);
-uint8_t GetDisplayButtonBit(ButtonType button);
 
 #endif

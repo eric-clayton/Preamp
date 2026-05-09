@@ -39,7 +39,7 @@ int main(void) {
     ROTARYENC_Initialize();
     GrabDataFromEEPROM();
     Parameters_Initialize();
-    InitializeNormalMode();
+    InitializeNormalMode(); 
     
     while(1) {
         // Inside your while(1) loop
@@ -58,7 +58,7 @@ int main(void) {
 
         UpdateEncoders();
 
-        SyncDirtyParameters();
+        SyncStorage();
 
         HandleInputSwitchPower();
 

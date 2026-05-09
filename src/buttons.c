@@ -2,44 +2,60 @@
 #include "as1115.h"
 #include "systick.h"
 #include "input.h"
+#include "tone.h"
 #include "mode.h"
+#include "storage.h"
+#include "display.h"
+
 #define LONG_PRESS_MS 1500  // Duration for a "Long Press"
 #define BLINK_INTERVAL 250
 
-uint8_t lightMap = 0x0;
-ButtonType activeButton = NONE;
+ButtonType activeButton = BUTTON_NONE;
 ButtonState_t longPressState = {false, false, false, 0, 0};
 volatile bool buttonEventPending = false;
 
+SystemMode MapButtonTypeToSystemMode(ButtonType button)
+{
+    switch(button)
+    {
+        case BUTTON_TONE:
+            return MODE_SUB;
+        case BUTTON_INPUT_ONE:
+            return MODE_INPUT_ONE_POWER;
+        case BUTTON_INPUT_TWO:
+            return  MODE_INPUT_TWO_POWER;
+        case BUTTON_INPUT_THREE:
+            return  MODE_INPUT_THREE_POWER;
+        case BUTTON_INPUT_BT:
+            return MODE_INPUT_BT_POWER;
+        case BUTTON_NONE:
+            return MODE_FREQ_LOW;
+    }
+        
+}
+LEDType MapButtonTypeToLedType(ButtonType button)
+{
+    switch(button)
+    {
+        case BUTTON_TONE:
+            return LED_TONE;
+        case BUTTON_INPUT_ONE:
+            return LED_INPUT_ONE;
+        case BUTTON_INPUT_TWO:
+            return LED_INPUT_TWO;
+        case BUTTON_INPUT_THREE:
+            return LED_INPUT_TWO;
+        case BUTTON_INPUT_BT:
+            return LED_INPUT_BT;
+        case BUTTON_NONE:
+            return LED_NONE;
+    }
+        
+}
 void HandleButtonPressed(){
     buttonEventPending = true;
 }
-uint8_t GetDisplayButtonBit(ButtonType button) {
-    switch(button) {
-        case TONE_BUTTON:        return 0x04;
-        case INPUT_ONE_BUTTON:   return 0x40;
-        case INPUT_TWO_BUTTON:   return 0x20;
-        case INPUT_THREE_BUTTON: return 0x10;
-        case INPUT_BT_BUTTON:    return 0x08;
-        default:                 return 0x00;
-    }
-}
-void ApplyButtonLightSwitch(ButtonType button) {
-    uint8_t bit = GetDisplayButtonBit(button);
-    switch(button) {
-        case TONE_BUTTON:
-            lightMap ^= bit; 
-            break;
-        case INPUT_ONE_BUTTON:
-        case INPUT_TWO_BUTTON:
-        case INPUT_THREE_BUTTON:
-        case INPUT_BT_BUTTON:
-            lightMap = (lightMap & ~0x78) | bit;
-            break;
-        default:
-            return;
-    }
-}
+
 void UpdateButton() {
     
     if (!buttonEventPending) {
@@ -52,15 +68,15 @@ void UpdateButton() {
     uint8_t pB = ~readData[1];
 
     // 1. Always see what is physically happening right now
-    uint8_t physicalButton = NONE;
-    if (pA & (1 << 6))      physicalButton = TONE_BUTTON;
-    else if (pB & (1 << 6)) physicalButton = INPUT_ONE_BUTTON;
-    else if (pA & (1 << 4)) physicalButton = INPUT_TWO_BUTTON;
-    else if (pA & (1 << 5)) physicalButton = INPUT_THREE_BUTTON;
-    else if (pB & (1 << 5)) physicalButton = INPUT_BT_BUTTON;
+    ButtonType physicalButton = BUTTON_NONE;
+    if (pA & (1 << 6))      physicalButton = BUTTON_TONE;
+    else if (pB & (1 << 6)) physicalButton = BUTTON_INPUT_ONE;
+    else if (pA & (1 << 4)) physicalButton = BUTTON_INPUT_TWO;
+    else if (pA & (1 << 5)) physicalButton = BUTTON_INPUT_THREE;
+    else if (pB & (1 << 5)) physicalButton = BUTTON_INPUT_BT;
 
     // 2. Handle the "Physical" press/release events
-    if (physicalButton != NONE) {
+    if (physicalButton != BUTTON_NONE) {
         // If this is a FRESH touch (finger just hit the button)
         if (!longPressState.isCurrentlyPressed) {
             
@@ -77,15 +93,19 @@ void UpdateButton() {
             else {
                 // --- NORMAL MODE LOGIC ---
                 // Only allow a press to register if no other button is currently "Active"
-                if (activeButton == NONE) {
+                if (activeButton == BUTTON_NONE) {
                     longPressState.isCurrentlyPressed = true;
                     longPressState.pressStartTime = systemTicks;
                     longPressState.longPressInitialized = false;
 
                     activeButton = physicalButton;
-                    ApplyButtonLightSwitch(activeButton);
-                    if (physicalButton == INPUT_ONE_BUTTON || physicalButton ==  INPUT_TWO_BUTTON || physicalButton ==  INPUT_THREE_BUTTON || physicalButton ==  INPUT_BT_BUTTON)
-                        InputSwitch(physicalButton);
+                    if (physicalButton == BUTTON_TONE)
+                    {
+                        ToggleTone();
+                    }
+                    else
+                        InputSwitch((uint8_t)physicalButton);
+                    Storage_MarkDirty();
                 }
             }
         }
@@ -96,13 +116,12 @@ void UpdateButton() {
         
         // Only clear the UI owner if we aren't in sub-mode
         if (!longPressState.isSubMode) {
-            activeButton = NONE;
+            activeButton = BUTTON_NONE;
         }
     }
-
-    AS1115_Write(0x08, lightMap);
     buttonEventPending = false;
 }
+
 void HandleLongPress()
 {
     if (longPressState.isCurrentlyPressed && !longPressState.longPressInitialized) {
@@ -111,29 +130,34 @@ void HandleLongPress()
             longPressState.isSubMode = !longPressState.isSubMode; 
             longPressState.longPressInitialized = true;        
 
-            uint8_t activeBit = GetDisplayButtonBit(activeButton);
-
             if (!longPressState.isSubMode) {
-                // --- EXITING SUB MODE ---
-                lightMap |= activeBit; // Ensure the LED stays solid ON when exiting
-                AS1115_Write(0x08, lightMap);
-                
+                // --- Entering NORMAL MODE ---
+                Display_SetBlinkBitIndex(LED_NONE);
+                if (activeButton == BUTTON_TONE)
+                {
+                    Display_SetToneLED(GetToneValue());
+                }
+                else
+                {
+                    Display_SetInputLED(MapInputTypeToLedType(GetInputType()));
+                }
                 InitializeNormalMode();
             }
             else {
                 // --- ENTERING SUB MODE ---
-                InitializeSubSettingModes(activeButton);
+                Display_SetBlinkBitIndex(MapButtonTypeToLedType(activeButton));
+                InitializeSubSettingModes(MapButtonTypeToSystemMode(activeButton));
             }
         }
     }
 }
+
 void HandleLEDBlink()
 {
     if (longPressState.isSubMode) {
         if (systemTicks - longPressState.lastBlinkTime >= BLINK_INTERVAL) {
             // Blink ONLY the LED of the button that owns this sub-menu
-            lightMap ^= GetDisplayButtonBit(activeButton); 
-            AS1115_Write(0x08, lightMap);
+            Display_BlinkLED();
             longPressState.lastBlinkTime = systemTicks;
         }
     }

@@ -1,23 +1,25 @@
-#include <stdint.h>
-#include <stdbool.h>
+#include "storage.h"
 #include "mcc_generated_files\nvm\nvm.h"
 #include "parameters.h"
 #include "systick.h"
+#include "input.h"
+#include "tone.h"
+
 
 #define WRITE_DELAY 500
-#define DATA_SIZE PARAM_COUNT  // Your PARAM_COUNT
-#define BLOCK_SIZE (DATA_SIZE + 1) // 20 data bytes + 1 sequence byte
+#define BLOCK_SIZE (PARAM_COUNT + 1 + 1 + 1)  // params + sequence + input + tone
 #define MAX_BLOCKS (EEPROM_SIZE / BLOCK_SIZE)
 
 eeprom_address_t currentBlockAddress = EEPROM_START_ADDRESS;
 uint8_t currentSequence = 0;
-static bool isParamDirty = false;
-static uint32_t lastParamUpdateTime = 0;
+static bool isStorageOutOfSync = false;
+static uint32_t lastDataUpdateTime = 0;
 
 void Storage_MarkDirty(void) {
-    isParamDirty = true;
-    lastParamUpdateTime = systemTicks;
+    isStorageOutOfSync = true;
+    lastDataUpdateTime = systemTicks;
 }
+
 void EEPROM_Write_Reliable(eeprom_address_t address, uint8_t data)
 {
     uint8_t gie_save = INTCON0bits.GIE;
@@ -59,42 +61,45 @@ void GrabDataFromEEPROM(void) {
             }
         }
     }
-    if(!foundAny)
+    if (!foundAny)
+    {
+        Storage_MarkDirty(); // no data found save in storage
+        IntializeInput(GetInputType()); // set input since we have no data for it
         return;
+    }
 
     currentBlockAddress = foundAddr;
     currentSequence = maxSeq;
 
     // Load actual data (offset by 1 because index 0 is the sequence byte)
-    for (eeprom_address_t i = 0; i < DATA_SIZE; i++) {
+    for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
         allParameters[i]->value = EEPROM_Read(currentBlockAddress + 1 + i);
     }
+    IntializeInput(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 1));
+    InitializeTone(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 2));
 }
 
-void SyncDirtyParameters(void) {
-    if (!isParamDirty)
-        return;
-    if ((systemTicks - lastParamUpdateTime) < WRITE_DELAY)
-        return;
-    // 1. Move to next block
+void SyncStorage(void) {
+    if (!isStorageOutOfSync) return;
+    if ((systemTicks - lastDataUpdateTime) < WRITE_DELAY) return;
+
     eeprom_address_t nextBlockAddr = currentBlockAddress + BLOCK_SIZE;
-    if (nextBlockAddr + BLOCK_SIZE > EEPROM_START_ADDRESS + EEPROM_SIZE) {
+    if (nextBlockAddr + BLOCK_SIZE > EEPROM_START_ADDRESS + EEPROM_SIZE)
         nextBlockAddr = EEPROM_START_ADDRESS;
-    }
 
-    // 2. Increment sequence
     currentSequence++;
-    if (currentSequence == 0xFF) currentSequence = 0; // Avoid FF to stay clear of "empty" marker
+    if (currentSequence == 0xFF) currentSequence = 0;
 
-    // 3. Write sequence byte first
     EEPROM_Write_Reliable(nextBlockAddr, currentSequence);
-    
-    // 4. Write data bytes
+
     for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
         EEPROM_Write_Reliable(nextBlockAddr + 1 + i, allParameters[i]->value);
         allParameters[i]->isDirty = false;
     }
+    // Write current input after param data
+    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 1 , GetInputType());
+    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 2, GetToneValue());
 
     currentBlockAddress = nextBlockAddr;
-    isParamDirty = false;
+    isStorageOutOfSync = false;
 }

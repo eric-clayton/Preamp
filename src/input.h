@@ -3,9 +3,16 @@
 #define INPUT_H
 
 #include "parameters.h"
+#include "display.h"
 #include <stdbool.h>
 #include <stdint.h>
-#include "buttons.h"
+
+typedef enum {
+    INPUT_ONE,
+    INPUT_TWO,
+    INPUT_THREE,
+    INPUT_BT
+} InputType;
 
 typedef struct {
     Parameter_t *powerOnDelay;
@@ -17,11 +24,14 @@ typedef struct {
 } InputState;
 
 extern InputState inputOne, inputTwo, inputThree, inputBt;
-extern InputState *currentInput;
+extern uint8_t currentInputIndex;
 extern InputState *inputs[];
 extern bool isAnyInputInPowerDelay;
 
-void InputSwitch(ButtonType button);
+LEDType MapInputTypeToLedType(InputType button);
+void IntializeInput(InputType inputType);
+void InputSwitch(InputType inputType) ;
 void HandleInputSwitchPower(void);
+InputType GetInputType(void);
 
 #endif

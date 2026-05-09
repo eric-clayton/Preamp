@@ -7,6 +7,19 @@ const uint8_t balanceLevels[9][3] = {
     {4, 10, 6}, {5, 10, 5}, {6, 10, 4}, 
     {7, 10, 3}, {8, 10, 2}, {9, 10, 1}
 };
+static uint8_t lightMap = 0x00;
+
+LEDType LEDBlinkType = LED_NONE;
+#define LED_BITS_SIZE 6
+static const uint8_t LEDBits[LED_BITS_SIZE] = {
+    [LED_INPUT_ONE] = 0x40, 
+    [LED_INPUT_TWO] = 0x20,
+    [LED_INPUT_THREE] = 0x10,
+    [LED_INPUT_BT] = 0x08,
+    [LED_TONE] = 0x04,
+    [LED_NONE] = 0x00
+};
+#define INPUT_BITMASK (LEDBits[LED_INPUT_ONE] | LEDBits[LED_INPUT_TWO] | LEDBits[LED_INPUT_THREE] | LEDBits[LED_INPUT_BT])
 void DisplaySubEnableDisable(int16_t value)
 {
     AS1115_Write(AS1115_REG_DECODE_MODE, 0x0);
@@ -222,4 +235,27 @@ void AS1115_DisplayDataPartition(const uint8_t* data, uint8_t len, uint8_t start
     for(uint8_t i = 0; i < len; i++) {
         AS1115_Write(startReg + i, data[i]); 
     }
+}
+void Display_WriteLEDs(void) {
+    AS1115_Write(0x08, lightMap);
+}
+void Display_SetToneLED(uint8_t enabled) {
+    if (enabled) lightMap |=  LEDBits[LED_TONE];
+    else         lightMap &= ~LEDBits[LED_TONE];
+    Display_WriteLEDs();
+}
+
+void Display_SetInputLED(LEDType ledType) {
+    lightMap = (lightMap & ~INPUT_BITMASK) | LEDBits[ledType];
+    Display_WriteLEDs();
+}
+
+void Display_BlinkLED(void) {
+    lightMap ^= LEDBits[LEDBlinkType];
+    Display_WriteLEDs();
+}
+
+void Display_SetBlinkBitIndex(LEDType ledType)
+{
+    LEDBlinkType = ledType;
 }

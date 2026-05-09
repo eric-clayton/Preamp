@@ -50,33 +50,27 @@ void InitializeNormalMode()
     
     activeDisplay2Encoder = &volumeKnob;
 }
-void InitializeSubSettingModes(ButtonType button)
+void InitializeSubSettingModes(SystemMode mode)
 {
-    // Clear display or show a "Sub Menu" splash here if needed
-    
-    switch(button) {
-        case TONE_BUTTON:
-            SwitchMode(MODE_SUB);
+    SwitchMode(mode);
+    switch(mode) {
+        case MODE_SUB:
             Parameter_Display(&subPhaseKnob);
             break;
             
-        case INPUT_ONE_BUTTON:
-            SwitchMode(MODE_INPUT_ONE_POWER);
+        case MODE_INPUT_ONE_POWER:
             Parameter_Display(&inputOneOnKnob);
             break;
             
-        case INPUT_TWO_BUTTON:
-            SwitchMode(MODE_INPUT_TWO_POWER);
+        case MODE_INPUT_TWO_POWER:
             Parameter_Display(&inputTwoOnKnob);
             break;
             
-        case INPUT_THREE_BUTTON:
-            SwitchMode(MODE_INPUT_THREE_POWER);
+        case MODE_INPUT_THREE_POWER:
             Parameter_Display(&inputThreeOnKnob);
             break;
             
-        case INPUT_BT_BUTTON:
-            SwitchMode(MODE_INPUT_BT_POWER);
+        case MODE_INPUT_BT_POWER:
             Parameter_Display(&inputBtOnKnob);
             break;
             
