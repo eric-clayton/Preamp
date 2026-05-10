@@ -1,4 +1,5 @@
 #include "ir.h"
+#include "power.h"
 #include <xc.h>
 #include "mcc_generated_files\system\interrupt.h"
 #include "systick.h"
@@ -19,7 +20,7 @@ volatile uint8_t frameReady = 0;
 volatile uint8_t repeatReady = 0;
 volatile uint32_t lastIrTime = 0;
 
-void HandleRemoteAction(uint32_t code) {
+void HandleRemoteAction(uint32_t code, bool repeat) {
     // 1. Convert current raw value to display percent (0-100)
     uint16_t currentPercent = ((uint16_t)volumeKnob.value * 100 + 127) / 254;
 
@@ -28,7 +29,16 @@ void HandleRemoteAction(uint32_t code) {
     } 
     else if (code == 0xEA15FF00) { // Down
         if (currentPercent > 0) currentPercent--;
-    } else {
+    }
+    else if(code == 0xBA45FF00) 
+    {
+        if(!repeat)
+        {
+            HandleRemotePowerButton(); // no repeat for power
+        }
+        return;
+    }
+    else {
         return;
     }
 
@@ -110,7 +120,7 @@ void IR_ProcessFrame(void)
         if ((addr ^ addrInv) == 0xFF && (cmd ^ cmdInv) == 0xFF) {
             activeCode     = capturedCode;
             lastFrameValid = 1;
-            HandleRemoteAction(activeCode);
+            HandleRemoteAction(activeCode, false);
         } else {
             lastFrameValid = 0; // corrupt — block repeats
         }
@@ -120,7 +130,7 @@ void IR_ProcessFrame(void)
     if (repeatReady) {
         repeatReady = 0;
         if (lastFrameValid && activeCode != 0) {
-            HandleRemoteAction(activeCode);
+            HandleRemoteAction(activeCode, true);
         }
     }
 
@@ -129,4 +139,9 @@ void IR_ProcessFrame(void)
         activeCode     = 0;
         lastFrameValid = 0;
     }
+}
+void Prepare_IR_For_Sleep(void) {
+    irState = IR_IDLE;
+    lastFrameValid = 0; // Crucial: This prevents the "Repeat" logic from being allowed
+    repeatReady = 0;
 }

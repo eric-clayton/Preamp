@@ -97,7 +97,7 @@ void SyncStorage(void) {
         allParameters[i]->isDirty = false;
     }
     // Write current input after param data
-    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 1 , GetInputType());
+    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 1 , (uint8_t)GetInputType());
     EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 2, GetToneValue());
 
     currentBlockAddress = nextBlockAddr;

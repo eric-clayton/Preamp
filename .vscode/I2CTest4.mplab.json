@@ -188,18 +188,6 @@
             "name": "Project files",
             "files": [
                 {
-                    "include": "Makefile",
-                    "encoding": "ISO-8859-1"
-                },
-                {
-                    "include": "*.c",
-                    "encoding": "ISO-8859-1"
-                },
-                {
-                    "include": "*.h",
-                    "encoding": "ISO-8859-1"
-                },
-                {
                     "include": "*.mc3",
                     "encoding": "ISO-8859-1"
                 },
@@ -253,7 +241,8 @@
                 "mcc_generated_files/timer/tmr1.h",
                 "mcc_generated_files/timer/tmr1_deprecated.h",
                 "src/*.c",
-                "src/*.h"
+                "src/*.h",
+                "main.c"
             ]
         }
     ]

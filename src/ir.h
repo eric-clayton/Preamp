@@ -6,5 +6,5 @@
 
 void IR_CaptureHandler(uint16_t now);
 void IR_ProcessFrame(void);
-
+void Prepare_IR_For_Sleep(void);
 #endif

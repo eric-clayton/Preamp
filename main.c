@@ -1,23 +1,19 @@
 #include "mcc_generated_files/system/system.h"
-#include "as1115.h"
+#include "src/as1115.h"
 #include <stdint.h>
-#include "buttons.h"
-#include "ir.h"
-#include "systick.h"
-#include "rotoryenc.h"
-#include "storage.h"
-#include "mode.h"
-#include "power.h"
-#include "input.h"
-#include "mute.h"
+#include "src/buttons.h"
+#include "src/ir.h"
+#include "src/systick.h"
+#include "src/rotoryenc.h"
+#include "src/storage.h"
+#include "src/mode.h"
+#include "src/power.h"
+#include "src/input.h"
+#include "src/mute.h"
 
 int main(void) {
     SYSTEM_Initialize();
-    PIR0 = PIR1 = PIR2 = PIR3 = PIR4 = PIR5 = PIR6 = PIR7 = 0;
-    IOCAF = IOCBF = IOCCF = IOCEF = 0;
-    // 1. Give the hardware a moment to breathe (Essential for I2C slaves)
-    __delay_ms(100); 
-
+    IO_PLED_SetHigh();
     // 2. Register handlers
     TMR0_OverflowCallbackRegister(SysTick_Callback);
     INT1_SetInterruptHandler(HandleButtonPressed);
@@ -42,7 +38,6 @@ int main(void) {
     InitializeNormalMode(); 
     
     while(1) {
-        // Inside your while(1) loop
 
         Power_HandleSleepWake();
 
@@ -50,10 +45,8 @@ int main(void) {
 
         UpdateButton();
 
-        // --- Hold Detection Logic ---
         HandleLongPress();
 
-        // --- Generalized Continuous Blink Logic ---
         HandleLEDBlink();
 
         UpdateEncoders();

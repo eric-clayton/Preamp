@@ -1,10 +1,11 @@
 #include "power.h"
+#include "mute.h"
+#include "ir.h"
 #include "mcc_generated_files\system\pins.h"
-#include "mcc_generated_files\system\interrupt.h"
 #include "mcc_generated_files\system\clock.h"
 #include "as1115.h"
 
-bool lastButtonState = true; 
+bool remotePowerPressed = false;
 
 bool IsInputOneOn(void) { return (IO_DV1_PORT == 1); }
 bool IsInputTwoOn(void) { return (IO_DV2_PORT == 1); }
@@ -16,65 +17,72 @@ void ToggleInputThreePower(void) { IO_DV3_Toggle(); }
 void ToggleInputBtPower(void) { IO_DVBT_Toggle(); }
 void Power_HandleSleepWake()
 {
-            bool currentButtonState = IO_PSW_PORT;   // or IO_PSW_GetValue()
+    if (IO_PSW_PORT == 0 || remotePowerPressed)
+    {
+        while(IO_PSW_GetValue() == 0 && !remotePowerPressed); 
+        __delay_ms(50); // Debounce
 
-        if (currentButtonState == 0 && lastButtonState == 1)
+        IO_PLED_SetLow();
+        Mute_Engage();
+        IO_POWER_SetLow();
+        AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_SHUTDOWN);
+        remotePowerPressed = false;
+        // 2. DISABLE all interrupts except the Power Button (IOC)
+        PIE5bits.INT1IE = 0;
+        PIE3bits.TMR0IE = 0;
+        PIE5bits.I2C2RXIE = 0;
+        PIE5bits.I2C2TXIE = 0;
+        PIE6bits.I2C2EIE = 0;
+        PIE6bits.I2C2IE = 0;
+
+        // 3. Ensure IOC (Power Button) is the only thing that can wake us
+        PIE0bits.IOCIE = 1;   
+        IOCAFbits.IOCAF4 = 0; // Clear the specific flag for RA4
+        
+        // 4. Go to Sleep
+        Prepare_IR_For_Sleep();
+
+        while(IO_PSW_GetValue() != 0 && !remotePowerPressed)
         {
-            __delay_ms(80);                    // debounce
+            // Enable only CCP1 and IOC interrupts here
+            PIE4bits.CCP1IE = 1; 
+            
+            SLEEP(); 
+            NOP(); 
 
-            AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_SHUTDOWN);
-            __delay_ms(100);
-
-            // === TURN OFF ===
-            IO_PLED_Toggle();                  // Toggle when user presses to turn off
-            IO_POWER_SetLow();
-
-            // === PREPARE FOR SLEEP ===
-            INTERRUPT_GlobalInterruptDisable();
-
-            // Disable all peripheral interrupts
-            PIE0 = 0; PIE1 = 0; PIE2 = 0; PIE3 = 0;
-            PIE4 = 0; PIE5 = 0; PIE6 = 0; PIE7 = 0;
-
-            // Clear all flags
-            PIR0 = 0; PIR1 = 0; PIR2 = 0; PIR3 = 0;
-            PIR4 = 0; PIR5 = 0; PIR6 = 0; PIR7 = 0;
-
-            IOCAF = 0; IOCBF = 0; IOCCF = 0; IOCEF = 0;
-
-            CLRWDT();
-            WDTCON0bits.SEN = 0;               // Disable WDT
-
-            SLEEP();
-            NOP();
-
-            // ========================
-            // WAKE UP
-            // ========================
-            WDTCON0bits.SEN = 1;               // Optional: re-enable WDT
-
-            IO_POWER_SetHigh();
-
-            // Force LED ON after wake-up (as you requested)
-            IO_PLED_SetHigh();
-
-            // Re-enable your normal system interrupts
-            INTERRUPT_GlobalInterruptEnable();
-
-            // Re-enable the peripherals you use
-            PIE5bits.INT1IE = 1;     // AS1115 button matrix
-            PIE4bits.CCP1IE = 1;     // IR receiver
-            PIE3bits.TMR0IE = 1;     // System timer
-
-            // Re-enable AS1115
-            AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_NORMAL_OP);
-
-            // Optional: short confirmation flash
-            // __delay_ms(50);
-            // IO_PLED_Toggle();
-            // __delay_ms(80);
-            // IO_PLED_Toggle();
+            // After waking, give the IR state machine a moment to see if a full 
+            // frame is coming in. NEC frames take about 70-100ms.
+            __delay_ms(100); 
+            
+            IR_ProcessFrame(); // Check if frameReady was set by the ISR during that 100ms
+            
+            // If the remotePowerPressed wasn't updated by IR_ProcessFrame, 
+            // the loop will check IO_PSW and then go back to SLEEP.
         }
+        
+        // --- MCU IS HALTED HERE UNTIL RA4 IS PRESSED ---
+       
+        // 5. Wake up logic: Wait for button release again
+        while(IO_PSW_GetValue() == 0 && !remotePowerPressed);
+        __delay_ms(50);
+        IOCAFbits.IOCAF4 = 0; // Clear flag so we don't immediately re-enter ISR
+        
+        // 6. RE-ENABLE all interrupts to resume normal operation
+        PIE5bits.INT1IE = 1;
+        PIE3bits.TMR0IE = 1;
+        PIE5bits.I2C2RXIE = 1;
+        PIE5bits.I2C2TXIE = 1;
+        PIE6bits.I2C2EIE = 1;
+        PIE6bits.I2C2IE = 1;
 
-        lastButtonState = currentButtonState;
+        IO_PLED_SetHigh();
+        IO_POWER_SetHigh();
+        Mute_ScheduleRelease();
+        AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_NORMAL_OP);
+        remotePowerPressed = false;
+    }
+}
+void HandleRemotePowerButton(void)
+{
+    remotePowerPressed = true;
 }

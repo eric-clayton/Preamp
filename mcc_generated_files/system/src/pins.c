@@ -12,7 +12,7 @@
 */
 
 /*
-© [2026] Microchip Technology Inc. and its subsidiaries.
+ï¿½ [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -34,6 +34,7 @@
 
 #include "../pins.h"
 
+void (*IO_PSW_InterruptHandler)(void);
 
 void PIN_MANAGER_Initialize(void)
 {
@@ -59,12 +60,12 @@ void PIN_MANAGER_Initialize(void)
     /**
     TRISx registers
     */
-    TRISA = 0x0;
+    TRISA = 0x10;
     TRISB = 0xF9;
     TRISC = 0xEE;
-    TRISD = 0xF2;
+    TRISD = 0xD3;
     TRISE = 0x0;
-    TRISF = 0xB0;
+    TRISF = 0x30;
 
     /**
     ANSELx registers
@@ -72,19 +73,19 @@ void PIN_MANAGER_Initialize(void)
     ANSELA = 0x0;
     ANSELB = 0xC0;
     ANSELC = 0x0;
-    ANSELD = 0x20;
+    ANSELD = 0x1;
     ANSELE = 0x0;
     ANSELF = 0x0;
 
     /**
     WPUx registers
     */
-    WPUA = 0x0;
+    WPUA = 0x10;
     WPUB = 0x0;
     WPUC = 0x0;
     WPUD = 0x0;
     WPUE = 0x0;
-    WPUF = 0x80;
+    WPUF = 0x0;
 
 
     /**
@@ -134,7 +135,7 @@ void PIN_MANAGER_Initialize(void)
     IOCx registers 
     */
     IOCAP = 0x0;
-    IOCAN = 0x0;
+    IOCAN = 0x10;
     IOCAF = 0x0;
     IOCBP = 0x0;
     IOCBN = 0x0;
@@ -146,11 +147,49 @@ void PIN_MANAGER_Initialize(void)
     IOCEN = 0x0;
     IOCEF = 0x0;
 
+    IO_PSW_SetInterruptHandler(IO_PSW_DefaultInterruptHandler);
 
+    // Enable PIE0bits.IOCIE interrupt 
+    PIE0bits.IOCIE = 1; 
 }
   
 void PIN_MANAGER_IOC(void)
 {
+    // interrupt on change for pin IO_PSW
+    if(IOCAFbits.IOCAF4 == 1)
+    {
+        IO_PSW_ISR();  
+    }
+}
+   
+/**
+   IO_PSW Interrupt Service Routine
+*/
+void IO_PSW_ISR(void) {
+
+    // Add custom IO_PSW code
+
+    // Call the interrupt handler for the callback registered at runtime
+    if(IO_PSW_InterruptHandler)
+    {
+        IO_PSW_InterruptHandler();
+    }
+    IOCAFbits.IOCAF4 = 0;
+}
+
+/**
+  Allows selecting an interrupt handler for IO_PSW at application runtime
+*/
+void IO_PSW_SetInterruptHandler(void (* InterruptHandler)(void)){
+    IO_PSW_InterruptHandler = InterruptHandler;
+}
+
+/**
+  Default interrupt handler for IO_PSW
+*/
+void IO_PSW_DefaultInterruptHandler(void){
+    // add your IO_PSW interrupt custom code
+    // or set custom function using IO_PSW_SetInterruptHandler()
 }
 /**
  End of File

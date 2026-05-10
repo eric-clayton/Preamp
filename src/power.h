@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 
-extern bool lastButtonState;
 bool IsInputOneOn(void);
 bool IsInputTwoOn(void);
 bool IsInputThreeOn(void);
@@ -13,5 +12,6 @@ void ToggleInputTwoPower(void);
 void ToggleInputThreePower(void);
 void ToggleInputBtPower(void);
 void Power_HandleSleepWake(void);
+void HandleRemotePowerButton(void);
 
 #endif
