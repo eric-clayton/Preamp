@@ -18,14 +18,14 @@ Parameter_t subEqKnob         = {   0, 254,  4,  4,     1,     0, false, false, 
 Parameter_t subLevelLeftKnob  = {   0, 254,  4,  4,    99,     0, false, false, DisplaySubLevelLeft,     UpdateSubLevelWipers};
 Parameter_t subLevelRightKnob = {   0, 254,  4,  4,    99,     0, false, false, DisplaySubLevelRight,    UpdateSubLevelWipers};
 // Power
-Parameter_t inputOneOnKnob    = {   0, 254,  4,  4,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputOneOffKnob   = {   0, 254,  4,  4,    98,     1, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputTwoOnKnob    = {   0, 254,  4,  4,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputTwoOffKnob   = {   0, 254,  4,  4,    98,     1, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputThreeOnKnob  = {   0, 254,  4,  4,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputThreeOffKnob = {   0, 254,  4,  4,    98,     1, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputBtOnKnob     = {   0, 254,  4,  4,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputBtOffKnob    = {   0, 254,  4,  4,    98,     1, false,  true, DisplayPowerDelayOff,    NULL};
+Parameter_t inputOneOnKnob    = {   0, 254,  1,  1,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
+Parameter_t inputOneOffKnob   = {   0, 254,  1,  1,    100,     0, false,  true, DisplayPowerDelayOff,    NULL};
+Parameter_t inputTwoOnKnob    = {   0, 254,  1,  1,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
+Parameter_t inputTwoOffKnob   = {   0, 254,  1,  1,    100,     0, false,  true, DisplayPowerDelayOff,    NULL};
+Parameter_t inputThreeOnKnob  = {   0, 254,  1,  1,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
+Parameter_t inputThreeOffKnob = {   0, 254,  1,  1,    100,     0, false,  true, DisplayPowerDelayOff,    NULL};
+Parameter_t inputBtOnKnob     = {   0, 254,  1,  1,    30,     0, false, false, DisplayPowerDelayOn,     NULL};
+Parameter_t inputBtOffKnob    = {   0, 254,  1,  1,    100,     0, false,  true, DisplayPowerDelayOff,    NULL};
 
 // The Master Array for looping
 Parameter_t* allParameters[] = {

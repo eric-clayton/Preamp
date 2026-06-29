@@ -116,7 +116,7 @@ void I2C2_Initialize(void)
     /* Count register */
     I2C2CNT = 0x0;
     /* Clock PadReg Configuration */
-    RC3I2C = 0x51;
+    RB1I2C = 0x51;
     /* Data PadReg Configuration */
     RC4I2C = 0x51;
     I2C2_InterruptsEnable();

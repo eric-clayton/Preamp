@@ -1,13 +1,13 @@
 /**
- * CCP1 Generated Driver File.
+ * CCP3 Generated Driver File.
  * 
- * @file ccp1.c
+ * @file ccp3.c
  * 
- * @ingroup capture1
+ * @ingroup capture3
  * 
- * @brief This file contains the API implementation for the CCP1 driver.
+ * @brief This file contains the API implementation for the CCP3 driver.
  *
- * @version CCP1 Driver Version 2.0.4
+ * @version CCP3 Driver Version 2.0.4
 */
 /*
 © [2026] Microchip Technology Inc. and its subsidiaries.
@@ -35,77 +35,77 @@
  */
 
 #include <xc.h>
-#include "../ccp1.h"
+#include "../ccp3.h"
 
-static void (*CCP1_CallBack)(uint16_t);
+static void (*CCP3_CallBack)(uint16_t);
 
 /**
   Section: Capture Module APIs
 */
 
 /**
- * @ingroup capture1
+ * @ingroup capture3
  * @brief Default callback function for the capture interrupt events.
  * @param capturedValue - 16-bit captured value.
  * @return None.
  */
 /* cppcheck-suppress misra-c2012-2.7 */
-static void CCP1_DefaultCallBack(uint16_t capturedValue) {
+static void CCP3_DefaultCallBack(uint16_t capturedValue) {
     // Add your code here
 }
 
-void CCP1_Initialize(void)
+void CCP3_Initialize(void)
 {
 
-    // CTS CCP1 pin; 
-    CCP1CAP = (uint8_t) 0x0U;
+    // CTS CCP3 pin; 
+    CCP3CAP = (uint8_t) 0x0U;
 
     // CCPRH 0; 
-    CCPR1H = (uint8_t) 0x0U;
+    CCPR3H = (uint8_t) 0x0U;
 
     // CCPRL 0; 
-    CCPR1L = (uint8_t)(0x0U);
+    CCPR3L = (uint8_t)(0x0U);
     
     
 
-    // Set the default call back function for CCP1
-    CCP1_SetCallBack(CCP1_DefaultCallBack);
+    // Set the default call back function for CCP3
+    CCP3_SetCallBack(CCP3_DefaultCallBack);
 
     // Selecting Timer 1
-    CCPTMRS0bits.C1TSEL = 0x1U;
+    CCPTMRS0bits.C3TSEL = 0x1U;
 
-    // Clear the CCP1 interrupt flag    
-    PIR4bits.CCP1IF = 0U;    
+    // Clear the CCP3 interrupt flag    
+    PIR9bits.CCP3IF = 0U;    
 
-    // Enable the CCP1 interrupt
-    PIE4bits.CCP1IE = 1U;
+    // Enable the CCP3 interrupt
+    PIE9bits.CCP3IE = 1U;
     
     // CCPM Falling edge; EN enabled; FMT right_aligned; 
-    CCP1CON = (uint8_t) 0x84U;
+    CCP3CON = (uint8_t) 0x84U;
 }
 
-void CCP1_CaptureISR(void)
+void CCP3_CaptureISR(void)
 {
 /**
  * @misradeviation{@advisory,19.2}
  * The CCP register values necessitates to store and accessing the register values within the group byte therefore the use of a union is essential.
  */
  /* cppcheck-suppress misra-c2012-19.2 */
-    CCPR1_PERIOD_REG_T module;
+    CCPR3_PERIOD_REG_T module;
 
-    // Clear the CCP1 interrupt flag
-    PIR4bits.CCP1IF = 0U;
+    // Clear the CCP3 interrupt flag
+    PIR9bits.CCP3IF = 0U;
     
     // Copy captured value.
-    module.ccpr1l = CCPR1L;
-    module.ccpr1h = CCPR1H;
+    module.ccpr3l = CCPR3L;
+    module.ccpr3h = CCPR3H;
     
     // Return 16-bit captured value
-    CCP1_CallBack(module.ccpr1_16Bit);
+    CCP3_CallBack(module.ccpr3_16Bit);
 }
 
-void CCP1_SetCallBack(void (*customCallBack)(uint16_t)){
-    CCP1_CallBack = customCallBack;
+void CCP3_SetCallBack(void (*customCallBack)(uint16_t)){
+    CCP3_CallBack = customCallBack;
 }
 /**
  End of File

@@ -64,7 +64,7 @@ const struct SPI_INTERFACE SPI1_Host = {
 
 // con0 == SPI1CON0, con1 == SPI1CON1, con2 == SPI1CON2, baud == SPI1BAUD, clksel == SPI1CLKSEL
 static const spi_configuration_t spi1_configuration[] = {   
-    { 0x2, 0x0, 0x0, 0xff, 0x0 },
+    { 0x2, 0x40, 0x0, 0xff, 0x0 },
     { 0x2, 0x40, 0x0, 0x0, 0x0 }
 };
 

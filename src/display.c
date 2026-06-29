@@ -1,6 +1,7 @@
 #include "display.h"
 #include "as1115.h"
 #include <stdbool.h>
+#include "mcc_generated_files\system\clock.h"
 
 const uint8_t balanceLevels[9][3] = {
     {1, 10, 9}, {2, 10, 8}, {3, 10, 7}, 
@@ -12,12 +13,12 @@ static uint8_t lightMap = 0x00;
 LEDType LEDBlinkType = LED_NONE;
 #define LED_BITS_SIZE 6
 static const uint8_t LEDBits[LED_BITS_SIZE] = {
-    [LED_INPUT_ONE] = 0x40, 
-    [LED_INPUT_TWO] = 0x20,
-    [LED_INPUT_THREE] = 0x10,
-    [LED_INPUT_BT] = 0x08,
-    [LED_TONE] = 0x04,
-    [LED_NONE] = 0x00
+    [LED_INPUT_ONE] = 0x40, // 64
+    [LED_INPUT_TWO] = 0x20, // 32
+    [LED_INPUT_THREE] = 0x10, // 16
+    [LED_INPUT_BT] = 0x08, // 8
+    [LED_TONE] = 0x04, // 4
+    [LED_NONE] = 0x00 // 0
 };
 #define INPUT_BITMASK (LEDBits[LED_INPUT_ONE] | LEDBits[LED_INPUT_TWO] | LEDBits[LED_INPUT_THREE] | LEDBits[LED_INPUT_BT])
 void DisplaySubEnableDisable(int16_t value)
@@ -151,7 +152,7 @@ void DisplayPowerDelayOff(int16_t value)
     AS1115_DisplayDataPartition(clear_label, 1, 7);
 
     // 2. Handle the Right Side (Numbers or "inf")
-    if (value == 0) 
+    if (value == 100) 
     {
         // DISPLAY "inf"
         AS1115_Write(AS1115_REG_DECODE_MODE, 0x00); 
@@ -161,7 +162,7 @@ void DisplayPowerDelayOff(int16_t value)
     }
     else 
     {
-        // DISPLAY NUMBERS ("1" to "99")
+        // DISPLAY NUMBERS ("0" to "99")
         AS1115_Write(AS1115_REG_DECODE_MODE, 0x07);
         
         // Write the number starting at Register 1
@@ -259,3 +260,26 @@ void Display_SetBlinkBitIndex(LEDType ledType)
 {
     LEDBlinkType = ledType;
 }
+void Display_TestButtons(void)
+{
+    while (true) 
+    {
+        for (uint8_t bit = 0; bit < 8; bit++) 
+        {
+            // Calculate the 8-bit value (1, 2, 4, 8, 16, 32, 64, 128)
+            uint8_t lightValue = (1 << bit);
+
+            // Option A: Display the bit INDEX (0 through 7)
+            AS1115_DisplayPartition(bit, 1, 3);
+            
+            // Option B: If you prefer to see the raw decimal value (1 to 128), 
+            // uncomment the line below and comment out Option A:
+            // AS1115_DisplayPartition(lightValue, 1, 3);
+
+            // Write the isolated bit to Register 8
+            AS1115_Write(0x08, lightValue);
+            __delay_ms(1000);
+        }
+    }
+}
+

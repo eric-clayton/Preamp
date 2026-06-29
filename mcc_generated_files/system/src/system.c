@@ -41,7 +41,7 @@ void SYSTEM_Initialize(void)
 {
     CLOCK_Initialize();
     PIN_MANAGER_Initialize();
-    CCP1_Initialize();
+    CCP3_Initialize();
     SPI1_Host_Initialize();
     TMR0_Initialize();
     TMR1_Initialize();

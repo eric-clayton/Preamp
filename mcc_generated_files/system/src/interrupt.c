@@ -88,13 +88,9 @@ void __interrupt() INTERRUPT_InterruptManager (void)
     {
         PIN_MANAGER_IOC();
     }
-    else if(PIE4bits.CCP1IE == 1 && PIR4bits.CCP1IF == 1)
+    else if(PIE9bits.CCP3IE == 1 && PIR9bits.CCP3IF == 1)
     {
-        CCP1_CaptureISR();
-    }
-    else if(PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1)
-    {
-        TMR0_ISR();
+        CCP3_CaptureISR();
     }
     else if(PIE6bits.I2C2EIE == 1 && PIR6bits.I2C2EIF == 1)
     {
@@ -111,6 +107,10 @@ void __interrupt() INTERRUPT_InterruptManager (void)
     else if(PIE5bits.I2C2TXIE == 1 && PIR5bits.I2C2TXIF == 1)
     {
         I2C2_TX_ISR();
+    }
+    else if(PIE3bits.TMR0IE == 1 && PIR3bits.TMR0IF == 1)
+    {
+        TMR0_ISR();
     }
     else
     {

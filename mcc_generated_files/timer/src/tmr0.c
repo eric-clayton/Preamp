@@ -35,7 +35,7 @@
 #include <xc.h>
 #include "../tmr0.h"
 
-const struct TIMER_INTERFACE Timer0 = {
+const struct TIMER_INTERFACE Timer = {
     .Initialize = TMR0_Initialize,
     .Deinitialize = TMR0_Deinitialize,
     .Start = TMR0_Start,

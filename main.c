@@ -6,18 +6,21 @@
 #include "src/systick.h"
 #include "src/rotoryenc.h"
 #include "src/storage.h"
-#include "src/mode.h"
+#include "src/ui_manager.h"
 #include "src/power.h"
 #include "src/input.h"
 #include "src/mute.h"
+#include "src/tone.h"
+
 
 int main(void) {
     SYSTEM_Initialize();
-    IO_PLED_SetHigh();
+    PLED_SetHigh();
+    POWER_SetHigh();
     // 2. Register handlers
     TMR0_OverflowCallbackRegister(SysTick_Callback);
     INT1_SetInterruptHandler(HandleButtonPressed);
-    CCP1_SetCallBack(IR_CaptureHandler);
+    CCP3_SetCallBack(IR_CaptureHandler);
     
 
     // 3. ENABLE INTERRUPTS FIRST
@@ -29,13 +32,15 @@ int main(void) {
     AS1115_ReadKeys(dummy);
     
     AS1115_Init();
-
+    
     TMR0_Start();
     
     ROTARYENC_Initialize();
+    Tone_Init();
+    Input_Init();
     GrabDataFromEEPROM();
     Parameters_Initialize();
-    InitializeNormalMode(); 
+    UI_Manager_Reset();
     
     while(1) {
 
@@ -45,9 +50,9 @@ int main(void) {
 
         UpdateButton();
 
-        HandleLongPress();
+        CheckIfLongPress();
 
-        HandleLEDBlink();
+        UI_Manager_HandleBlink();
 
         UpdateEncoders();
 

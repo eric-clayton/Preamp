@@ -13,7 +13,7 @@ typedef struct {
 static UnmuteState unmuteState = {false, 0};
 
 void Mute_Engage(void) {
-    IO_MUTE_SetHigh();
+    //IO_MUTE_SetHigh();
     unmuteState.shouldUnmute = false;
 }
 
@@ -25,7 +25,7 @@ void Mute_ScheduleRelease(void) {
 void Mute_Update(void) {
     if (unmuteState.shouldUnmute &&
        (systemTicks - unmuteState.unmuteStartTime) >= MUTE_TIMEOUT) {
-        IO_MUTE_SetLow();
+        //IO_MUTE_SetLow();
         unmuteState.shouldUnmute = false;
     }
 }

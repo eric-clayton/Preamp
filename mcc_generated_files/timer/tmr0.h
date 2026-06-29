@@ -61,85 +61,85 @@
  * @brief Defines the Custom Name for the \ref TMR0_MAX_COUNT.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define TIMER0_MAX_COUNT TMR0_MAX_COUNT
+#define TIMER_MAX_COUNT TMR0_MAX_COUNT
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_CLOCK_FREQ.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define TIMER0_CLOCK_FREQ TMR0_CLOCK_FREQ
+#define TIMER_CLOCK_FREQ TMR0_CLOCK_FREQ
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_Initialize API.
  */
-#define Timer0_Initialize TMR0_Initialize
+#define Timer_Initialize TMR0_Initialize
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_Deinitialize API.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_Deinitialize TMR0_Deinitialize
+#define Timer_Deinitialize TMR0_Deinitialize
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_Start API.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_Start TMR0_Start
+#define Timer_Start TMR0_Start
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_Stop API.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_Stop TMR0_Stop
+#define Timer_Stop TMR0_Stop
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_CounterGet API.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_CounterGet TMR0_CounterGet
+#define Timer_CounterGet TMR0_CounterGet
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_CounterSet API.
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_CounterSet TMR0_CounterSet
+#define Timer_CounterSet TMR0_CounterSet
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_PeriodSet API
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_PeriodSet TMR0_PeriodSet
+#define Timer_PeriodSet TMR0_PeriodSet
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_PeriodGet API
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_PeriodGet TMR0_PeriodGet
+#define Timer_PeriodGet TMR0_PeriodGet
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_MaxCountGet API
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_MaxCountGet TMR0_MaxCountGet
+#define Timer_MaxCountGet TMR0_MaxCountGet
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_ISR API
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_ISR TMR0_ISR
+#define Timer_ISR TMR0_ISR
 /**
  * @ingroup timerdriver
  * @brief Defines the Custom Name for the \ref TMR0_OverflowCallbackRegister API
  */
 /* cppcheck-suppress misra-c2012-2.5 */  
-#define Timer0_OverflowCallbackRegister TMR0_OverflowCallbackRegister
+#define Timer_OverflowCallbackRegister TMR0_OverflowCallbackRegister
 
 /**
  @ingroup timerdriver
  @struct TIMER_INTERFACE
  @brief Declares an instance of TIMER_INTERFACE for the TMR0 module.
  */
-extern const struct TIMER_INTERFACE Timer0;
+extern const struct TIMER_INTERFACE Timer;
 
 /**
  * @ingroup timerdriver

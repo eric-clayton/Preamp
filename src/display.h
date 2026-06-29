@@ -30,4 +30,6 @@ void Display_SetInputLED(LEDType ledType);
 void Display_BlinkLED(void);
 void Display_SetBlinkBitIndex(LEDType ledType);
 
+void Display_TestButtons(void);
+
 #endif

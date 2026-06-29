@@ -2,6 +2,7 @@
 #define DIGIPOT_H
 
 #include <stdint.h>
+#include <stdbool.h>
 
 typedef void (*CS_SetFunc)(void);
 
@@ -20,5 +21,13 @@ void UpdateHFBoostWipers(void);
 void UpdateHFFrequencyWipers(void);
 void UpdateHFQWipers(void);
 void UpdateSubLevelWipers(void);
-
+void DV1_Toggle(void);
+void DV2_Toggle(void);
+void DV3_Toggle(void);
+void DVBT_Toggle(void);
+void SetInputState(uint8_t ISA, uint8_t ISB);
+bool IsInputOneExpanderBitSet(void);
+bool IsInputTwoExpanderBitSet(void);
+bool IsInputThreeExpanderBitSet(void);
+bool IsInputBTExpanderBitSet(void);
 #endif

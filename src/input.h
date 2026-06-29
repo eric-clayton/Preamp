@@ -29,7 +29,8 @@ extern InputState *inputs[];
 extern bool isAnyInputInPowerDelay;
 
 LEDType MapInputTypeToLedType(InputType button);
-void IntializeInput(InputType inputType);
+void Input_LoadSettings(InputType inputType);
+void Input_Init(void);
 void InputSwitch(InputType inputType) ;
 void HandleInputSwitchPower(void);
 InputType GetInputType(void);

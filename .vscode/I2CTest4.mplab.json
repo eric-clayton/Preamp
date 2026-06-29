@@ -211,8 +211,6 @@
                     "include": "mcc_generated_files/timer/**/*",
                     "encoding": "ISO-8859-1"
                 },
-                "mcc_generated_files/capture/ccp1.h",
-                "mcc_generated_files/capture/src/ccp1.c",
                 "mcc_generated_files/system/interrupt.h",
                 "mcc_generated_files/system/src/interrupt.c",
                 "mcc_generated_files/system/src/clock.c",
@@ -242,7 +240,9 @@
                 "mcc_generated_files/timer/tmr1_deprecated.h",
                 "src/*.c",
                 "src/*.h",
-                "main.c"
+                "main.c",
+                "mcc_generated_files/capture/src/ccp3.c",
+                "mcc_generated_files/capture/ccp3.h"
             ]
         }
     ]

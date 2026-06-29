@@ -6,12 +6,12 @@
 // If 1 tick = 64us, then 800 counts = ~51ms threshold.
 #define FAST_THRESHOLD 10
 
-static RCValues ReadKnobOne()   { return (RCValues){IO_LFA_PORT,  IO_LFB_PORT};  }
-static RCValues ReadKnobTwo()   { return (RCValues){IO_FREQA_PORT,IO_FREQB_PORT};}
-static RCValues ReadKnobThree() { return (RCValues){IO_RQA_PORT,  IO_RQB_PORT};  }
-static RCValues ReadKnobFour()  { return (RCValues){IO_HFA_PORT,  IO_HFB_PORT};  }
-static RCValues ReadKnobFive()  { return (RCValues){IO_BALA_PORT, IO_BALB_PORT}; }
-static RCValues ReadKnobSix()   { return (RCValues){IO_VOLA_PORT, IO_VOLB_PORT}; }
+static RCValues ReadKnobOne()   { return (RCValues){LFA_PORT,  LFB_PORT};  }
+static RCValues ReadKnobTwo()   { return (RCValues){FREQA_PORT,FREQB_PORT};}
+static RCValues ReadKnobThree() { return (RCValues){QA_PORT,  QB_PORT};  }
+static RCValues ReadKnobFour()  { return (RCValues){HFA_PORT,  HFB_PORT};  }
+static RCValues ReadKnobFive()  { return (RCValues){BALA_PORT, BALB_PORT}; }
+static RCValues ReadKnobSix()   { return (RCValues){VOLA_PORT, VOLB_PORT}; }
 
 PhysicalKnob_t physicalKnobs[KNOB_COUNT] = {
     {ReadKnobOne,   0, 0, 0},

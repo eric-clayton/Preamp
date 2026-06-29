@@ -3,28 +3,39 @@
 #include "ir.h"
 #include "mcc_generated_files\system\pins.h"
 #include "mcc_generated_files\system\clock.h"
+#include "digipot.h"
 #include "as1115.h"
 
 bool remotePowerPressed = false;
 
-bool IsInputOneOn(void) { return (IO_DV1_PORT == 1); }
-bool IsInputTwoOn(void) { return (IO_DV2_PORT == 1); }
-bool IsInputThreeOn(void) { return (IO_DV3_PORT == 1); }
-bool IsInputBtOn(void) { return (IO_DVBT_PORT == 1); }
-void ToggleInputOnePower(void) { IO_DV1_Toggle(); }
-void ToggleInputTwoPower(void) { IO_DV2_Toggle(); }
-void ToggleInputThreePower(void) { IO_DV3_Toggle(); }
-void ToggleInputBtPower(void) { IO_DVBT_Toggle(); }
+bool IsInputOneOn(void) {
+    return IsInputOneExpanderBitSet();
+}
+bool IsInputTwoOn(void) {
+    return IsInputTwoExpanderBitSet();
+}
+bool IsInputThreeOn(void) {
+    return IsInputThreeExpanderBitSet();
+}
+bool IsInputBtOn(void) {
+    return IsInputBTExpanderBitSet();
+}
+
+void ToggleInputOnePower(void) { DV1_Toggle(); }
+void ToggleInputTwoPower(void) { DV2_Toggle();}
+void ToggleInputThreePower(void) { DV3_Toggle();}
+void ToggleInputBtPower(void) { DVBT_Toggle();}
+
 void Power_HandleSleepWake()
 {
-    if (IO_PSW_PORT == 0 || remotePowerPressed)
+    if (PSW_PORT == 0 || remotePowerPressed)
     {
-        while(IO_PSW_GetValue() == 0 && !remotePowerPressed); 
+        while(PSW_GetValue() == 0 && !remotePowerPressed); 
         __delay_ms(50); // Debounce
 
-        IO_PLED_SetLow();
+        PLED_SetLow();
         Mute_Engage();
-        IO_POWER_SetLow();
+        POWER_SetLow();
         AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_SHUTDOWN);
         remotePowerPressed = false;
         // 2. DISABLE all interrupts except the Power Button (IOC)
@@ -42,7 +53,7 @@ void Power_HandleSleepWake()
         // 4. Go to Sleep
         Prepare_IR_For_Sleep();
 
-        while(IO_PSW_GetValue() != 0 && !remotePowerPressed)
+        while(PSW_GetValue() != 0 && !remotePowerPressed)
         {
             // Enable only CCP1 and IOC interrupts here
             PIE4bits.CCP1IE = 1; 
@@ -63,7 +74,7 @@ void Power_HandleSleepWake()
         // --- MCU IS HALTED HERE UNTIL RA4 IS PRESSED ---
        
         // 5. Wake up logic: Wait for button release again
-        while(IO_PSW_GetValue() == 0 && !remotePowerPressed);
+        while(PSW_GetValue() == 0 && !remotePowerPressed);
         __delay_ms(50);
         IOCAFbits.IOCAF4 = 0; // Clear flag so we don't immediately re-enter ISR
         
@@ -75,8 +86,8 @@ void Power_HandleSleepWake()
         PIE6bits.I2C2EIE = 1;
         PIE6bits.I2C2IE = 1;
 
-        IO_PLED_SetHigh();
-        IO_POWER_SetHigh();
+        PLED_SetHigh();
+        POWER_SetHigh();
         Mute_ScheduleRelease();
         AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_NORMAL_OP);
         remotePowerPressed = false;

@@ -12,7 +12,7 @@
 */
 
 /*
-ï¿½ [2026] Microchip Technology Inc. and its subsidiaries.
+© [2026] Microchip Technology Inc. and its subsidiaries.
 
     Subject to your compliance with these terms, you may use Microchip 
     software and any derivatives exclusively with Microchip products. 
@@ -34,7 +34,8 @@
 
 #include "../pins.h"
 
-void (*IO_PSW_InterruptHandler)(void);
+void (*HFBCCS_InterruptHandler)(void);
+void (*PSW_InterruptHandler)(void);
 
 void PIN_MANAGER_Initialize(void)
 {
@@ -60,28 +61,28 @@ void PIN_MANAGER_Initialize(void)
     /**
     TRISx registers
     */
-    TRISA = 0x10;
+    TRISA = 0x3;
     TRISB = 0xF9;
-    TRISC = 0xEE;
-    TRISD = 0xD3;
+    TRISC = 0xF4;
+    TRISD = 0xF3;
     TRISE = 0x0;
-    TRISF = 0x30;
+    TRISF = 0xB0;
 
     /**
     ANSELx registers
     */
     ANSELA = 0x0;
     ANSELB = 0xC0;
-    ANSELC = 0x0;
-    ANSELD = 0x1;
+    ANSELC = 0x80;
+    ANSELD = 0x0;
     ANSELE = 0x0;
-    ANSELF = 0x0;
+    ANSELF = 0x80;
 
     /**
     WPUx registers
     */
-    WPUA = 0x10;
-    WPUB = 0x0;
+    WPUA = 0x0;
+    WPUB = 0x10;
     WPUC = 0x0;
     WPUD = 0x0;
     WPUE = 0x0;
@@ -120,10 +121,10 @@ void PIN_MANAGER_Initialize(void)
     /**
     PPS registers
     */
-    CCP1PPS = 0x11; //RC1->CCP1:CCP1;
+    CCP3PPS = 0xD; //RB5->CCP3:CCP3;
     INT1PPS = 0x19; //RD1->INTERRUPT MANAGER:INT1;
-    SPI1SDIPPS = 0x13; //RC3->SPI1:SDI1;
-    RC4PPS = 0x1F;  //RC4->SPI1:SDO1;
+    SPI1SDIPPS = 0x14; //RC4->SPI1:SDI1;
+    RC3PPS = 0x1F;  //RC3->SPI1:SDO1;
     I2C2SCLPPS = 0x9;  //RB1->I2C2:SCL2;
     RB1PPS = 0x23;  //RB1->I2C2:SCL2;
     I2C2SDAPPS = 0xA;  //RB2->I2C2:SDA2;
@@ -138,7 +139,7 @@ void PIN_MANAGER_Initialize(void)
     IOCAN = 0x10;
     IOCAF = 0x0;
     IOCBP = 0x0;
-    IOCBN = 0x0;
+    IOCBN = 0x10;
     IOCBF = 0x0;
     IOCCP = 0x0;
     IOCCN = 0x0;
@@ -147,7 +148,8 @@ void PIN_MANAGER_Initialize(void)
     IOCEN = 0x0;
     IOCEF = 0x0;
 
-    IO_PSW_SetInterruptHandler(IO_PSW_DefaultInterruptHandler);
+    HFBCCS_SetInterruptHandler(HFBCCS_DefaultInterruptHandler);
+    PSW_SetInterruptHandler(PSW_DefaultInterruptHandler);
 
     // Enable PIE0bits.IOCIE interrupt 
     PIE0bits.IOCIE = 1; 
@@ -155,41 +157,76 @@ void PIN_MANAGER_Initialize(void)
   
 void PIN_MANAGER_IOC(void)
 {
-    // interrupt on change for pin IO_PSW
+    // interrupt on change for pin HFBCCS
     if(IOCAFbits.IOCAF4 == 1)
     {
-        IO_PSW_ISR();  
+        HFBCCS_ISR();  
+    }
+    // interrupt on change for pin PSW
+    if(IOCBFbits.IOCBF4 == 1)
+    {
+        PSW_ISR();  
     }
 }
    
 /**
-   IO_PSW Interrupt Service Routine
+   HFBCCS Interrupt Service Routine
 */
-void IO_PSW_ISR(void) {
+void HFBCCS_ISR(void) {
 
-    // Add custom IO_PSW code
+    // Add custom HFBCCS code
 
     // Call the interrupt handler for the callback registered at runtime
-    if(IO_PSW_InterruptHandler)
+    if(HFBCCS_InterruptHandler)
     {
-        IO_PSW_InterruptHandler();
+        HFBCCS_InterruptHandler();
     }
     IOCAFbits.IOCAF4 = 0;
 }
 
 /**
-  Allows selecting an interrupt handler for IO_PSW at application runtime
+  Allows selecting an interrupt handler for HFBCCS at application runtime
 */
-void IO_PSW_SetInterruptHandler(void (* InterruptHandler)(void)){
-    IO_PSW_InterruptHandler = InterruptHandler;
+void HFBCCS_SetInterruptHandler(void (* InterruptHandler)(void)){
+    HFBCCS_InterruptHandler = InterruptHandler;
 }
 
 /**
-  Default interrupt handler for IO_PSW
+  Default interrupt handler for HFBCCS
 */
-void IO_PSW_DefaultInterruptHandler(void){
-    // add your IO_PSW interrupt custom code
-    // or set custom function using IO_PSW_SetInterruptHandler()
+void HFBCCS_DefaultInterruptHandler(void){
+    // add your HFBCCS interrupt custom code
+    // or set custom function using HFBCCS_SetInterruptHandler()
+}
+   
+/**
+   PSW Interrupt Service Routine
+*/
+void PSW_ISR(void) {
+
+    // Add custom PSW code
+
+    // Call the interrupt handler for the callback registered at runtime
+    if(PSW_InterruptHandler)
+    {
+        PSW_InterruptHandler();
+    }
+    IOCBFbits.IOCBF4 = 0;
+}
+
+/**
+  Allows selecting an interrupt handler for PSW at application runtime
+*/
+void PSW_SetInterruptHandler(void (* InterruptHandler)(void)){
+    PSW_InterruptHandler = InterruptHandler;
+}
+
+/**
+  Default interrupt handler for PSW
+*/
+void PSW_DefaultInterruptHandler(void){
+    // add your PSW interrupt custom code
+    // or set custom function using PSW_SetInterruptHandler()
 }
 /**
  End of File

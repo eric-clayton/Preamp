@@ -64,7 +64,7 @@ void GrabDataFromEEPROM(void) {
     if (!foundAny)
     {
         Storage_MarkDirty(); // no data found save in storage
-        IntializeInput(GetInputType()); // set input since we have no data for it
+        Input_LoadSettings(GetInputType()); // set input since we have no data for it
         return;
     }
 
@@ -75,8 +75,8 @@ void GrabDataFromEEPROM(void) {
     for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
         allParameters[i]->value = EEPROM_Read(currentBlockAddress + 1 + i);
     }
-    IntializeInput(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 1));
-    InitializeTone(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 2));
+    Input_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 1));
+    Tone_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 2));
 }
 
 void SyncStorage(void) {
