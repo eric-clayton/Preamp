@@ -1,63 +1,74 @@
 #include "digipot.h"
 #include "parameters.h"
+#include "input.h"
 #include "mcc_generated_files/spi/spi1.h"
 #include "mcc_generated_files\system\pins.h"
+#include "mcc_generated_files/system/clock.h"
 
-// 74HC595
-#define W0  (0 << 4)   // 0x00
-#define W1  (1 << 4)   // 0x10
-#define IO_EN_MASK    0x0001
-#define DV1_MASK      0x0010
-#define DV2_MASK      0x0020
-#define DV3_MASK      0x0040
-#define SUBEN_MASK    0x0080
-#define PP_MASK       0x0100
-#define NEXT_MASK    0x0200
-#define PREV_MASK    0x0400
-#define ISA_MASK     0x0800
-#define ISB_MASK     0x1000
-#define DVBT_MASK    0x2000
-#define TONE_MASK    0x4000
+#define WIPER_MIN 0
+#define WIPER_MAX 254
+#define WIPER_CENTER 127
+#define BALANCE_CENTER 127
 
-static inline void LFFCSSetLow(void)  { LFFCS_SetLow();  }
-static inline void LFFCSSetHigh(void)  { LFFCS_SetHigh();  }
+#define MASTER_MAX_SHIFT_TOP 75   // how far master can push center up/down from 127 on the top range
+#define MASTER_MAX_SHIFT_BOTTOM 70   // how far master can push center up/down from 127 on the bottom range
+
+static inline void LFFCSSetLow(void)   { LFFCS_SetLow();  }
+static inline void LFFCSSetHigh(void)  { LFFCS_SetHigh(); }
 static inline void LFBCCSSetLow(void)  { LFBCCS_SetLow();  }
-static inline void LFBCCSSetHigh(void)  { LFBCCS_SetHigh();  }
-static inline void LFQCSSetLow(void)  { LFQCS_SetLow();  }
-static inline void LFQCSSetHigh(void)  { LFQCS_SetHigh();  }
+static inline void LFBCCSSetHigh(void) { LFBCCS_SetHigh(); }
+static inline void LFQCSSetLow(void)   { LFQCS_SetLow();  }
+static inline void LFQCSSetHigh(void)  { LFQCS_SetHigh(); }
 
-
-static inline void HFFCSSetLow(void)  { HFFCS_SetLow();  }
-static inline void HFFCSSeHigh(void)  { HFFCS_SetHigh();  }
+static inline void HFFCSSetLow(void)   { HFFCS_SetLow();  }
+static inline void HFFCSSetHigh(void)  { HFFCS_SetHigh(); }
 static inline void HFBCCSSetLow(void)  { HFBCCS_SetLow();  }
-static inline void HFBCCSSetHigh(void)  { HFBCCS_SetHigh();  }
-static inline void HFFCSSetHigh(void)  { HFFCS_SetHigh();  }
-static inline void HFQCSSetLow(void)  { HFQCS_SetLow();  }
-static inline void HFQCSSetHigh(void)  { HFQCS_SetHigh();  }
+static inline void HFBCCSSetHigh(void) { HFBCCS_SetHigh(); }
+static inline void HFQCSSetLow(void)   { HFQCS_SetLow();  }
+static inline void HFQCSSetHigh(void)  { HFQCS_SetHigh(); }
 
-static inline void VOLCSSetLow(void)  { VOLCS_SetLow();  }
-static inline void VOLCSSetHigh(void) { VOLCS_SetHigh(); }
+static inline void VOLCSSetLow(void)   { VOLCS_SetLow();  }
+static inline void VOLCSSetHigh(void)  { VOLCS_SetHigh(); }
 
-static inline void SLCSSetLow(void)  { SLCS_SetLow();  }
-static inline void SLCSSetHigh(void) { SLCS_SetHigh(); }
+static inline void SLCSSetLow(void)    { SLCS_SetLow();  }
+static inline void SLCSSetHigh(void)   { SLCS_SetHigh(); }
 
-static inline void O_RCSetLow(void)  { O_RC_SetLow();  }
-static inline void O_RCSetHigh(void) { O_RC_SetHigh(); }
+static inline void OGCSRSetLow(void)    { OGCSR_SetLow();  }
+static inline void OGCSRSetHigh(void)   { OGCSR_SetHigh(); }
+static inline void OGCSLSetLow(void)    { OGCSL_SetLow();  }
+static inline void OGCSLSetHigh(void)   { OGCSL_SetHigh(); }
 
+static inline void IGAINCSSetHigh(void)   { IGAINCS_SetHigh(); }
+static inline void IGAINCSSetLow(void)   { IGAINCS_SetLow(); }
 
-static const DigiPot_t lffPot = {LFFCSSetLow,  LFFCSSetHigh};
-static const DigiPot_t lfbcPot  = {LFBCCSSetLow,  LFBCCSSetHigh};
-static const DigiPot_t lfqPot = {LFQCSSetLow,  LFQCSSetHigh};
-static const DigiPot_t hffPot = {HFFCSSetLow,  HFFCSSetHigh};
-static const DigiPot_t hfbcPot  = {HFBCCSSetLow,  HFBCCSSetHigh};
-static const DigiPot_t hfqPot = {HFQCSSetLow,  HFQCSSetHigh};
-static const DigiPot_t volPot     = {VOLCSSetLow,  VOLCSSetHigh};
-static const DigiPot_t subLevelPot = {SLCSSetLow, SLCSSetHigh};
-static const DigiPot_t outputExpanderPot = {O_RCSetLow, O_RCSetHigh};
-
-static uint16_t outputExpanderRegisterState = 0x0000;
-
-void WriteWiper(const DigiPot_t *pot, uint8_t wiperAddr, uint8_t value) {
+static const CS_Device_t lffPot       = { LFFCSSetLow,  LFFCSSetHigh };
+static const CS_Device_t lfbcPot      = { LFBCCSSetLow, LFBCCSSetHigh };
+static const CS_Device_t lfqPot       = { LFQCSSetLow,  LFQCSSetHigh };
+static const CS_Device_t hffPot       = { HFFCSSetLow,  HFFCSSetHigh };
+static const CS_Device_t hfbcPot      = { HFBCCSSetLow, HFBCCSSetHigh };
+static const CS_Device_t hfqPot       = { HFQCSSetLow,  HFQCSSetHigh };
+static const CS_Device_t volPot       = { VOLCSSetLow,  VOLCSSetHigh };
+static const CS_Device_t subLevelPot  = { SLCSSetLow,   SLCSSetHigh };
+static const CS_Device_t outputPotR  = { OGCSRSetLow,   OGCSRSetHigh};
+static const CS_Device_t outputPotL  = { OGCSLSetLow,   OGCSLSetHigh };
+static const CS_Device_t inputGainPot  = { IGAINCSSetLow,   IGAINCSSetHigh };
+// digipot.c
+void DigiPot_Init(void)
+{
+    lffPot.csHigh();
+    lfbcPot.csHigh();
+    lfqPot.csHigh();
+    hffPot.csHigh();
+    hfbcPot.csHigh();
+    hfqPot.csHigh();
+    volPot.csHigh();
+    subLevelPot.csHigh();
+    outputPotR.csHigh();
+    outputPotL.csHigh();
+    inputGainPot.csHigh();
+}
+void WriteWiper(const CS_Device_t *pot, uint8_t wiperAddr, uint8_t value)
+{
     uint8_t txBuffer[2];
     txBuffer[0] = wiperAddr | 0x00;
     txBuffer[1] = value;
@@ -67,135 +78,97 @@ void WriteWiper(const DigiPot_t *pot, uint8_t wiperAddr, uint8_t value) {
     SPI1_Host.BufferWrite(txBuffer, 2);
     pot->csHigh();
     SPI1_Host.Close();
-
 }
-void WriteRegister(const DigiPot_t *pot) {
-    // Prepare the 2-byte SPI transfer buffer
-    uint8_t txBuffer[2];
-    
-    // Split the 16-bit state into two bytes
-    // Note: If your physical PCB wiring expects the low byte first, swap these indices.
-    txBuffer[0] = (uint8_t)(outputExpanderRegisterState >> 8);   // MSB (Second chip in the chain)
-    txBuffer[1] = (uint8_t)(outputExpanderRegisterState & 0xFF);  // LSB (First chip in the chain)
 
-    // Send over SPI to latch the new outputs
-    SPI1_Host.Open(HOST_CONFIG);
-    pot->csLow();
-    
-    SPI1_Host.BufferWrite(txBuffer, 2);
-    
-    pot->csHigh(); // Pulse latch pin to apply the changes to physical pins
-    SPI1_Host.Close();
+void UpdateVolumeWipers(void)
+{   
+    WriteWiper(&volPot, W0, volumeKnob.value);
 }
-void SetExpanderRegister(uint16_t bitMask, uint8_t value)
+
+void UpdateLFBoostWipers(void)
 {
-    if (value)
+    WriteWiper(&lfbcPot, W0, WIPER_MAX - lfBoostKnob.value);
+}
+void UpdateLFFrequencyWipers(void)
+{
+    WriteWiper(&lffPot, W0, WIPER_MAX - frequencyKnobLow.value);
+}
+void UpdateLFQWipers(void)
+{
+    WriteWiper(&lfqPot, W0, WIPER_MAX - QKnobLow.value);
+}
+void UpdateHFBoostWipers(void)
+{
+    WriteWiper(&hfbcPot, W0, WIPER_MAX - hfBoostKnob.value);
+}
+void UpdateHFFrequencyWipers(void)
+{
+    WriteWiper(&hffPot, W0, WIPER_MAX - frequencyKnobHigh.value);
+}
+void UpdateHFQWipers(void)
+{
+    WriteWiper(&hfqPot, W0, WIPER_MAX - QKnobHigh.value);
+}
+void UpdateSubLevelWipers(void)
+{
+    WriteWiper(&subLevelPot, W0, subLevelRightKnob.value);
+}
+
+void UpdateOutputWipers(void)
+{
+    // Map master (0-254) to a small +/- shift around 127
+    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)WIPER_CENTER; // -127..+127
+    int32_t max_shift = masterDelta < 0 ? MASTER_MAX_SHIFT_BOTTOM : MASTER_MAX_SHIFT_TOP;
+    int32_t center = WIPER_CENTER + (masterDelta * max_shift) / 127;
+    // center now ranges from (127 - 30) to (127 + 30) as master sweeps 0..254
+
+    int32_t balanceDelta = (int32_t)balanceKnob.value - BALANCE_CENTER; // -127..+127
+
+    uint8_t leftValue, rightValue;
+
+    if (balanceDelta >= 0)
     {
-       outputExpanderRegisterState |= bitMask;
+        int32_t ratio = balanceDelta;
+        int32_t distToMax = WIPER_MAX - center;
+        int32_t distToMin = center - WIPER_MIN;
+
+        rightValue = (uint8_t)(center + (distToMax * ratio) / 127);
+        leftValue  = (uint8_t)(center - (distToMin * ratio) / 127);
     }
     else
     {
-        outputExpanderRegisterState &= ~bitMask;
+        int32_t ratio = -balanceDelta;
+        int32_t distToMax = WIPER_MAX - center;
+        int32_t distToMin = center - WIPER_MIN;
+
+        leftValue  = (uint8_t)(center + (distToMax * ratio) / 127);
+        rightValue = (uint8_t)(center - (distToMin * ratio) / 127);
     }
-    WriteRegister(&outputExpanderPot);
-} 
-void ToggleExpanderRegister(uint16_t bitMask)
-{
-    outputExpanderRegisterState ^= bitMask;
-    WriteRegister(&outputExpanderPot);
+
+    WriteWiper(&outputPotR, W0, rightValue);
+    WriteWiper(&outputPotL, W0, leftValue);
 }
-void UpdateVolumeWipers(void) {
-    int16_t baseVol = volumeKnob.value;
-    int16_t bal = balanceKnob.value; // 0 to 254, center is 127
-
-    int16_t leftVol = baseVol;
-    int16_t rightVol = baseVol;
-
-    // Apply Balance Logic (Attenuate the opposite channel)
-    if (bal < 127) {
-        // Panning Left: Reduce Right channel
-        rightVol -= (127 - bal); 
-    } else if (bal > 127) {
-        // Panning Right: Reduce Left channel
-        leftVol -= (bal - 127);
-    }
-    // Clamp values to valid 0-254 range
-    if (leftVol < 0) leftVol = 0;
-    if (rightVol < 0) rightVol = 0;
-    if (leftVol > 254) leftVol = 254;
-    if (rightVol > 254) rightVol = 254;
-
-    // Apply Inverse Log Taper (Linear to Audio taper)
-    // uint8_t finalLeft = audioTaper[leftVol];
-    // uint8_t finalRight = audioTaper[rightVol];
-    uint8_t finalLeft = (uint8_t)leftVol;   // Remove this once lookup table is ready
-    uint8_t finalRight = (uint8_t)rightVol; // Remove this once lookup table is ready
-    WriteWiper(&volPot, W0, finalRight);
-    WriteWiper(&volPot, W1, finalLeft);
+void UpdateInputOneGainWipers(void)
+{
+    if (GetInputType() == INPUT_ONE)
+        WriteWiper(&inputGainPot, W0, WIPER_MAX - inputOneGainKnob.value);
+}
+void UpdateInputTwoGainWipers(void)
+{
+    if (GetInputType() == INPUT_TWO)
+        WriteWiper(&inputGainPot, W0, WIPER_MAX - inputTwoGainKnob.value);
 }
 
-void UpdateLFBoostWipers()
+void UpdateInputThreeGainWipers(void)
 {
-    WriteWiper(&lfbcPot, W0, lfBoostKnob.value);
-}
-void UpdateLFFrequencyWipers()
-{
-    WriteWiper(&lffPot, W0, frequencyKnobLow.value);
-}
-void UpdateLFQWipers()
-{
-    WriteWiper(&lfqPot, W0, QKnobLow.value);
-}
-void UpdateHFBoostWipers()
-{
-    WriteWiper(&hfbcPot, W0, hfBoostKnob.value);
-}
-void UpdateHFFrequencyWipers()
-{
-    WriteWiper(&hffPot, W0, frequencyKnobHigh.value);
-}
-void UpdateHFQWipers()
-{
-    WriteWiper(&hfqPot, W0, QKnobHigh.value);
+    if (GetInputType() == INPUT_THREE)
+        WriteWiper(&inputGainPot, W0, WIPER_MAX - inputThreeGainKnob.value);
 }
 
-void UpdateSubLevelWipers(void) {
-    WriteWiper(&subLevelPot, W0, subLevelRightKnob.value);
-}
-void DV1_Toggle()
+void UpdateInputBtGainWipers(void)
 {
-    ToggleExpanderRegister(DV1_MASK);
+    if (GetInputType() == INPUT_BT)
+        WriteWiper(&inputGainPot, W0, WIPER_MAX - inputBtGainKnob.value);
 }
-void DV2_Toggle()
-{
-    ToggleExpanderRegister(DV2_MASK);
-}
-void DV3_Toggle()
-{
-    ToggleExpanderRegister(DV3_MASK);
-}
-void DVBT_Toggle()
-{
-    ToggleExpanderRegister(DVBT_MASK);
-}
-void SetInputState(uint8_t ISA, uint8_t ISB)
-{
-    SetExpanderRegister(ISA_MASK, ISA);
-    SetExpanderRegister(ISB_MASK, ISB);
-}
-bool IsInputOneExpanderBitSet(void)
-{
-    return (outputExpanderRegisterState & DV1_MASK) != 0;
-}
-bool IsInputTwoExpanderBitSet(void)
-{
-    return (outputExpanderRegisterState & DV2_MASK) != 0;
-}
-bool IsInputThreeExpanderBitSet(void)
-{
-    return (outputExpanderRegisterState & DV3_MASK) != 0;
-}
-bool IsInputBTExpanderBitSet(void)
-{
-    return (outputExpanderRegisterState & DVBT_MASK) != 0;
-}
+
+

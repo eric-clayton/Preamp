@@ -82,6 +82,17 @@ void DisplaySubLevelLeft(int16_t value)
 
     AS1115_DisplayDataPartition(sub_level_display, 4, 0x04);
 }
+void DisplayOutputGain(int16_t value)
+{
+    static uint8_t out_l_display[] = {0x0E, 0x0F, 0x1C, 0x1D}; // "outL"
+    //                                   L           t         u          o
+
+    AS1115_Write(AS1115_REG_DECODE_MODE, AS1115_DECODE_DIGIT_0_2);
+
+    AS1115_DisplayPartitionDecimal(value, 1, 3);
+
+    AS1115_DisplayDataPartition(out_l_display, 4, 0x04);
+}
 void DisplayVolume(int16_t value) {
     AS1115_DisplayPartition(value, 1, 3);
 }
@@ -168,6 +179,15 @@ void DisplayPowerDelayOff(int16_t value)
         // Write the number starting at Register 1
         AS1115_DisplayPartition(value, 1, 3);
     }
+}
+void DisplayInputGain(int16_t value)
+{
+    static uint8_t inp_l_display[] = {0x0E, 0x67, 0x15, 0x30}; // "InpL"
+    //                                   L      p      n      I
+
+    AS1115_Write(AS1115_REG_DECODE_MODE, AS1115_DECODE_DIGIT_0_2);
+    AS1115_DisplayPartitionDecimal(value, 1, 3);
+    AS1115_DisplayDataPartition(inp_l_display, 4, 0x04);
 }
 void AS1115_DisplayPartitionDecimal(int16_t number, uint8_t startReg, uint8_t numDigits) {
     uint16_t temp;

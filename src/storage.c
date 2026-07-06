@@ -4,10 +4,10 @@
 #include "systick.h"
 #include "input.h"
 #include "tone.h"
-
+#include "power.h"
 
 #define WRITE_DELAY 500
-#define BLOCK_SIZE (PARAM_COUNT + 1 + 1 + 1)  // params + sequence + input + tone
+#define BLOCK_SIZE (PARAM_COUNT + 1 + 1 + 1 + 1)  // params + sequence + input + tone + power
 #define MAX_BLOCKS (EEPROM_SIZE / BLOCK_SIZE)
 
 eeprom_address_t currentBlockAddress = EEPROM_START_ADDRESS;
@@ -64,7 +64,9 @@ void GrabDataFromEEPROM(void) {
     if (!foundAny)
     {
         Storage_MarkDirty(); // no data found save in storage
-        Input_LoadSettings(GetInputType()); // set input since we have no data for it
+        Input_LoadSettings(0);
+        Tone_LoadSettings(0);
+        Power_LoadSettings(0);
         return;
     }
 
@@ -77,6 +79,7 @@ void GrabDataFromEEPROM(void) {
     }
     Input_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 1));
     Tone_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 2));
+    Power_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 3));
 }
 
 void SyncStorage(void) {
@@ -99,7 +102,13 @@ void SyncStorage(void) {
     // Write current input after param data
     EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 1 , (uint8_t)GetInputType());
     EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 2, GetToneValue());
+    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 3, GetPowerState());
 
     currentBlockAddress = nextBlockAddr;
     isStorageOutOfSync = false;
+}
+void Storage_ForceSync(void) {
+    if (!isStorageOutOfSync) return;
+    lastDataUpdateTime = systemTicks - WRITE_DELAY; // satisfy the delay check
+    SyncStorage();
 }

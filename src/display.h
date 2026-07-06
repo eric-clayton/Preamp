@@ -17,8 +17,10 @@ void DisplaySubEnableDisable(int16_t value);
 void DisplaySubEQ(int16_t value);
 void DisplaySubLevelRight(int16_t value);
 void DisplaySubLevelLeft(int16_t value);
+void DisplayOutputGain(int16_t value);
 void DisplayPowerDelayOn(int16_t value);
 void DisplayPowerDelayOff(int16_t value);
+void DisplayInputGain(int16_t value);
 
 void AS1115_DisplayPartition(int16_t number, uint8_t startReg, uint8_t numDigits);
 void AS1115_DisplayPartitionDecimal(int16_t number, uint8_t startReg, uint8_t numDigits);

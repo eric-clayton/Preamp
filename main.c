@@ -11,35 +11,34 @@
 #include "src/input.h"
 #include "src/mute.h"
 #include "src/tone.h"
-
+#include "src/bluetooth.h"
+#include "src/digipot.h"
 
 int main(void) {
     SYSTEM_Initialize();
-    PLED_SetHigh();
-    POWER_SetHigh();
+   
     // 2. Register handlers
+
     TMR0_OverflowCallbackRegister(SysTick_Callback);
     INT1_SetInterruptHandler(HandleButtonPressed);
     CCP3_SetCallBack(IR_CaptureHandler);
-    
 
-    // 3. ENABLE INTERRUPTS FIRST
-    // If I2C is interrupt-based, it MUST have these on to function
-    INTERRUPT_GlobalInterruptEnable(); 
-    
-    // 4. Now perform I2C operations
-    uint8_t dummy[2];
-    AS1115_ReadKeys(dummy);
-    
-    AS1115_Init();
-    
-    TMR0_Start();
-    
-    ROTARYENC_Initialize();
+    DigiPot_Init();
     Tone_Init();
     Input_Init();
+    Bluetooth_Init();
+    ROTARYENC_Initialize();
+
+    INTERRUPT_GlobalInterruptEnable(); 
+
+    TMR0_Start();
+    AS1115_Init();
+
     GrabDataFromEEPROM();
     Parameters_Initialize();
+
+    uint8_t dummy[2];
+    AS1115_ReadKeys(dummy);
     UI_Manager_Reset();
     
     while(1) {

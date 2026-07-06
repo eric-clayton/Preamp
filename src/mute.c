@@ -1,5 +1,6 @@
 // mute.c
 #include "mute.h"
+#include "audio_control.h"
 #include "mcc_generated_files\system\pins.h"
 
 #define MUTE_TIMEOUT 2000
@@ -13,7 +14,8 @@ typedef struct {
 static UnmuteState unmuteState = {false, 0};
 
 void Mute_Engage(void) {
-    //IO_MUTE_SetHigh();
+    SetSubMute(true);
+    SetIODisabled(true);
     unmuteState.shouldUnmute = false;
 }
 
@@ -25,7 +27,8 @@ void Mute_ScheduleRelease(void) {
 void Mute_Update(void) {
     if (unmuteState.shouldUnmute &&
        (systemTicks - unmuteState.unmuteStartTime) >= MUTE_TIMEOUT) {
-        //IO_MUTE_SetLow();
+        SetSubMute(false);
+        SetIODisabled(false);
         unmuteState.shouldUnmute = false;
     }
 }

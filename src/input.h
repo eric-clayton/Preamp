@@ -11,7 +11,8 @@ typedef enum {
     INPUT_ONE,
     INPUT_TWO,
     INPUT_THREE,
-    INPUT_BT
+    INPUT_BT,
+    INPUT_NONE
 } InputType;
 
 typedef struct {
@@ -24,7 +25,6 @@ typedef struct {
 } InputState;
 
 extern InputState inputOne, inputTwo, inputThree, inputBt;
-extern uint8_t currentInputIndex;
 extern InputState *inputs[];
 extern bool isAnyInputInPowerDelay;
 

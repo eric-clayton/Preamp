@@ -3,9 +3,11 @@
 #include "buttons.h"
 #include "display.h"
 #include "mute.h"
-#include "digipot.h"
+#include "audio_control.h"
 #include "power.h"
+#include "storage.h"
 #include "systick.h"
+#include "digipot.h"
 #include <stddef.h>
 
 // --- State Variables ---
@@ -16,15 +18,15 @@ InputState inputBt = {&inputBtOnKnob, &inputBtOffKnob, 0, 0, IsInputBtOn, Toggle
 
 InputState *inputs[] = { [INPUT_ONE] = &inputOne, [INPUT_TWO] = &inputTwo, [INPUT_THREE] = &inputThree, [INPUT_BT] = &inputBt };
 
-InputType currentInputType = INPUT_ONE;
+InputType currentInputType = INPUT_NONE;
 bool isAnyInputInPowerDelay = false;
 
 // --- UI Layouts ---
 static const UI_Layout inputLayouts[] = {
-    [INPUT_ONE]   = { .params = {&inputOneOnKnob, &inputOneOffKnob, NULL, NULL, NULL, NULL}, .blinkLed = LED_INPUT_ONE },
-    [INPUT_TWO]   = { .params = {&inputTwoOnKnob, &inputTwoOffKnob, NULL, NULL, NULL, NULL}, .blinkLed = LED_INPUT_TWO },
-    [INPUT_THREE] = { .params = {&inputThreeOnKnob, &inputThreeOffKnob, NULL, NULL, NULL, NULL}, .blinkLed = LED_INPUT_THREE },
-    [INPUT_BT]    = { .params = {&inputBtOnKnob, &inputBtOffKnob, NULL, NULL, NULL, NULL}, .blinkLed = LED_INPUT_BT }
+    [INPUT_ONE]   = { .params = {&inputOneOnKnob, &inputOneOffKnob, NULL, NULL, NULL, &inputOneGainKnob}, .blinkLed = LED_INPUT_ONE },
+    [INPUT_TWO]   = { .params = {&inputTwoOnKnob, &inputTwoOffKnob, NULL, NULL, NULL, &inputTwoGainKnob}, .blinkLed = LED_INPUT_TWO },
+    [INPUT_THREE] = { .params = {&inputThreeOnKnob, &inputThreeOffKnob, NULL, NULL, NULL, &inputThreeGainKnob}, .blinkLed = LED_INPUT_THREE },
+    [INPUT_BT]    = { .params = {&inputBtOnKnob, &inputBtOffKnob, NULL, NULL, NULL, &inputBtGainKnob}, .blinkLed = LED_INPUT_BT }
 };
 
 // --- Helpers ---
@@ -69,17 +71,33 @@ void Input_Init(void) {
     Button_Subscribe(BUTTON_INPUT_TWO, Input_ButtonHandler);
     Button_Subscribe(BUTTON_INPUT_THREE, Input_ButtonHandler);
     Button_Subscribe(BUTTON_INPUT_BT, Input_ButtonHandler);
+
 }
 
 // --- Original Logic (Preserved) ---
 void InputSet(InputType inputType) {
+    if (currentInputType == inputType)
+        return;
     Mute_Engage(); 
     currentInputType = inputType;
+    Storage_MarkDirty();
     switch(inputType) {
-        case INPUT_ONE:   SetInputState(0, 0); break;
-        case INPUT_TWO:   SetInputState(0, 1); break;
-        case INPUT_THREE: SetInputState(1, 0); break;
-        case INPUT_BT:    SetInputState(1, 1); break;
+        case INPUT_ONE:   
+            SetInputState(0, 0); 
+            UpdateInputOneGainWipers();
+            break;
+        case INPUT_TWO:   
+            SetInputState(0, 1); 
+            UpdateInputTwoGainWipers();
+            break;
+        case INPUT_THREE: 
+            SetInputState(1, 0);
+            UpdateInputThreeGainWipers();
+            break;
+        case INPUT_BT:    
+            SetInputState(1, 1);
+            UpdateInputBtGainWipers();
+            break;
         default: return;
     }
     Display_SetInputLED(MapInputTypeToLedType(currentInputType));
@@ -119,11 +137,7 @@ void HandleInputSwitchPower() {
                 if ((systemTicks - inputs[i]->powerOnStartTime) >= requiredDelay) {
                     inputs[i]->TogglePower();
                     Mute_ScheduleRelease();
-                } else {
-                    isAnyInputInPowerDelay = true;
                 }
-            } else {
-                Mute_ScheduleRelease();
             }
         }
     }

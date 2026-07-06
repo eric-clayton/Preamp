@@ -72,7 +72,7 @@ void UpdateButton() {
     else if (pA & (1 << 5)) physicalButton = BUTTON_INPUT_TWO;
     else if (pB & (1 << 5)) physicalButton = BUTTON_INPUT_THREE;
     else if (pA & (1 << 4)) physicalButton = BUTTON_INPUT_BT;
-    else if (pB & (1 << 5)) physicalButton = BUTTON_PREV;  // Note: Check bit map, previously shared (1<<5) with INPUT_THREE
+    else if (pB & (1 << 4)) physicalButton = BUTTON_PREV;
     else if (pA & (1 << 3)) physicalButton = BUTTON_PAUSE;
     else if (pB & (1 << 3)) physicalButton = BUTTON_NEXT;
 
