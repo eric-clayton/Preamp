@@ -8,5 +8,8 @@
         "gdb",
         "mplab-core-da"
     ],
-    "C_Cpp.intelliSenseEngine": "disabled"
+    "C_Cpp.intelliSenseEngine": "disabled",
+    "mplab.clangd.arguments": [
+        "--header-insertion=never"
+    ]
 }

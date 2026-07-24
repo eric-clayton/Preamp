@@ -7,11 +7,12 @@
 
 #define WIPER_MIN 0
 #define WIPER_MAX 254
-#define WIPER_CENTER 127
-#define BALANCE_CENTER 127
+#define OUTPUT_DEFAULT_CENTER 80
+#define KNOB_CENTER 127
 
-#define MASTER_MAX_SHIFT_TOP 75   // how far master can push center up/down from 127 on the top range
-#define MASTER_MAX_SHIFT_BOTTOM 70   // how far master can push center up/down from 127 on the bottom range
+#define MASTER_MAX_SHIFT_TOP 45   // how far master can push center up/down from 127 on the top range
+#define MASTER_MAX_SHIFT_BOTTOM 57   // how far master can push center up/down from 127 on the bottom range
+#define BALANCE_DEADZONE_CENTER 254 / 8 // deadzone for balance knob, within this range, the balance is considered centered
 
 static inline void LFFCSSetLow(void)   { LFFCS_SetLow();  }
 static inline void LFFCSSetHigh(void)  { LFFCS_SetHigh(); }
@@ -117,18 +118,18 @@ void UpdateSubLevelWipers(void)
 void UpdateOutputWipers(void)
 {
     // Map master (0-254) to a small +/- shift around 127
-    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)WIPER_CENTER; // -127..+127
+    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)KNOB_CENTER; // -127..+127
     int32_t max_shift = masterDelta < 0 ? MASTER_MAX_SHIFT_BOTTOM : MASTER_MAX_SHIFT_TOP;
-    int32_t center = WIPER_CENTER + (masterDelta * max_shift) / 127;
+    int32_t center = OUTPUT_DEFAULT_CENTER + (masterDelta * max_shift) / 127;
     // center now ranges from (127 - 30) to (127 + 30) as master sweeps 0..254
 
-    int32_t balanceDelta = (int32_t)balanceKnob.value - BALANCE_CENTER; // -127..+127
+    int32_t balanceDelta = (int32_t)balanceKnob.value - KNOB_CENTER; // -127..+127
 
     uint8_t leftValue, rightValue;
 
     if (balanceDelta >= 0)
     {
-        int32_t ratio = balanceDelta;
+        int32_t ratio = balanceDelta < BALANCE_DEADZONE_CENTER ? 0 : balanceDelta;
         int32_t distToMax = WIPER_MAX - center;
         int32_t distToMin = center - WIPER_MIN;
 
@@ -137,7 +138,7 @@ void UpdateOutputWipers(void)
     }
     else
     {
-        int32_t ratio = -balanceDelta;
+        int32_t ratio = -balanceDelta < BALANCE_DEADZONE_CENTER ? 0 : -balanceDelta;
         int32_t distToMax = WIPER_MAX - center;
         int32_t distToMin = center - WIPER_MIN;
 
