@@ -5,7 +5,7 @@
 #include "subcontrol.h"
 
 Parameter_t volumeKnob        = { 127, 254,  1,  5,   100,     0, false, false, DisplayVolume,           UpdateVolumeWipers};
-Parameter_t balanceKnob       = { 127, 254,  1,  4,     8,     0, false, false, DisplayBalance,          UpdateOutputWipers};
+Parameter_t balanceKnob       = { 127, 254,  4,  4,     8,     0, false, false, DisplayBalance,          UpdateOutputWipers};
 Parameter_t lfBoostKnob       = { 127, 254,  4,  8,    12,    -6, false, false, DisplayBoostCut,         UpdateLFBoostWipers};
 Parameter_t hfBoostKnob       = { 127, 254,  4,  8,    12,    -6, false, false, DisplayBoostCut,         UpdateHFBoostWipers};
 Parameter_t frequencyKnobLow  = { 127, 254,  1,  1,   977,    22, false, false, DisplayFreqLow,          UpdateLFFrequencyWipers};

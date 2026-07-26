@@ -17,6 +17,7 @@ void Tone_ButtonHandler(ButtonType button, ButtonEvent event) {
         if (Button_GetExclusive() == BUTTON_TONE) {
             Button_ClearExclusive();
             UI_Manager_Reset(); // Just tell the UI Manager to go back to default
+            Display_SetToneLED(isToneOn); // Restore the LED state based on the current tone value
         } else {
             Button_SetExclusive(BUTTON_TONE);
             UI_Manager_ApplyLayout(&toneSubModeLayout); // Provide the config
@@ -24,8 +25,11 @@ void Tone_ButtonHandler(ButtonType button, ButtonEvent event) {
     }
     if (event == BUTTON_EVENT_SHORT_PRESS)
     {
-        ToggleTone();
-        Storage_MarkDirty();
+        if (Button_GetExclusive() == BUTTON_NONE)
+        {
+            ToggleTone();
+            Storage_MarkDirty();
+        }
     }
 }
 
