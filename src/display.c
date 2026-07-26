@@ -11,12 +11,13 @@ const uint8_t balanceLevels[9][3] = {
 static uint8_t lightMap = 0x00;
 
 LEDType LEDBlinkType = LED_NONE;
-#define LED_BITS_SIZE 6
+#define LED_BITS_SIZE 8
 static const uint8_t LEDBits[LED_BITS_SIZE] = {
+    [LED_NEG_RIGHT] = 0x01,
+    [LED_NEG_LEFT] = 0x80,
     [LED_INPUT_ONE] = 0x40, // 64
     [LED_INPUT_TWO] = 0x20, // 32
-    [LED_INPUT_THREE] = 0x10, // 16
-    [LED_INPUT_BT] = 0x08, // 8
+    [LED_INPUT_THREE] = 0x10, // 16 
     [LED_TONE] = 0x04, // 4
     [LED_NONE] = 0x00 // 0
 };
@@ -94,7 +95,7 @@ void DisplayOutputGain(int16_t value)
     AS1115_DisplayDataPartition(out_l_display, 4, 0x04);
 }
 void DisplayVolume(int16_t value) {
-    AS1115_DisplayPartition(value, 1, 3);
+    AS1115_DisplayPartitionDecimal(value, 1, 3);
 }
 void DisplayBalance(int16_t value)
 {
@@ -106,7 +107,7 @@ void DisplayBoostCut(int16_t value)
     AS1115_Write(AS1115_REG_DECODE_MODE, 0x67);  // turn off decode mode to display db on digit 4 and 5
     AS1115_Write(0x04, 0x1F); // d
     AS1115_Write(0x05, 0x3D); // b
-    AS1115_DisplayPartition(value, 6, 2);
+    AS1115_DisplayPartitionDecimal(value, 6, 2);
 }
 void DisplayFreqLow(int16_t value){
     AS1115_Write(AS1115_REG_DECODE_MODE, 0x77); //decode off on 4 and 8;
@@ -208,15 +209,25 @@ void AS1115_DisplayPartitionDecimal(int16_t number, uint8_t startReg, uint8_t nu
             uint8_t displayValue = i == 1 ? (temp % 10) | 0x80 : temp % 10; // add a decimal to the second number
             AS1115_Write(startReg + i, displayValue);
             temp /= 10;
-        } else if (shouldWriteNegative)
-        {
-            AS1115_Write(startReg + i, 0xA);
-            shouldWriteNegative = false;
         }
         else {
             // Fill remaining assigned digits with BLANK (0xF in BCD mode)
             AS1115_Write(startReg + i, 0xF); 
         }
+    }
+    if (shouldWriteNegative)
+    {
+        if (startReg + numDigits > 4)
+            Display_SetNegLeftLED(true);
+        else 
+            Display_SetNegRightLED(true);
+    }
+    else
+    {
+        if (startReg + numDigits > 4)
+            Display_SetNegLeftLED(false);
+        else 
+            Display_SetNegRightLED(false);
     }
 }
 // Displays a number constrained to a specific section of the 7-segment display
@@ -238,17 +249,28 @@ void AS1115_DisplayPartition(int16_t number, uint8_t startReg, uint8_t numDigits
         if (i == 0 || temp > 0) {
             AS1115_Write(startReg + i, temp % 10);
             temp /= 10;
-        } else if (shouldWriteNegative)
-        {
-            AS1115_Write(startReg + i, 0xA);
-            shouldWriteNegative = false;
-        }
+        } 
         else
          {
             // Fill remaining assigned digits with BLANK (0xF in BCD mode)
             AS1115_Write(startReg + i, 0xF); 
         }
     }
+    if (shouldWriteNegative)
+    {
+        if (startReg + numDigits > 4)
+            Display_SetNegLeftLED(true);
+        else 
+            Display_SetNegRightLED(true);
+    }
+    else
+    {
+        if (startReg + numDigits > 4)
+            Display_SetNegLeftLED(false);
+        else 
+            Display_SetNegRightLED(false);
+    }
+            
 }
 
 // Writes raw data arrays (like your Balance visualization) to a specific section
@@ -264,6 +286,22 @@ void Display_SetToneLED(uint8_t enabled) {
     if (enabled) lightMap |=  LEDBits[LED_TONE];
     else         lightMap &= ~LEDBits[LED_TONE];
     Display_WriteLEDs();
+}
+void Display_SetNegLeftLED(uint8_t enabled) {
+    uint8_t temp = lightMap;
+    if (enabled) lightMap |=  LEDBits[LED_NEG_LEFT];
+    else         lightMap &= ~LEDBits[LED_NEG_LEFT];
+
+    if(lightMap != temp)
+        Display_WriteLEDs();
+}
+void Display_SetNegRightLED(uint8_t enabled) {
+    uint8_t temp = lightMap;
+    if (enabled) lightMap |=  LEDBits[LED_NEG_RIGHT];
+    else         lightMap &= ~LEDBits[LED_NEG_RIGHT];
+
+    if(lightMap != temp)
+        Display_WriteLEDs();
 }
 
 void Display_SetInputLED(LEDType ledType) {

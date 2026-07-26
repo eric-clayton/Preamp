@@ -10,7 +10,6 @@
 Parameter_t* activeDisplay2Encoder = &volumeKnob;
 Parameter_t* activeParameters[6] = {NULL, NULL, NULL, NULL, NULL, NULL};
 uint32_t display2Timer = 0;
-bool isShowingBaseEQ = true;
 
 
 static LEDType activeBlinkLed = LED_NONE;
@@ -37,7 +36,6 @@ void UI_Manager_ApplyLayout(const UI_Layout* layout) {
 }
 
 void UI_Manager_Reset() {
-    isShowingBaseEQ = true;
     Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &balanceKnob, &volumeKnob);
     
     // Reset Blink State
@@ -59,12 +57,6 @@ void UI_Manager_HandleBlink() {
     }
 }
 
-// Swaps to high freq EQ (called internally)
-void Mode_SwitchToHighEQ() {
-    isShowingBaseEQ = true;
-    Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobHigh, &QKnobHigh, &hfBoostKnob, &balanceKnob, &volumeKnob);
-}
-
 void UpdateEncoders() {
     for(uint8_t i = 0; i < 6; i++) {
         // Only process if a parameter is assigned to this physical knob
@@ -73,8 +65,8 @@ void UpdateEncoders() {
             Parameter_t* current = activeParameters[i];
             
             // Base mode switching logic
-            if (current == &lfBoostKnob) UI_Manager_Reset();
-            else if (current == &hfBoostKnob) Mode_SwitchToHighEQ();
+            if (current == &lfBoostKnob) Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &balanceKnob, &volumeKnob);
+            else if (current == &hfBoostKnob)  Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobHigh, &QKnobHigh, &hfBoostKnob, &balanceKnob, &volumeKnob);
             else if (current == &balanceKnob || current == &volumeKnob) {
                 activeDisplay2Encoder = current;
                 display2Timer = systemTicks;
@@ -88,7 +80,7 @@ void UpdateEncoders() {
     }
     
     // Timeout for volume display
-    if (isShowingBaseEQ && activeDisplay2Encoder != &volumeKnob) {
+    if (activeDisplay2Encoder != &volumeKnob) {
         if ((systemTicks - display2Timer) >= DISPLAY_TIMEOUT) {
             Parameter_Display(&volumeKnob);
             activeDisplay2Encoder = &volumeKnob;
