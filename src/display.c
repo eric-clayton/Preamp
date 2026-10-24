@@ -95,7 +95,8 @@ void DisplayOutputGain(int16_t value)
     AS1115_DisplayDataPartition(out_l_display, 4, 0x04);
 }
 void DisplayVolume(int16_t value) {
-    AS1115_DisplayPartitionDecimal(value, 1, 3);
+    if (value % 5 == 0)
+        AS1115_DisplayPartitionDecimal(value, 1, 3);
 }
 void DisplayBalance(int16_t value)
 {

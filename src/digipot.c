@@ -5,8 +5,7 @@
 #include "mcc_generated_files\system\pins.h"
 #include "mcc_generated_files/system/clock.h"
 
-#define WIPER_MIN 0
-#define WIPER_MAX 254
+
 #define OUTPUT_DEFAULT_CENTER 80
 #define KNOB_CENTER 127
 

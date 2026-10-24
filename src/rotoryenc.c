@@ -38,34 +38,28 @@ void ROTARYENC_UpdateLastState(PhysicalKnob_t *hw)
 int8_t rot_states[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 bool ROTARYENC_Process(PhysicalKnob_t *hw, Parameter_t *param, uint32_t systemTicks) 
 {
-    if (param == NULL) return false; // Safety check if knob is "unmapped"
+    if (param == NULL) return false;
 
     uint32_t timeDelta = systemTicks - hw->lastChangeTime;
-    
-    // We pass the hardware ID to get the pins
     RCValues rcValues = hw->ReadHardware(); 
-    
     uint8_t currentState = (uint8_t)((rcValues.RCA << 1) | rcValues.RCB);
     uint8_t index = (uint8_t)((hw->lastState << 2) | currentState);
     int8_t direction = rot_states[index];
 
     if (direction != 0) {
-        // Acceleration logic stays with the Physical Hardware
         bool fastTurn = (direction == hw->lastDirection && timeDelta < FAST_THRESHOLD);
         int stepSize = fastTurn ? param->fastStep : param->slowStep;
 
-        int16_t newValue = param->value + (direction * stepSize);
+        int32_t newValue = (int32_t)param->value + (direction * stepSize);
 
-        // Clamping logic applies to the Parameter
         if (newValue > param->maxValue) {
-            param->value = param->isLooping ? 0 : param->maxValue;
-        } else if (newValue < 0) {
-            param->value = param->isLooping ? param->maxValue : 0;
+            param->value = param->isLooping ? param->minValue : param->maxValue;
+        } else if (newValue < param->minValue) {
+            param->value = param->isLooping ? param->maxValue : param->minValue;
         } else {
-            param->value = (uint8_t)newValue;
+            param->value = (int16_t)newValue;
         }
 
-        // Update Physical trackers
         hw->lastDirection = direction;
         hw->lastState = currentState;
         hw->lastChangeTime = systemTicks;

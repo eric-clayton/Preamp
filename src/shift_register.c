@@ -16,12 +16,12 @@ const switch_condition_t SUB_UNMUTE      = { S8AB,                S8AB };
 uint16_t hc595_shadow = 0;
 uint16_t sswcs_shadow = 0;
 
-static inline void O_RCSetLow(void)    { O_RC_SetLow();  }
-static inline void O_RCSetHigh(void)   { O_RC_SetHigh(); }
+static inline void O595CSSetLow(void)    { O595CS_SetLow();  }
+static inline void O595CSSetHigh(void)   { O595CS_SetHigh(); }
 static inline void SSWCSSetLow(void)   { SSWCS_SetLow();  }
 static inline void SSWCSSetHigh(void)  { SSWCS_SetHigh(); }
 
-static const CS_Device_t outputExpanderCS = { O_RCSetLow, O_RCSetHigh };
+static const CS_Device_t outputExpanderCS = { O595CSSetLow, O595CSSetHigh };
 static const CS_Device_t subSwitchCS      = { SSWCSSetLow, SSWCSSetHigh };
 
 void apply_bits(uint16_t *shadow, uint16_t mask, uint16_t value)

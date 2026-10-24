@@ -190,26 +190,6 @@
 #define POWER_SetAnalogMode()      do { ANSELAbits.ANSELA6 = 1; } while(0)
 #define POWER_SetDigitalMode()     do { ANSELAbits.ANSELA6 = 0; } while(0)
 
-// get/set RA7 aliases
-#define O_SRC_TRIS                 TRISAbits.TRISA7
-#define O_SRC_LAT                  LATAbits.LATA7
-#define O_SRC_PORT                 PORTAbits.RA7
-#define O_SRC_WPU                  WPUAbits.WPUA7
-#define O_SRC_OD                   ODCONAbits.ODCA7
-#define O_SRC_ANS                  ANSELAbits.ANSELA7
-#define O_SRC_SetHigh()            do { LATAbits.LATA7 = 1; } while(0)
-#define O_SRC_SetLow()             do { LATAbits.LATA7 = 0; } while(0)
-#define O_SRC_Toggle()             do { LATAbits.LATA7 = ~LATAbits.LATA7; } while(0)
-#define O_SRC_GetValue()           PORTAbits.RA7
-#define O_SRC_SetDigitalInput()    do { TRISAbits.TRISA7 = 1; } while(0)
-#define O_SRC_SetDigitalOutput()   do { TRISAbits.TRISA7 = 0; } while(0)
-#define O_SRC_SetPullup()          do { WPUAbits.WPUA7 = 1; } while(0)
-#define O_SRC_ResetPullup()        do { WPUAbits.WPUA7 = 0; } while(0)
-#define O_SRC_SetPushPull()        do { ODCONAbits.ODCA7 = 0; } while(0)
-#define O_SRC_SetOpenDrain()       do { ODCONAbits.ODCA7 = 1; } while(0)
-#define O_SRC_SetAnalogMode()      do { ANSELAbits.ANSELA7 = 1; } while(0)
-#define O_SRC_SetDigitalMode()     do { ANSELAbits.ANSELA7 = 0; } while(0)
-
 // get/set RB0 aliases
 #define FREQB_TRIS                 TRISBbits.TRISB0
 #define FREQB_LAT                  LATBbits.LATB0
@@ -332,24 +312,24 @@
 #define IRDA_SetDigitalMode()     do { ANSELBbits.ANSELB5 = 0; } while(0)
 
 // get/set RC0 aliases
-#define O_RC_TRIS                 TRISCbits.TRISC0
-#define O_RC_LAT                  LATCbits.LATC0
-#define O_RC_PORT                 PORTCbits.RC0
-#define O_RC_WPU                  WPUCbits.WPUC0
-#define O_RC_OD                   ODCONCbits.ODCC0
-#define O_RC_ANS                  ANSELCbits.ANSELC0
-#define O_RC_SetHigh()            do { LATCbits.LATC0 = 1; } while(0)
-#define O_RC_SetLow()             do { LATCbits.LATC0 = 0; } while(0)
-#define O_RC_Toggle()             do { LATCbits.LATC0 = ~LATCbits.LATC0; } while(0)
-#define O_RC_GetValue()           PORTCbits.RC0
-#define O_RC_SetDigitalInput()    do { TRISCbits.TRISC0 = 1; } while(0)
-#define O_RC_SetDigitalOutput()   do { TRISCbits.TRISC0 = 0; } while(0)
-#define O_RC_SetPullup()          do { WPUCbits.WPUC0 = 1; } while(0)
-#define O_RC_ResetPullup()        do { WPUCbits.WPUC0 = 0; } while(0)
-#define O_RC_SetPushPull()        do { ODCONCbits.ODCC0 = 0; } while(0)
-#define O_RC_SetOpenDrain()       do { ODCONCbits.ODCC0 = 1; } while(0)
-#define O_RC_SetAnalogMode()      do { ANSELCbits.ANSELC0 = 1; } while(0)
-#define O_RC_SetDigitalMode()     do { ANSELCbits.ANSELC0 = 0; } while(0)
+#define O595CS_TRIS                 TRISCbits.TRISC0
+#define O595CS_LAT                  LATCbits.LATC0
+#define O595CS_PORT                 PORTCbits.RC0
+#define O595CS_WPU                  WPUCbits.WPUC0
+#define O595CS_OD                   ODCONCbits.ODCC0
+#define O595CS_ANS                  ANSELCbits.ANSELC0
+#define O595CS_SetHigh()            do { LATCbits.LATC0 = 1; } while(0)
+#define O595CS_SetLow()             do { LATCbits.LATC0 = 0; } while(0)
+#define O595CS_Toggle()             do { LATCbits.LATC0 = ~LATCbits.LATC0; } while(0)
+#define O595CS_GetValue()           PORTCbits.RC0
+#define O595CS_SetDigitalInput()    do { TRISCbits.TRISC0 = 1; } while(0)
+#define O595CS_SetDigitalOutput()   do { TRISCbits.TRISC0 = 0; } while(0)
+#define O595CS_SetPullup()          do { WPUCbits.WPUC0 = 1; } while(0)
+#define O595CS_ResetPullup()        do { WPUCbits.WPUC0 = 0; } while(0)
+#define O595CS_SetPushPull()        do { ODCONCbits.ODCC0 = 0; } while(0)
+#define O595CS_SetOpenDrain()       do { ODCONCbits.ODCC0 = 1; } while(0)
+#define O595CS_SetAnalogMode()      do { ANSELCbits.ANSELC0 = 1; } while(0)
+#define O595CS_SetDigitalMode()     do { ANSELCbits.ANSELC0 = 0; } while(0)
 
 // get/set RC1 aliases
 #define SSWCS_TRIS                 TRISCbits.TRISC1
@@ -671,26 +651,6 @@
 #define LFBCCS_SetAnalogMode()      do { ANSELEbits.ANSELE1 = 1; } while(0)
 #define LFBCCS_SetDigitalMode()     do { ANSELEbits.ANSELE1 = 0; } while(0)
 
-// get/set RE2 aliases
-#define O_SER_TRIS                 TRISEbits.TRISE2
-#define O_SER_LAT                  LATEbits.LATE2
-#define O_SER_PORT                 PORTEbits.RE2
-#define O_SER_WPU                  WPUEbits.WPUE2
-#define O_SER_OD                   ODCONEbits.ODCE2
-#define O_SER_ANS                  ANSELEbits.ANSELE2
-#define O_SER_SetHigh()            do { LATEbits.LATE2 = 1; } while(0)
-#define O_SER_SetLow()             do { LATEbits.LATE2 = 0; } while(0)
-#define O_SER_Toggle()             do { LATEbits.LATE2 = ~LATEbits.LATE2; } while(0)
-#define O_SER_GetValue()           PORTEbits.RE2
-#define O_SER_SetDigitalInput()    do { TRISEbits.TRISE2 = 1; } while(0)
-#define O_SER_SetDigitalOutput()   do { TRISEbits.TRISE2 = 0; } while(0)
-#define O_SER_SetPullup()          do { WPUEbits.WPUE2 = 1; } while(0)
-#define O_SER_ResetPullup()        do { WPUEbits.WPUE2 = 0; } while(0)
-#define O_SER_SetPushPull()        do { ODCONEbits.ODCE2 = 0; } while(0)
-#define O_SER_SetOpenDrain()       do { ODCONEbits.ODCE2 = 1; } while(0)
-#define O_SER_SetAnalogMode()      do { ANSELEbits.ANSELE2 = 1; } while(0)
-#define O_SER_SetDigitalMode()     do { ANSELEbits.ANSELE2 = 0; } while(0)
-
 // get/set RF0 aliases
 #define SLCS_TRIS                 TRISFbits.TRISF0
 #define SLCS_LAT                  LATFbits.LATF0
@@ -830,6 +790,26 @@
 #define PLED_SetOpenDrain()       do { ODCONFbits.ODCF6 = 1; } while(0)
 #define PLED_SetAnalogMode()      do { ANSELFbits.ANSELF6 = 1; } while(0)
 #define PLED_SetDigitalMode()     do { ANSELFbits.ANSELF6 = 0; } while(0)
+
+// get/set RF7 aliases
+#define LED595CS_TRIS                 TRISFbits.TRISF7
+#define LED595CS_LAT                  LATFbits.LATF7
+#define LED595CS_PORT                 PORTFbits.RF7
+#define LED595CS_WPU                  WPUFbits.WPUF7
+#define LED595CS_OD                   ODCONFbits.ODCF7
+#define LED595CS_ANS                  ANSELFbits.ANSELF7
+#define LED595CS_SetHigh()            do { LATFbits.LATF7 = 1; } while(0)
+#define LED595CS_SetLow()             do { LATFbits.LATF7 = 0; } while(0)
+#define LED595CS_Toggle()             do { LATFbits.LATF7 = ~LATFbits.LATF7; } while(0)
+#define LED595CS_GetValue()           PORTFbits.RF7
+#define LED595CS_SetDigitalInput()    do { TRISFbits.TRISF7 = 1; } while(0)
+#define LED595CS_SetDigitalOutput()   do { TRISFbits.TRISF7 = 0; } while(0)
+#define LED595CS_SetPullup()          do { WPUFbits.WPUF7 = 1; } while(0)
+#define LED595CS_ResetPullup()        do { WPUFbits.WPUF7 = 0; } while(0)
+#define LED595CS_SetPushPull()        do { ODCONFbits.ODCF7 = 0; } while(0)
+#define LED595CS_SetOpenDrain()       do { ODCONFbits.ODCF7 = 1; } while(0)
+#define LED595CS_SetAnalogMode()      do { ANSELFbits.ANSELF7 = 1; } while(0)
+#define LED595CS_SetDigitalMode()     do { ANSELFbits.ANSELF7 = 0; } while(0)
 
 /**
  * @ingroup  pinsdriver

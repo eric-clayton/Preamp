@@ -16,7 +16,7 @@ void UpdatePhaseCorrect(void);
  * Sub EQ dis: S1off, S2on, S3on, S4off
  */
 void UpdateSubEQ(void) {
-    int16_t eq = Parameter_Interpolate(&subEqKnob);
+    int16_t eq = subEqKnob.value;
     isSubEqEnabled = (eq != 0); 
 
     if (isSubEqEnabled) {
@@ -35,7 +35,7 @@ void UpdateSubEQ(void) {
  * Phase 0:   S5on, S6off
  */
 void UpdateSubEnable(void) {
-    int16_t state = Parameter_Interpolate(&subPhaseKnob);
+    int16_t state = subPhaseKnob.value;
     isPhase180 = (state == 2); 
     if(state == 0)
     {

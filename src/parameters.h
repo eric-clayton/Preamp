@@ -5,17 +5,19 @@
 #include <stdint.h>
 #include <stdbool.h>
 
+#define WIPER_MIN 0
+#define WIPER_MAX 254
 typedef struct Parameter_t {
-    uint8_t value;
-    uint8_t maxValue;
-    int slowStep;
-    int fastStep;
-    uint32_t displayRange;
-    int16_t displayOrigin;
+    int16_t value;      // current value, in DISPLAY units directly (no more raw pot units)
+    int16_t minValue;   // minimum value, in display units
+    int16_t maxValue;   // maximum value, in display units
+    int slowStep;        // amount to add/subtract per slow click, in display units
+    int fastStep;        // amount to add/subtract per fast click, in display units
+    bool inverted;        // true if wiper is wired backwards: minValue->254, maxValue->0
     bool isDirty;
     bool isLooping;
     void (*_display)(int16_t value);
-    void (*_update)(void);  
+    void (*_update)(void);
 } Parameter_t;
 
 #define PARAM_COUNT 25U
@@ -33,7 +35,7 @@ extern Parameter_t inputBtOnKnob,   inputBtOffKnob, inputBtGainKnob;
 
 extern Parameter_t* allParameters[PARAM_COUNT];
 
-int16_t Parameter_Interpolate(Parameter_t *param);
+uint8_t Parameter_GetWiperValue(Parameter_t *param);
 void Parameter_Display(Parameter_t *param);
 void Parameter_Update(Parameter_t *param);
 void Parameters_Initialize(void);
