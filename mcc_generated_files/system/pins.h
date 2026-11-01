@@ -771,26 +771,6 @@
 #define LFA_SetAnalogMode()      do { ANSELFbits.ANSELF5 = 1; } while(0)
 #define LFA_SetDigitalMode()     do { ANSELFbits.ANSELF5 = 0; } while(0)
 
-// get/set RF6 aliases
-#define PLED_TRIS                 TRISFbits.TRISF6
-#define PLED_LAT                  LATFbits.LATF6
-#define PLED_PORT                 PORTFbits.RF6
-#define PLED_WPU                  WPUFbits.WPUF6
-#define PLED_OD                   ODCONFbits.ODCF6
-#define PLED_ANS                  ANSELFbits.ANSELF6
-#define PLED_SetHigh()            do { LATFbits.LATF6 = 1; } while(0)
-#define PLED_SetLow()             do { LATFbits.LATF6 = 0; } while(0)
-#define PLED_Toggle()             do { LATFbits.LATF6 = ~LATFbits.LATF6; } while(0)
-#define PLED_GetValue()           PORTFbits.RF6
-#define PLED_SetDigitalInput()    do { TRISFbits.TRISF6 = 1; } while(0)
-#define PLED_SetDigitalOutput()   do { TRISFbits.TRISF6 = 0; } while(0)
-#define PLED_SetPullup()          do { WPUFbits.WPUF6 = 1; } while(0)
-#define PLED_ResetPullup()        do { WPUFbits.WPUF6 = 0; } while(0)
-#define PLED_SetPushPull()        do { ODCONFbits.ODCF6 = 0; } while(0)
-#define PLED_SetOpenDrain()       do { ODCONFbits.ODCF6 = 1; } while(0)
-#define PLED_SetAnalogMode()      do { ANSELFbits.ANSELF6 = 1; } while(0)
-#define PLED_SetDigitalMode()     do { ANSELFbits.ANSELF6 = 0; } while(0)
-
 // get/set RF7 aliases
 #define LED595CS_TRIS                 TRISFbits.TRISF7
 #define LED595CS_LAT                  LATFbits.LATF7

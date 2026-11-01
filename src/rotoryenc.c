@@ -48,7 +48,7 @@ bool ROTARYENC_Process(PhysicalKnob_t *hw, Parameter_t *param, uint32_t systemTi
 
     if (direction != 0) {
         bool fastTurn = (direction == hw->lastDirection && timeDelta < FAST_THRESHOLD);
-        int stepSize = fastTurn ? param->fastStep : param->slowStep;
+         int stepSize = fastTurn ? param->fastStep : param->slowStep;
 
         int32_t newValue = (int32_t)param->value + (direction * stepSize);
 

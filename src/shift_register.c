@@ -15,14 +15,19 @@ const switch_condition_t SUB_UNMUTE      = { S8AB,                S8AB };
 
 uint16_t hc595_shadow = 0;
 uint16_t sswcs_shadow = 0;
+uint16_t led595_shadow = 0;
+static uint8_t ledBlank = 0;
 
 static inline void O595CSSetLow(void)    { O595CS_SetLow();  }
 static inline void O595CSSetHigh(void)   { O595CS_SetHigh(); }
 static inline void SSWCSSetLow(void)   { SSWCS_SetLow();  }
 static inline void SSWCSSetHigh(void)  { SSWCS_SetHigh(); }
+static inline void LED595CSSetLow(void)  { LED595CS_SetLow();  }
+static inline void LED595CSSetHigh(void) { LED595CS_SetHigh(); }
 
 static const CS_Device_t outputExpanderCS = { O595CSSetLow, O595CSSetHigh };
 static const CS_Device_t subSwitchCS      = { SSWCSSetLow, SSWCSSetHigh };
+static const CS_Device_t ledExpanderCS = { LED595CSSetLow, LED595CSSetHigh };
 
 void apply_bits(uint16_t *shadow, uint16_t mask, uint16_t value)
 {
@@ -56,6 +61,19 @@ void WriteRegisterAnalog(void)
     subSwitchCS.csHigh(); // latch pulse
     SPI1_Host.Close();
 }
+void WriteRegisterLED(void)
+{
+    uint8_t txBuffer[2];
+
+    txBuffer[0] = (uint8_t)(led595_shadow >> 8);
+    txBuffer[1] = (uint8_t)(led595_shadow & 0xFF);
+
+    SPI1_Host.Open(HOST_CONFIG);
+    ledExpanderCS.csLow();
+    SPI1_Host.BufferWrite(txBuffer, 2);
+    ledExpanderCS.csHigh(); // latch pulse
+    SPI1_Host.Close();
+}
 void SetExpanderRegister(uint16_t bitMask, uint8_t value)
 {
     apply_bits(&hc595_shadow, bitMask, value ? bitMask : 0);
@@ -68,3 +86,26 @@ void ToggleExpanderRegister(uint16_t bitMask)
     WriteRegister();
 }
 
+void SetExpanderBits(uint16_t mask, uint16_t bits)
+{
+    apply_bits(&hc595_shadow, mask, bits);
+    WriteRegister();
+}
+
+void SetLEDRegister(uint16_t bitMask, uint8_t value)
+{
+    apply_bits(&led595_shadow, bitMask, value ? bitMask : 0);
+    WriteRegisterLED();
+}
+
+void ToggleLEDRegister(uint16_t bitMask)
+{
+    led595_shadow ^= bitMask;
+    WriteRegisterLED();
+}
+
+void SetLEDBits(uint16_t mask, uint16_t bits)
+{
+    apply_bits(&led595_shadow, mask, bits);
+    WriteRegisterLED();
+}

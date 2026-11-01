@@ -33,6 +33,9 @@ void Display_SetNegLeftLED(uint8_t enabled);
 void Display_SetInputLED(LEDType ledType);
 void Display_BlinkLED(void);
 void Display_SetBlinkBitIndex(LEDType ledType);
+void Display_SetBTStatusLED(uint8_t enabled);
+void Display_LEDsStandby(void);
+void Display_LEDsWake(void);
 
 void Display_TestButtons(void);
 

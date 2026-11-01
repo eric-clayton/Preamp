@@ -2,14 +2,14 @@
 
 manifest_file_version: 1.0.0
 project: I2CTest4
-creation_date: 2026-10-24T16:00:29.636-04:00[America/New_York]
+creation_date: 2026-11-01T07:59:52.745-05:00[America/New_York]
 operating_system: Windows 11
 mcc_mode: VSCodePlugin
 mcc_mode_version: Unknown
 device_name: PIC18LF56K42
 compiler: N/A
-mcc_version: 5.7.0
-mcc_core_version: 5.9.0
+mcc_version: 5.7.1
+mcc_core_version: 5.9.1
 content_manager_version: 7.0.0
 is_mcc_offline: false
 is_using_prerelease_versions: false

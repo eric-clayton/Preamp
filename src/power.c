@@ -1,3 +1,4 @@
+#include "display.h"
 #include "power.h"
 #include "mute.h"
 #include "ir.h"
@@ -7,6 +8,8 @@
 #include "storage.h"
 
 #include "as1115.h"
+
+#define PSW_DEBOUNCE_MS   25
 
 static bool remotePowerPressed = false;
 static uint8_t systemPoweredOn = 0;
@@ -31,7 +34,7 @@ void ToggleInputBtPower(void) { DVBT_Toggle();}
 
 void TurnStandby()
 {
-    PLED_SetLow();
+    Display_LEDsStandby(); 
     Mute_Engage();
     POWER_SetLow();
     SetPowerState(0);
@@ -51,8 +54,10 @@ void TurnStandby()
 }
 void TurnOn()
 {
-    PLED_SetHigh();
     POWER_SetHigh();
+    __delay_ms(10);
+    Display_LEDsWake(); 
+    
     SetPowerState(1);
     Mute_ScheduleRelease();
     AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_NORMAL_OP);
@@ -66,32 +71,58 @@ void TurnOn()
     PIE6bits.I2C2IE = 1;
     remotePowerPressed = false;
 }
-// power.c
+
+// A press is real only if the pin reads low for PSW_DEBOUNCE_MS in a row.
+static bool PowerButton_ConfirmedPress(void)
+{
+    for (uint8_t i = 0; i < PSW_DEBOUNCE_MS; i++)
+    {
+        if (PSW_GetValue() != 0) return false;   // high = noise, not a press
+        __delay_ms(1);
+    }
+    return true;
+}
+
+// Returns once the pin has read high for PSW_DEBOUNCE_MS in a row.
+static void PowerButton_WaitRelease(void)
+{
+    uint8_t highMs = 0;
+    while (highMs < PSW_DEBOUNCE_MS)
+    {
+        if (PSW_GetValue() != 0) { __delay_ms(1); highMs++; }
+        else                      highMs = 0;     // still held or bouncing
+    }
+}
+
 void Power_EnterSleep(void)
 {
     TurnStandby();
 
-    while (PSW_GetValue() != 0 && !remotePowerPressed)
+    while (!remotePowerPressed)
     {
         PIE4bits.CCP1IE = 1;
         SLEEP();
         NOP();
-        __delay_ms(100);
+
+        __delay_ms(5);                       // let the contact settle after the wake edge
+        if (PowerButton_ConfirmedPress())    // check the button BEFORE the 100 ms IR delay
+        {
+            PowerButton_WaitRelease();
+            break;
+        }
+
+        __delay_ms(100);                     // IR frame is still arriving
         IR_ProcessFrame();
     }
-
-    while (PSW_GetValue() == 0 && !remotePowerPressed);
-    __delay_ms(50);
 
     TurnOn();
 }
 
 void Power_HandleSleepWake(void)
 {
-    if (PSW_PORT == 0 || remotePowerPressed)
+    if (remotePowerPressed || PowerButton_ConfirmedPress())
     {
-        while (PSW_GetValue() == 0 && !remotePowerPressed);
-        __delay_ms(50); // Debounce
+        PowerButton_WaitRelease();
         Power_EnterSleep();
     }
 }

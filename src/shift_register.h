@@ -54,6 +54,7 @@ extern const switch_condition_t SUB_UNMUTE;
 // can't be read back; these in-RAM copies are authoritative.
 extern uint16_t hc595_shadow;   // 74HC595 cascade (digital)
 extern uint16_t sswcs_shadow;   // ADG1414 cascade (analog switches)
+extern uint16_t led595_shadow;
 
 // Apply a masked update without touching unrelated bits in a shadow word.
 void apply_bits(uint16_t *shadow, uint16_t mask, uint16_t value);
@@ -65,5 +66,10 @@ void WriteRegisterAnalog(void);  // flushes sswcs_shadow   -> SSWCS / ADG1414
 // Convenience wrappers: modify shadow bit(s) then flush.
 void SetExpanderRegister(uint16_t bitMask, uint8_t value);
 void ToggleExpanderRegister(uint16_t bitMask);
+void SetExpanderBits(uint16_t mask, uint16_t bits);
 
+void WriteRegisterLED(void);
+void SetLEDRegister(uint16_t bitMask, uint8_t value);
+void ToggleLEDRegister(uint16_t bitMask);
+void SetLEDBits(uint16_t mask, uint16_t bits);
 #endif
