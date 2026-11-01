@@ -385,7 +385,7 @@ void DisplayVolume(int16_t value)
 void DisplayBalance(int16_t pos)
 {
     int16_t  offset = Balance_Offset(pos);
-    uint8_t  att    = (uint8_t)((Magnitude(offset) * 99u + 63u) / 127u);   // 0..127 -> 0..99
+    uint8_t att = (uint8_t)((Magnitude(offset) * 99u + (BAL_SPAN / 2u)) / BAL_SPAN);
     uint8_t  tens   = att / 10;
     uint8_t  ones   = att % 10;
     uint8_t  out[3];                                  // LSD first: reg1 (right), reg2, reg3 (left)

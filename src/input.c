@@ -84,19 +84,19 @@ void InputSet(InputType inputType) {
     switch(inputType) {
         case INPUT_ONE:   
             SetInputState(0, 0); 
-            UpdateInputOneGainWipers();
+            UpdateInputGainWipers();
             break;
         case INPUT_TWO:   
             SetInputState(0, 1); 
-            UpdateInputTwoGainWipers();
+            UpdateInputGainWipers();
             break;
         case INPUT_THREE: 
             SetInputState(1, 0);
-            UpdateInputThreeGainWipers();
+            UpdateInputGainWipers();
             break;
         case INPUT_BT:    
             SetInputState(1, 1);
-            UpdateInputBtGainWipers();
+            UpdateInputGainWipers();
             break;
         default: return;
     }

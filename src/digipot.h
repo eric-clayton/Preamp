@@ -24,9 +24,6 @@ void UpdateHFFrequencyWipers(void);
 void UpdateHFQWipers(void);
 void UpdateSubLevelWipers(void);
 void UpdateOutputWipers(void);
-void UpdateInputOneGainWipers(void);
-void UpdateInputTwoGainWipers(void);
-void UpdateInputThreeGainWipers(void);
-void UpdateInputBtGainWipers(void);
+void UpdateInputGainWipers(void);
 
 #endif

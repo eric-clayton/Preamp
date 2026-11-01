@@ -24,16 +24,16 @@ Parameter_t subOuputKnob      = {    5,    5,   25,   1,   1, false, false, fals
 // Inputs
 Parameter_t inputOneOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
 Parameter_t inputOneOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputOneGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputOneGainWipers};
+Parameter_t inputOneGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
 Parameter_t inputTwoOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
 Parameter_t inputTwoOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputTwoGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputTwoGainWipers};
+Parameter_t inputTwoGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
 Parameter_t inputThreeOnKnob  = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
 Parameter_t inputThreeOffKnob = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputThreeGainKnob= {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputThreeGainWipers};
+Parameter_t inputThreeGainKnob= {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
 Parameter_t inputBtOnKnob     = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
 Parameter_t inputBtOffKnob    = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputBtGainKnob   = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputBtGainWipers};
+Parameter_t inputBtGainKnob   = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
 
 // The Master Array for looping
 Parameter_t* allParameters[] = {
@@ -43,6 +43,18 @@ Parameter_t* allParameters[] = {
     &inputTwoOnKnob, &inputTwoOffKnob, &inputTwoGainKnob, &inputThreeOnKnob, &inputThreeOffKnob, &inputThreeGainKnob,
     &inputBtOnKnob, &inputBtOffKnob, &inputBtGainKnob
 };
+uint8_t Parameter_GetWiperValue(Parameter_t *param) {
+    int32_t range = (int32_t)param->maxValue - param->minValue;
+    if (range <= 0) return 0; // misconfigured knob guard
+
+    int32_t offset = (int32_t)param->value - param->minValue;
+    if (offset < 0) offset = 0;
+    if (offset > range) offset = range;
+
+    int32_t wiperPos = (offset * WIPER_MAX + (range / 2)) / range;
+
+    return param->inverted ? (uint8_t)(WIPER_MAX - wiperPos) : (uint8_t)wiperPos;
+}
 void Parameter_Display(Parameter_t *param) {
     param->_display(param->value);
 }

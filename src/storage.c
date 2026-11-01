@@ -7,7 +7,9 @@
 #include "power.h"
 
 #define WRITE_DELAY 500
-#define BLOCK_SIZE (PARAM_COUNT + 1 + 1 + 1 + 1)  // params + sequence + input + tone + power
+#define PARAM_BYTES   2
+#define EXTRA_OFFSET  (1 + PARAM_COUNT * PARAM_BYTES)     // after sequence + params
+#define BLOCK_SIZE    (PARAM_COUNT * PARAM_BYTES + 1 + 1 + 1 + 1)   // params + sequence + input + tone + power
 #define MAX_BLOCKS (EEPROM_SIZE / BLOCK_SIZE)
 
 eeprom_address_t currentBlockAddress = EEPROM_START_ADDRESS;
@@ -75,11 +77,16 @@ void GrabDataFromEEPROM(void) {
 
     // Load actual data (offset by 1 because index 0 is the sequence byte)
     for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
-        allParameters[i]->value = EEPROM_Read(currentBlockAddress + 1 + i);
+        eeprom_address_t a = currentBlockAddress + 1 + i * PARAM_BYTES;
+        int16_t v = (int16_t)(EEPROM_Read(a) | ((uint16_t)EEPROM_Read(a + 1) << 8));
+        Parameter_t *p = allParameters[i];
+        if (v < p->minValue) v = p->minValue;
+        if (v > p->maxValue) v = p->maxValue;
+        p->value = v;
     }
-    Input_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 1));
-    Tone_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 2));
-    Power_LoadSettings(EEPROM_Read(currentBlockAddress + PARAM_COUNT + 3));
+    Input_LoadSettings(EEPROM_Read(currentBlockAddress + EXTRA_OFFSET));
+    Tone_LoadSettings (EEPROM_Read(currentBlockAddress + EXTRA_OFFSET + 1));
+    Power_LoadSettings(EEPROM_Read(currentBlockAddress + EXTRA_OFFSET + 2));
 }
 
 void SyncStorage(void) {
@@ -96,13 +103,15 @@ void SyncStorage(void) {
     EEPROM_Write_Reliable(nextBlockAddr, currentSequence);
 
     for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
-        EEPROM_Write_Reliable(nextBlockAddr + 1 + i, allParameters[i]->value);
+        int16_t v = allParameters[i]->value;
+        eeprom_address_t a = nextBlockAddr + 1 + i * PARAM_BYTES;
+        EEPROM_Write_Reliable(a,     (uint8_t)(v & 0xFF));
+        EEPROM_Write_Reliable(a + 1, (uint8_t)((uint16_t)v >> 8));
         allParameters[i]->isDirty = false;
     }
-    // Write current input after param data
-    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 1 , (uint8_t)GetInputType());
-    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 2, GetToneValue());
-    EEPROM_Write_Reliable(nextBlockAddr + PARAM_COUNT + 3, GetPowerState());
+    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET,     (uint8_t)GetInputType());
+    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET + 1, GetToneValue());
+    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET + 2, GetPowerState());
 
     currentBlockAddress = nextBlockAddr;
     isStorageOutOfSync = false;
