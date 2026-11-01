@@ -36,35 +36,21 @@ void ROTARYENC_UpdateLastState(PhysicalKnob_t *hw)
 }
 // A transition is only valid if it moves from one state to an adjacent valid state.
 int8_t rot_states[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
-bool ROTARYENC_Process(PhysicalKnob_t *hw, Parameter_t *param, uint32_t systemTicks) 
+// Reads one knob. Returns -1, 0 or +1; *fast is set when the turn is fast.
+int8_t ROTARYENC_Read(PhysicalKnob_t *hw, uint32_t systemTicks, bool *fast)
 {
-    if (param == NULL) return false;
-
     uint32_t timeDelta = systemTicks - hw->lastChangeTime;
-    RCValues rcValues = hw->ReadHardware(); 
+    RCValues rcValues  = hw->ReadHardware();
     uint8_t currentState = (uint8_t)((rcValues.RCA << 1) | rcValues.RCB);
-    uint8_t index = (uint8_t)((hw->lastState << 2) | currentState);
-    int8_t direction = rot_states[index];
+    uint8_t index        = (uint8_t)((hw->lastState << 2) | currentState);
+    int8_t  direction    = rot_states[index];
 
-    if (direction != 0) {
-        bool fastTurn = (direction == hw->lastDirection && timeDelta < FAST_THRESHOLD);
-         int stepSize = fastTurn ? param->fastStep : param->slowStep;
+    if (direction == 0) return 0;
 
-        int32_t newValue = (int32_t)param->value + (direction * stepSize);
+    *fast = (direction == hw->lastDirection && timeDelta < FAST_THRESHOLD);
 
-        if (newValue > param->maxValue) {
-            param->value = param->isLooping ? param->minValue : param->maxValue;
-        } else if (newValue < param->minValue) {
-            param->value = param->isLooping ? param->maxValue : param->minValue;
-        } else {
-            param->value = (int16_t)newValue;
-        }
-
-        hw->lastDirection = direction;
-        hw->lastState = currentState;
-        hw->lastChangeTime = systemTicks;
-
-        return true;
-    }
-    return false;  
+    hw->lastDirection  = direction;
+    hw->lastState      = currentState;
+    hw->lastChangeTime = systemTicks;
+    return direction;
 }

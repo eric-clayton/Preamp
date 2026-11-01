@@ -1,6 +1,7 @@
 #include "digipot.h"
 #include "parameters.h"
 #include "input.h"
+#include "balance.h"
 #include "mcc_generated_files/spi/spi1.h"
 #include "mcc_generated_files\system\pins.h"
 #include "mcc_generated_files/system/clock.h"
@@ -117,33 +118,20 @@ void UpdateSubLevelWipers(void)
 void UpdateOutputWipers(void)
 {
     // Map master (0-254) to a small +/- shift around 127
-    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)KNOB_CENTER; // -127..+127
-    int32_t max_shift = masterDelta < 0 ? MASTER_MAX_SHIFT_BOTTOM : MASTER_MAX_SHIFT_TOP;
-    int32_t center = OUTPUT_DEFAULT_CENTER + (masterDelta * max_shift) / 127;
-    // center now ranges from (127 - 30) to (127 + 30) as master sweeps 0..254
+    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)KNOB_CENTER;
+    int32_t max_shift   = masterDelta < 0 ? MASTER_MAX_SHIFT_BOTTOM : MASTER_MAX_SHIFT_TOP;
+    int32_t center      = OUTPUT_DEFAULT_CENTER + (masterDelta * max_shift) / 127;
 
-    int32_t balanceDelta = (int32_t)balanceKnob.value - KNOB_CENTER; // -127..+127
+    // Balance: -127..+127, exactly 0 across the center hold
+    int32_t balanceDelta = Balance_Offset(balanceKnob.value);
+    int32_t ratio        = balanceDelta < 0 ? -balanceDelta : balanceDelta;
 
-    uint8_t leftValue, rightValue;
+    // One wiper goes up while the other goes down by the same ratio
+    int32_t up   = center + ((int32_t)(WIPER_MAX - center) * ratio) / 127;
+    int32_t down = center - ((int32_t)(center - WIPER_MIN) * ratio) / 127;
 
-    if (balanceDelta >= 0)
-    {
-        int32_t ratio = balanceDelta < BALANCE_DEADZONE_CENTER ? 0 : balanceDelta;
-        int32_t distToMax = WIPER_MAX - center;
-        int32_t distToMin = center - WIPER_MIN;
-
-        rightValue = (uint8_t)(center + (distToMax * ratio) / 127);
-        leftValue  = (uint8_t)(center - (distToMin * ratio) / 127);
-    }
-    else
-    {
-        int32_t ratio = -balanceDelta < BALANCE_DEADZONE_CENTER ? 0 : -balanceDelta;
-        int32_t distToMax = WIPER_MAX - center;
-        int32_t distToMin = center - WIPER_MIN;
-
-        leftValue  = (uint8_t)(center + (distToMax * ratio) / 127);
-        rightValue = (uint8_t)(center - (distToMin * ratio) / 127);
-    }
+    uint8_t leftValue  = (uint8_t)(balanceDelta < 0 ? up   : down);
+    uint8_t rightValue = (uint8_t)(balanceDelta < 0 ? down : up);
 
     WriteWiper(&outputPotR, W0, rightValue);
     WriteWiper(&outputPotL, W0, leftValue);

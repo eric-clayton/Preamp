@@ -1,8 +1,10 @@
 #include "display.h"
 #include "as1115.h"
 #include "shift_register.h"      // SetExpanderRegister / SetExpanderBits / ToggleExpanderRegister
+#include "balance.h"
 #include <stdbool.h>
 #include "mcc_generated_files\system\clock.h"
+#
 
 /* ============================================================================
  *  PANEL LAYOUT
@@ -95,12 +97,6 @@ static const uint8_t TXT_OFF[]          = { CH_BLANK, CH_O, CH_F, CH_F };
 static const uint8_t TXT_INF[]          = { CH_i, CH_n, CH_F };
 static const uint8_t TXT_DB[]           = { CH_d, CH_b };      // regs 4-5 next to the number
 
-// Balance: left-to-right "9-1" ... "1-9"; stored LSD first for DisplayDataPartition
-const uint8_t balanceLevels[9][3] = {
-    {1, CODE_B_DASH, 9}, {2, CODE_B_DASH, 8}, {3, CODE_B_DASH, 7},
-    {4, CODE_B_DASH, 6}, {5, CODE_B_DASH, 5}, {6, CODE_B_DASH, 4},
-    {7, CODE_B_DASH, 3}, {8, CODE_B_DASH, 2}, {9, CODE_B_DASH, 1}
-};
 
 /* ============================================================================
  *  LEDs
@@ -384,14 +380,22 @@ void DisplayVolume(int16_t value)
     AS1115_Write(REG_DIG0, negative ? (CH_d | SEG_DP) : CH_d);
 }
 
-// value = balance index 0..8, shown "9-1" ... "1-9"
-void DisplayBalance(int16_t value)
+// pos = knob position. Shows how far the quieter channel is turned down (0-99):
+//   center "-0-" | toward left "-nn" | toward right "nn-"
+void DisplayBalance(int16_t pos)
 {
-    if (value < 0) value = 0;
-    if (value > 8) value = 8;
+    int16_t  offset = Balance_Offset(pos);
+    uint8_t  att    = (uint8_t)((Magnitude(offset) * 99u + 63u) / 127u);   // 0..127 -> 0..99
+    uint8_t  tens   = att / 10;
+    uint8_t  ones   = att % 10;
+    uint8_t  out[3];                                  // LSD first: reg1 (right), reg2, reg3 (left)
+
+    if (offset == 0)     { out[0] = CODE_B_DASH; out[1] = 0;    out[2] = CODE_B_DASH; }  // "-0-"
+    else if (offset < 0) { out[0] = ones;        out[1] = tens; out[2] = CODE_B_DASH; }  // "-nn"
+    else                 { out[0] = CODE_B_DASH; out[1] = ones; out[2] = tens;        }  // "nn-"
 
     SetDecode(ZONE_RIGHT, ZONE_RIGHT);
-    AS1115_DisplayDataPartition(balanceLevels[value], 3, REG_DIG0);
+    AS1115_DisplayDataPartition(out, 3, REG_DIG0);
 }
 
 // ---- Tone parameters (left zone, DIG3-DIG6; right zone left untouched) --------

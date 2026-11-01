@@ -20,7 +20,7 @@ extern PhysicalKnob_t physicalKnobs[KNOB_COUNT];
 
 void ROTARYENC_Initialize(void);
 void ROTARYENC_UpdateLastState(PhysicalKnob_t *hw);
-bool ROTARYENC_Process(PhysicalKnob_t *hw, Parameter_t *param, uint32_t systemTicks);
+int8_t ROTARYENC_Read(PhysicalKnob_t *hw, uint32_t systemTicks, bool *fast);
 
 
 #endif

@@ -59,27 +59,30 @@ void UI_Manager_HandleBlink() {
 
 void UpdateEncoders() {
     for(uint8_t i = 0; i < 6; i++) {
-        // Only process if a parameter is assigned to this physical knob
-        if(activeParameters[i] != NULL && ROTARYENC_Process(&physicalKnobs[i], activeParameters[i], systemTicks)) {
-            
-            Parameter_t* current = activeParameters[i];
-            
-            // Base mode switching logic
-            if (current == &lfBoostKnob) Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &balanceKnob, &volumeKnob);
-            else if (current == &hfBoostKnob)  Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobHigh, &QKnobHigh, &hfBoostKnob, &balanceKnob, &volumeKnob);
-            else if (current == &balanceKnob || current == &volumeKnob) {
-                activeDisplay2Encoder = current;
-                display2Timer = systemTicks;
-            }
+        Parameter_t* current = activeParameters[i];
+        if (current == NULL) continue;                  // no parameter on this knob
 
-            current->isDirty = true;
-            Parameter_Display(current);
-            Parameter_Update(current);
-            Storage_MarkDirty();
+        bool fast = false;
+        int8_t direction = ROTARYENC_Read(&physicalKnobs[i], systemTicks, &fast);
+        if (direction == 0) continue;
+
+        Parameter_Adjust(current, direction, fast);
+
+        // Base mode switching logic
+        if (current == &lfBoostKnob) Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &balanceKnob, &volumeKnob);
+        else if (current == &hfBoostKnob)  Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobHigh, &QKnobHigh, &hfBoostKnob, &balanceKnob, &volumeKnob);
+        else if (current == &balanceKnob || current == &volumeKnob) {
+            activeDisplay2Encoder = current;
+            display2Timer = systemTicks;
         }
+
+        current->isDirty = true;
+        Parameter_Display(current);
+        Parameter_Update(current);
+        Storage_MarkDirty();
     }
-    
-    // Timeout for volume display
+
+    // Timeout for volume display (unchanged)
     if (activeDisplay2Encoder != &volumeKnob) {
         if ((systemTicks - display2Timer) >= DISPLAY_TIMEOUT) {
             Parameter_Display(&volumeKnob);

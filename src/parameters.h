@@ -35,9 +35,9 @@ extern Parameter_t inputBtOnKnob,   inputBtOffKnob, inputBtGainKnob;
 
 extern Parameter_t* allParameters[PARAM_COUNT];
 
-uint8_t Parameter_GetWiperValue(Parameter_t *param);
 void Parameter_Display(Parameter_t *param);
 void Parameter_Update(Parameter_t *param);
 void Parameters_Initialize(void);
+void Parameter_Adjust(Parameter_t *param, int8_t direction, bool fast);
 
 #endif
