@@ -1,6 +1,6 @@
 #include "subcontrol.h"
 #include "parameters.h"
-#include "audio_control.h" // Contains S1_MASK through S8_MASK
+#include "audio_control.h"
 #include <stdbool.h>
 
 // Static tracking to maintain state for "Phase Correct" logic
@@ -11,12 +11,10 @@ static bool isPhase180 = false;
 void UpdatePhaseCorrect(void);
 
 /**
- * Handles Logic Condition 1 & 2:
- * Sub EQ ena: S1on, S2off, S3off, S4on
- * Sub EQ dis: S1off, S2on, S3on, S4off
+ * Selects sub EQ enable through the SEQ output.
  */
 void UpdateSubEQ(void) {
-    int16_t eq = subEqKnob.value;
+    int16_t eq = subEqKnob.value / SUB_EQ_STEPS_PER_OPTION;
     isSubEqEnabled = (eq != 0); 
 
     if (isSubEqEnabled) {
@@ -30,12 +28,10 @@ void UpdateSubEQ(void) {
 }
 
 /**
- * Handles Logic Condition 3 & 4:
- * Phase 180: S5off, S6on
- * Phase 0:   S5on, S6off
+ * Selects sub phase through PHINV and disables the sub output at state zero.
  */
 void UpdateSubEnable(void) {
-    int16_t state = subPhaseKnob.value;
+    int16_t state = subPhaseKnob.value / SUB_PHASE_STEPS_PER_OPTION;
     isPhase180 = (state == 2); 
     if(state == 0)
     {
@@ -58,7 +54,7 @@ void UpdateSubEnable(void) {
  * Phase correct logic: off when EQ == Phase (180=ena), on when !=
  */
 void UpdatePhaseCorrect(void) {
-    // Determine S7 state
+    // Phase correction depends on the selected EQ and phase.
     bool shouldBeCorrect = (isSubEqEnabled != isPhase180);
     
     SetPhaseCorrect(shouldBeCorrect);

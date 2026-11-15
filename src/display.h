@@ -6,6 +6,11 @@
 #include <stdbool.h>
 
 typedef enum { LED_NEG_RIGHT, LED_NEG_LEFT, LED_INPUT_ONE, LED_INPUT_TWO, LED_INPUT_THREE, LED_INPUT_BT, LED_TONE, LED_NONE} LEDType;
+typedef enum {
+    DISPLAY_BT_PREV,
+    DISPLAY_BT_PAUSE,
+    DISPLAY_BT_NEXT
+} DisplayBluetoothCommand;
 
 void DisplayBoostCut(int16_t value);
 void DisplayVolume(int16_t value);
@@ -34,6 +39,7 @@ void Display_SetInputLED(LEDType ledType);
 void Display_BlinkLED(void);
 void Display_SetBlinkBitIndex(LEDType ledType);
 void Display_SetBTStatusLED(uint8_t enabled);
+void Display_ShowBluetoothCommand(DisplayBluetoothCommand command, bool enabled);
 void Display_LEDsStandby(void);
 void Display_LEDsWake(void);
 

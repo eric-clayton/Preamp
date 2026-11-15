@@ -4,35 +4,23 @@
 #include "mcc_generated_files\system\pins.h"
 #include "mcc_generated_files/system/clock.h"
 
-const switch_condition_t SUB_EQ_ENA      = { S1AB|S2AB|S3AB|S4AB, S1AB|S4AB };
-const switch_condition_t SUB_EQ_DIS      = { S1AB|S2AB|S3AB|S4AB, S2AB|S3AB };
-const switch_condition_t PHASE_180       = { S5AB|S6AB,           S6AB };
-const switch_condition_t PHASE_0         = { S5AB|S6AB,           S5AB };
-const switch_condition_t PHASE_CORRECT   = { S7AB,                0 };
-const switch_condition_t PHASE_INCORRECT = { S7AB,                S7AB };
-const switch_condition_t SUB_MUTE        = { S8AB,                0 };
-const switch_condition_t SUB_UNMUTE      = { S8AB,                S8AB };
-
 uint16_t hc595_shadow = 0;
-uint16_t sswcs_shadow = 0;
 uint16_t led595_shadow = 0;
 static uint8_t ledBlank = 0;
 
 static inline void O595CSSetLow(void)    { O595CS_SetLow();  }
 static inline void O595CSSetHigh(void)   { O595CS_SetHigh(); }
-static inline void SSWCSSetLow(void)   { SSWCS_SetLow();  }
-static inline void SSWCSSetHigh(void)  { SSWCS_SetHigh(); }
 static inline void LED595CSSetLow(void)  { LED595CS_SetLow();  }
 static inline void LED595CSSetHigh(void) { LED595CS_SetHigh(); }
 
 static const CS_Device_t outputExpanderCS = { O595CSSetLow, O595CSSetHigh };
-static const CS_Device_t subSwitchCS      = { SSWCSSetLow, SSWCSSetHigh };
 static const CS_Device_t ledExpanderCS = { LED595CSSetLow, LED595CSSetHigh };
 
 void apply_bits(uint16_t *shadow, uint16_t mask, uint16_t value)
 {
     *shadow = (*shadow & ~mask) | (value & mask);
 }
+
 void WriteRegister(void)
 {
     uint8_t txBuffer[2];
@@ -43,24 +31,11 @@ void WriteRegister(void)
 
     SPI1_Host.Open(HOST_CONFIG);
     outputExpanderCS.csLow();
-    SPI1_Host.BufferWrite(txBuffer, 2);
+    SPI1_Host.BufferExchange(txBuffer, 2);
     outputExpanderCS.csHigh(); // latch pulse -- applies shifted bits to physical pins
     SPI1_Host.Close();
 }
 
-void WriteRegisterAnalog(void)
-{
-    uint8_t txBuffer[2];
-
-    txBuffer[0] = (uint8_t)(sswcs_shadow >> 8);
-    txBuffer[1] = (uint8_t)(sswcs_shadow & 0xFF);
-
-    SPI1_Host.Open(HOST_CONFIG);
-    subSwitchCS.csLow();
-    SPI1_Host.BufferWrite(txBuffer, 2);
-    subSwitchCS.csHigh(); // latch pulse
-    SPI1_Host.Close();
-}
 void WriteRegisterLED(void)
 {
     uint8_t txBuffer[2];
@@ -70,7 +45,7 @@ void WriteRegisterLED(void)
 
     SPI1_Host.Open(HOST_CONFIG);
     ledExpanderCS.csLow();
-    SPI1_Host.BufferWrite(txBuffer, 2);
+    SPI1_Host.BufferExchange(txBuffer, 2);
     ledExpanderCS.csHigh(); // latch pulse
     SPI1_Host.Close();
 }

@@ -3,6 +3,7 @@
 #include "systick.h"
 
 #define LONG_PRESS_MS 1500  // Duration for a "Long Press"
+#define DEBOUNCE_MS 20
 #define MAX_SUBSCRIBERS 10  // Adjust based on how many modules need to listen
 
 // Struct to link a specific button to a handler
@@ -26,6 +27,14 @@ typedef struct {
 } ButtonState_t;
 
 ButtonState_t pressState = {false, false, 0};
+
+static ButtonType candidate = BUTTON_NONE;
+static bool candidateValid = false;
+static uint32_t candidateSince = 0;
+static uint8_t candidateRaw[2];
+volatile uint8_t rejectedReads = 0;
+volatile uint8_t failedKeyReads = 0;
+uint8_t lastRejectedRaw[2];
 
 void Button_Subscribe(ButtonType buttonToWatch, ButtonEventHandler handler) {
     if (subscriberCount < MAX_SUBSCRIBERS) {
@@ -55,12 +64,16 @@ void Button_ClearExclusive(void) { exclusiveButton = BUTTON_NONE; }
 ButtonType Button_GetExclusive(void) { return exclusiveButton; }
 
 void UpdateButton() {
-    if (!buttonEventPending) {
+    if (!buttonEventPending) return;
+    buttonEventPending = false;
+
+    uint8_t readData[2] = {0xFF, 0xFF};
+    if (!AS1115_ReadKeys(readData)) {
+        failedKeyReads++;
+        candidateValid = false;
+        buttonEventPending = true;
         return;
     }
-    
-    uint8_t readData[2];
-    AS1115_ReadKeys(readData); 
    
     uint8_t pA = ~readData[0];
     uint8_t pB = ~readData[1];
@@ -79,19 +92,49 @@ void UpdateButton() {
     if (exclusiveButton != BUTTON_NONE && physicalButton != exclusiveButton) {
         physicalButton = BUTTON_NONE; 
     }
+
+    bool wantPressed = (physicalButton != BUTTON_NONE);
+    if (wantPressed == pressState.isCurrentlyPressed) {
+        if (candidateValid) {
+            rejectedReads++;
+            lastRejectedRaw[0] = candidateRaw[0];
+            lastRejectedRaw[1] = candidateRaw[1];
+            candidateValid = false;
+        }
+        return;
+    }
+
+    if (!candidateValid || physicalButton != candidate) {
+        candidate = physicalButton;
+        candidateSince = SysTick_Now();
+        candidateRaw[0] = readData[0];
+        candidateRaw[1] = readData[1];
+        candidateValid = true;
+        buttonEventPending = true;
+        return;
+    }
+    if (SysTick_Now() - candidateSince < DEBOUNCE_MS) {
+        buttonEventPending = true;
+        return;
+    }
+    candidateValid = false;
+
     // 2. Handle State Changes
     if (physicalButton != BUTTON_NONE) {
         // FRESH TOUCH
         if (!pressState.isCurrentlyPressed) {
             pressState.isCurrentlyPressed = true;
-            pressState.pressStartTime = systemTicks;
+            pressState.pressStartTime = SysTick_Now();
             pressState.longPressFired = false;
             activeButton = physicalButton;
+            PublishEvent(activeButton, BUTTON_EVENT_PRESSED);
         }
     } 
     else {
         // FINGER RELEASED
         if (pressState.isCurrentlyPressed) {
+            PublishEvent(activeButton, BUTTON_EVENT_RELEASED);
+
             // If released before a long press was triggered, it's a short press
             if (!pressState.longPressFired) {
                 PublishEvent(activeButton, BUTTON_EVENT_SHORT_PRESS);
@@ -102,14 +145,12 @@ void UpdateButton() {
             activeButton = BUTTON_NONE;
         }
     }
-    
-    buttonEventPending = false;
 }
 
 void CheckIfLongPress() {
     if (pressState.isCurrentlyPressed && !pressState.longPressFired) {
         // Check if this specific button is allowed to trigger a long press
-        if ((systemTicks - pressState.pressStartTime) >= LONG_PRESS_MS) {
+        if ((SysTick_Now() - pressState.pressStartTime) >= LONG_PRESS_MS) {
             
             // Mark as fired so releasing the button doesn't trigger a short press
             pressState.longPressFired = true; 

@@ -51,9 +51,9 @@ void UI_Manager_Reset() {
 void UI_Manager_HandleBlink() {
     if (activeBlinkLed == LED_NONE) return; // Nothing to blink
 
-    if (systemTicks - lastBlinkTime >= BLINK_INTERVAL) {
+    if (SysTick_Now() - lastBlinkTime >= BLINK_INTERVAL) {
         Display_BlinkLED();
-        lastBlinkTime = systemTicks;
+        lastBlinkTime = SysTick_Now();
     }
 }
 
@@ -63,17 +63,20 @@ void UpdateEncoders() {
         if (current == NULL) continue;                  // no parameter on this knob
 
         bool fast = false;
-        int8_t direction = ROTARYENC_Read(&physicalKnobs[i], systemTicks, &fast);
+        int8_t direction = ROTARYENC_Read(&physicalKnobs[i], SysTick_Now(), &fast);
         if (direction == 0) continue;
 
+        int16_t oldValue = current->value;
         Parameter_Adjust(current, direction, fast);
+        if (current->value == oldValue)
+            continue;
 
         // Base mode switching logic
         if (current == &lfBoostKnob) Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &balanceKnob, &volumeKnob);
         else if (current == &hfBoostKnob)  Mode_SetEncoderLayout(&lfBoostKnob, &frequencyKnobHigh, &QKnobHigh, &hfBoostKnob, &balanceKnob, &volumeKnob);
         else if (current == &balanceKnob || current == &volumeKnob) {
             activeDisplay2Encoder = current;
-            display2Timer = systemTicks;
+            display2Timer = SysTick_Now();
         }
 
         current->isDirty = true;
@@ -84,7 +87,7 @@ void UpdateEncoders() {
 
     // Timeout for volume display (unchanged)
     if (activeDisplay2Encoder != &volumeKnob) {
-        if ((systemTicks - display2Timer) >= DISPLAY_TIMEOUT) {
+        if ((SysTick_Now() - display2Timer) >= DISPLAY_TIMEOUT) {
             Parameter_Display(&volumeKnob);
             activeDisplay2Encoder = &volumeKnob;
         }

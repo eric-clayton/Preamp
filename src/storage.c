@@ -7,22 +7,69 @@
 #include "power.h"
 
 #define WRITE_DELAY 500
-#define PARAM_BYTES   2
-#define EXTRA_OFFSET  (1 + PARAM_COUNT * PARAM_BYTES)     // after sequence + params
-#define BLOCK_SIZE    (PARAM_COUNT * PARAM_BYTES + 1 + 1 + 1 + 1)   // params + sequence + input + tone + power
-#define MAX_BLOCKS (EEPROM_SIZE / BLOCK_SIZE)
+#define BLOCK_METADATA_BYTES 4
 
 eeprom_address_t currentBlockAddress = EEPROM_START_ADDRESS;
 uint8_t currentSequence = 0;
 static bool isStorageOutOfSync = false;
 static uint32_t lastDataUpdateTime = 0;
 
-void Storage_MarkDirty(void) {
-    isStorageOutOfSync = true;
-    lastDataUpdateTime = systemTicks;
+static void EEPROM_Write_Reliable(eeprom_address_t address, uint8_t data);
+
+static uint16_t ParameterDataSize(void)
+{
+    uint16_t size = 0;
+    for (uint8_t i = 0; i < PARAM_COUNT; i++)
+        size += allParameters[i]->storageBytes;
+    return size;
 }
 
-void EEPROM_Write_Reliable(eeprom_address_t address, uint8_t data)
+static uint16_t StorageBlockSize(void)
+{
+    return BLOCK_METADATA_BYTES + ParameterDataSize();
+}
+
+static eeprom_address_t ParameterAddress(eeprom_address_t blockAddress, uint8_t parameterIndex)
+{
+    eeprom_address_t address = blockAddress + 1;
+    for (uint8_t i = 0; i < parameterIndex; i++)
+        address += allParameters[i]->storageBytes;
+    return address;
+}
+
+static eeprom_address_t ExtrasAddress(eeprom_address_t blockAddress)
+{
+    return blockAddress + 1 + ParameterDataSize();
+}
+
+static int16_t ReadParameter(eeprom_address_t address, const Parameter_t *parameter)
+{
+    uint8_t lowByte = EEPROM_Read(address);
+    if (parameter->storageBytes == PARAM_STORAGE_1_BYTE)
+        return (int16_t)(parameter->minValue + lowByte);
+
+    uint16_t value = lowByte | ((uint16_t)EEPROM_Read(address + 1) << 8);
+    return (int16_t)value;
+}
+
+static void WriteParameter(eeprom_address_t address, const Parameter_t *parameter)
+{
+    if (parameter->storageBytes == PARAM_STORAGE_1_BYTE) {
+        EEPROM_Write_Reliable(address, (uint8_t)(parameter->value - parameter->minValue));
+        return;
+    }
+
+    uint16_t value = (uint16_t)parameter->value;
+    EEPROM_Write_Reliable(address, (uint8_t)(value & 0xFF));
+    EEPROM_Write_Reliable(address + 1, (uint8_t)(value >> 8));
+}
+
+void Storage_MarkDirty(void) {
+    isStorageOutOfSync = true;
+    lastDataUpdateTime = SysTick_Now();
+}
+
+static void EEPROM_Write_Reliable(eeprom_address_t address, uint8_t data)
 {
     uint8_t gie_save = INTCON0bits.GIE;
     INTCON0bits.GIE = 0;
@@ -48,9 +95,11 @@ void GrabDataFromEEPROM(void) {
     uint8_t maxSeq = 0;
     eeprom_address_t foundAddr = 0;
     bool foundAny = false;
+    uint16_t blockSize = StorageBlockSize();
+    uint16_t maxBlocks = EEPROM_SIZE / blockSize;
 
-    for (eeprom_address_t i = 0; i < MAX_BLOCKS; i++) {
-        eeprom_address_t addr = i * BLOCK_SIZE + EEPROM_START_ADDRESS;
+    for (uint16_t i = 0; i < maxBlocks; i++) {
+        eeprom_address_t addr = i * blockSize + EEPROM_START_ADDRESS;
         uint8_t seq = EEPROM_Read(addr);
         
         // 0xFF usually means uninitialized/erased
@@ -76,25 +125,27 @@ void GrabDataFromEEPROM(void) {
     currentSequence = maxSeq;
 
     // Load actual data (offset by 1 because index 0 is the sequence byte)
-    for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
-        eeprom_address_t a = currentBlockAddress + 1 + i * PARAM_BYTES;
-        int16_t v = (int16_t)(EEPROM_Read(a) | ((uint16_t)EEPROM_Read(a + 1) << 8));
+    for (uint8_t i = 0; i < PARAM_COUNT; i++) {
         Parameter_t *p = allParameters[i];
+        eeprom_address_t a = ParameterAddress(currentBlockAddress, i);
+        int16_t v = ReadParameter(a, p);
         if (v < p->minValue) v = p->minValue;
         if (v > p->maxValue) v = p->maxValue;
         p->value = v;
     }
-    Input_LoadSettings(EEPROM_Read(currentBlockAddress + EXTRA_OFFSET));
-    Tone_LoadSettings (EEPROM_Read(currentBlockAddress + EXTRA_OFFSET + 1));
-    Power_LoadSettings(EEPROM_Read(currentBlockAddress + EXTRA_OFFSET + 2));
+    eeprom_address_t extrasAddress = ExtrasAddress(currentBlockAddress);
+    Input_LoadSettings(EEPROM_Read(extrasAddress));
+    Tone_LoadSettings (EEPROM_Read(extrasAddress + 1));
+    Power_LoadSettings(EEPROM_Read(extrasAddress + 2));
 }
 
 void SyncStorage(void) {
     if (!isStorageOutOfSync) return;
-    if ((systemTicks - lastDataUpdateTime) < WRITE_DELAY) return;
+    if ((SysTick_Now() - lastDataUpdateTime) < WRITE_DELAY) return;
 
-    eeprom_address_t nextBlockAddr = currentBlockAddress + BLOCK_SIZE;
-    if (nextBlockAddr + BLOCK_SIZE > EEPROM_START_ADDRESS + EEPROM_SIZE)
+    uint16_t blockSize = StorageBlockSize();
+    eeprom_address_t nextBlockAddr = currentBlockAddress + blockSize;
+    if (nextBlockAddr + blockSize > EEPROM_START_ADDRESS + EEPROM_SIZE)
         nextBlockAddr = EEPROM_START_ADDRESS;
 
     currentSequence++;
@@ -102,22 +153,21 @@ void SyncStorage(void) {
 
     EEPROM_Write_Reliable(nextBlockAddr, currentSequence);
 
-    for (eeprom_address_t i = 0; i < PARAM_COUNT; i++) {
-        int16_t v = allParameters[i]->value;
-        eeprom_address_t a = nextBlockAddr + 1 + i * PARAM_BYTES;
-        EEPROM_Write_Reliable(a,     (uint8_t)(v & 0xFF));
-        EEPROM_Write_Reliable(a + 1, (uint8_t)((uint16_t)v >> 8));
-        allParameters[i]->isDirty = false;
+    for (uint8_t i = 0; i < PARAM_COUNT; i++) {
+        Parameter_t *parameter = allParameters[i];
+        WriteParameter(ParameterAddress(nextBlockAddr, i), parameter);
+        parameter->isDirty = false;
     }
-    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET,     (uint8_t)GetInputType());
-    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET + 1, GetToneValue());
-    EEPROM_Write_Reliable(nextBlockAddr + EXTRA_OFFSET + 2, GetPowerState());
+    eeprom_address_t extrasAddress = ExtrasAddress(nextBlockAddr);
+    EEPROM_Write_Reliable(extrasAddress,     (uint8_t)GetInputType());
+    EEPROM_Write_Reliable(extrasAddress + 1, GetToneValue());
+    EEPROM_Write_Reliable(extrasAddress + 2, GetPowerState());
 
     currentBlockAddress = nextBlockAddr;
     isStorageOutOfSync = false;
 }
 void Storage_ForceSync(void) {
     if (!isStorageOutOfSync) return;
-    lastDataUpdateTime = systemTicks - WRITE_DELAY; // satisfy the delay check
+    lastDataUpdateTime = SysTick_Now() - WRITE_DELAY; // satisfy the delay check
     SyncStorage();
 }

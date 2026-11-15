@@ -40,6 +40,8 @@
 #define AS1115_H
 
 #include <xc.h> // include processor files - each processor file is guarded. 
+#include <stdbool.h>
+#include <stdint.h>
     
 //AS1115 128x64 Definition
 #define AS1115_I2C_ADDRESS 0x0000    
@@ -136,6 +138,7 @@
     
 void AS1115_Write(uint8_t reg, uint8_t data);
 void AS1115_Init(void);
-void AS1115_ReadKeys(uint8_t *buffer);
+bool AS1115_ReadKeys(uint8_t *buffer);
+extern volatile uint8_t failedWrites;
 
 #endif

@@ -34,23 +34,32 @@ void ROTARYENC_UpdateLastState(PhysicalKnob_t *hw)
     uint8_t currentState = (uint8_t)(rcValues.RCA << 1) | rcValues.RCB;
     hw->lastState = currentState;
 }
-// A transition is only valid if it moves from one state to an adjacent valid state.
-int8_t rot_states[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
+// A transition is valid only when exactly one encoder bit changes.
+static const int8_t rot_states[] = {0, -1, 1, 0, 1, 0, 0, -1, -1, 0, 0, 1, 0, 1, -1, 0};
 // Reads one knob. Returns -1, 0 or +1; *fast is set when the turn is fast.
 int8_t ROTARYENC_Read(PhysicalKnob_t *hw, uint32_t systemTicks, bool *fast)
 {
+    *fast = false;
     uint32_t timeDelta = systemTicks - hw->lastChangeTime;
     RCValues rcValues  = hw->ReadHardware();
     uint8_t currentState = (uint8_t)((rcValues.RCA << 1) | rcValues.RCB);
+    if (currentState == hw->lastState) return 0;
+
     uint8_t index        = (uint8_t)((hw->lastState << 2) | currentState);
     int8_t  direction    = rot_states[index];
 
-    if (direction == 0) return 0;
+    hw->lastState = currentState;
+    if (direction == 0) {
+        // Resynchronize after a skipped state; retaining the old state can
+        // make the next sample look like motion in the opposite direction.
+        hw->lastDirection = 0;
+        hw->lastChangeTime = systemTicks;
+        return 0;
+    }
 
     *fast = (direction == hw->lastDirection && timeDelta < FAST_THRESHOLD);
 
     hw->lastDirection  = direction;
-    hw->lastState      = currentState;
     hw->lastChangeTime = systemTicks;
     return direction;
 }

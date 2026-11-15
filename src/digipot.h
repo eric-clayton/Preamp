@@ -7,8 +7,7 @@
 // True digital potentiometers: variable-resistance devices addressed by
 // wiper address + value over SPI. Each WriteWiper call targets exactly one
 // wiper and does not affect others. This file does NOT cover the 74HC595
-// or ADG1414 chains -- those are full-word shift registers, see
-// shift_register.h.
+// 74HC595 output shift register -- see shift_register.h.
 
 #define W0  (0 << 4)   // 0x00
 

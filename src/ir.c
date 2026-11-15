@@ -4,6 +4,7 @@
 #include "mcc_generated_files\system\interrupt.h"
 #include "systick.h"
 #include "parameters.h"
+#include "storage.h"
 
 typedef enum {
     IR_IDLE,
@@ -21,34 +22,27 @@ volatile uint8_t repeatReady = 0;
 volatile uint32_t lastIrTime = 0;
 
 void HandleRemoteAction(uint32_t code, bool repeat) {
-    // 1. Convert current raw value to display percent (0-100)
-    uint16_t currentPercent = ((uint16_t)volumeKnob.value * 100 + 127) / 254;
-
-    if (code == 0xF609FF00) { // Up
-        if (currentPercent < 100) currentPercent++;
-    } 
-    else if (code == 0xEA15FF00) { // Down
-        if (currentPercent > 0) currentPercent--;
-    }
-    else if(code == 0xBA45FF00) 
-    {
+    if (code == 0xBA45FF00) {
         if(!repeat)
         {
             HandleRemotePowerButton(); // no repeat for power
         }
         return;
     }
-    else {
-        return;
-    }
 
-    // 2. Convert percent back to raw value (0-254)
-    // Formula: (Percent * 254 + 50) / 100
-    // 50 is half of 100, which handles the rounding
-    volumeKnob.value = (uint8_t)(((uint16_t)currentPercent * 254 + 50) / 100);
+    int8_t direction;
+    if (code == 0xF609FF00) direction = 1;
+    else if (code == 0xEA15FF00) direction = -1;
+    else return;
 
-    // 3. Sync the display
+    int16_t oldValue = volumeKnob.value;
+    Parameter_Adjust(&volumeKnob, direction, repeat);
+    if (volumeKnob.value == oldValue) return;
+
     Parameter_Display(&volumeKnob);
+    Parameter_Update(&volumeKnob);
+    volumeKnob.isDirty = true;
+    Storage_MarkDirty();
 }
 
 
@@ -58,7 +52,7 @@ void IR_CaptureHandler(uint16_t now)
 {
     uint16_t currentPulse = now - lastCapture;
     lastCapture = now;
-    lastIrTime = systemTicks;
+    lastIrTime = SysTick_Now();
 
     switch (irState)
     {
@@ -135,7 +129,7 @@ void IR_ProcessFrame(void)
     }
 
     // 3. Safety: If no IR seen for 150ms, user let go of button
-    if (systemTicks - lastIrTime > 150) {
+    if (SysTick_Now() - lastIrTime > 150) {
         activeCode     = 0;
         lastFrameValid = 0;
     }

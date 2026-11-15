@@ -2,6 +2,7 @@
 #include "as1115.h"
 #include "shift_register.h"      // SetExpanderRegister / SetExpanderBits / ToggleExpanderRegister
 #include "balance.h"
+#include "parameters.h"
 #include <stdbool.h>
 #include "mcc_generated_files\system\clock.h"
 #
@@ -23,7 +24,7 @@
  *    RIGHT zone: decimal point of DIG0 (bit 7 of the byte written to reg 1).
  *                Stateless - it is written together with the digit, so any
  *                later write to reg 1 clears it automatically.
- *    LEFT  zone: "neg" LED on the DIG7 LED bank (reg 8).
+ *    LEFT  zone: G segment on DIG7 (reg 8).
  * ========================================================================== */
 #define REG_DIG0        1       // rightmost digit / LSD of the right zone
 #define REG_DIG3        4       // LSD of the left zone
@@ -62,6 +63,7 @@
 #define CH_E     (SEG_A | SEG_D | SEG_E | SEG_F | SEG_G)
 #define CH_F     (SEG_A | SEG_E | SEG_F | SEG_G)
 #define CH_H     (SEG_B | SEG_C | SEG_E | SEG_F | SEG_G)
+#define CH_X     CH_H
 #define CH_h     (SEG_C | SEG_E | SEG_F | SEG_G)
 #define CH_i     (SEG_C)
 #define CH_L     (SEG_D | SEG_E | SEG_F)
@@ -101,7 +103,7 @@ static const uint8_t TXT_DB[]           = { CH_d, CH_b };      // regs 4-5 next 
 /* ============================================================================
  *  LEDs
  *
- *    AS1115 reg 8 (DIG7) : left-zone NEG LED only
+ *    AS1115 reg 8 (DIG7) : left-zone NEG segment only
  *    74HC595 chain       : every button LED (power, tone, inputs, BT status),
  *                          written through shift_register.c
  *
@@ -124,7 +126,8 @@ static const uint8_t TXT_DB[]           = { CH_d, CH_b };      // regs 4-5 next 
 
 // ---- AS1115 reg 8: NEG LED -------------------------------------------------
 static uint8_t lightMap = 0x00;
-#define LED_NEG_LEFT_BIT  0x80
+#define LED_NEG_LEFT_BIT  SEG_G
+static uint8_t digitShadow[8] = {0};
 
 void Display_WriteLEDs(void) {
     AS1115_Write(0x08, lightMap);
@@ -157,7 +160,9 @@ static uint16_t Led595Mask(LEDType ledType)
 
 LEDType LEDBlinkType = LED_NONE;
 static uint16_t blinkMask595 = 0;
+static bool blinkPhase = true;
 static uint16_t standbyLEDs = 0;
+static bool standbyActive = false;
 
 void Display_SetToneLED(uint8_t enabled) {
     SetLEDRegister(BTN_LED_TONE, enabled);
@@ -167,18 +172,24 @@ void Display_SetInputLED(LEDType ledType) {
     SetLEDBits(BTN_LED_INPUTS, Led595Mask(ledType));
 }
 void Display_BlinkLED(void) {
-    if (blinkMask595)
-       ToggleLEDRegister(blinkMask595);
+    if (!blinkMask595) return;
+    blinkPhase = !blinkPhase;
+    SetLEDBits(blinkMask595, blinkPhase ? blinkMask595 : 0);
 }
 void Display_SetBlinkBitIndex(LEDType ledType)
 {
+    if (blinkMask595)
+        SetLEDBits(blinkMask595, blinkMask595);
     LEDBlinkType = ledType;
     blinkMask595 = Led595Mask(ledType);
+    blinkPhase = true;
 }
 
 // Standby: remember the pattern, then darken every button LED (one write)
 void Display_LEDsStandby(void)
 {
+    if (standbyActive) return;
+    standbyActive = true;
     standbyLEDs = led595_shadow & BTN_LED_ALL;
     SetLEDBits(BTN_LED_ALL, 0);
 }
@@ -186,7 +197,9 @@ void Display_LEDsStandby(void)
 // Wake: restore the pattern and light the power LED in the same write
 void Display_LEDsWake(void)
 {
-    SetLEDBits(BTN_LED_ALL, standbyLEDs | BTN_LED_POWER);
+    standbyActive = false;
+    uint16_t activeLEDs = led595_shadow & BTN_LED_ALL;
+    SetLEDBits(BTN_LED_ALL, standbyLEDs | activeLEDs | BTN_LED_POWER);
 }
 void Display_SetBTStatusLED(uint8_t enabled) {
     SetLEDRegister(BTN_LED_BTSTAT, enabled);
@@ -201,6 +214,13 @@ void Display_SetBTStatusLED(uint8_t enabled) {
 // Power-up assumption: volume layout on the right (DIG1-DIG2 decoded, DIG0 raw).
 static uint8_t decodeShadow = DEC(2) | DEC(3);
 
+static void WriteDigit(uint8_t reg, uint8_t value)
+{
+    if (reg >= 1 && reg <= 7)
+        digitShadow[reg] = value;
+    AS1115_Write(reg, value);
+}
+
 static void SetDecode(uint8_t zones, uint8_t bits)
 {
     decodeShadow = (uint8_t)((decodeShadow & ~zones) | (bits & zones));
@@ -212,9 +232,68 @@ static void SetDecode(uint8_t zones, uint8_t bits)
 static void WriteText(const uint8_t *text, uint8_t len, uint8_t rightmostReg)
 {
     for (uint8_t i = 0; i < len; i++)
-        AS1115_Write(rightmostReg + i, text[len - 1 - i]);
+        WriteDigit(rightmostReg + i, text[len - 1 - i]);
 }
 #define WRITE_TEXT(msg, reg)  WriteText((msg), (uint8_t)sizeof(msg), (reg))
+
+void Display_ShowBluetoothCommand(DisplayBluetoothCommand command, bool enabled)
+{
+    static const uint8_t nextText[] = { CH_n, CH_E, CH_X, CH_t };
+    static const uint8_t prevText[] = { CH_P, CH_r, CH_E, CH_u };
+    static const uint8_t pauseText[] = { CH_P, CH_P };
+    static uint8_t savedDigits[4];
+    static uint8_t savedDecode;
+    static bool savedNegLeft;
+    static bool overlayActive;
+    static DisplayBluetoothCommand activeCommand;
+
+    if (enabled)
+    {
+        if (overlayActive)
+            return;
+
+        for (uint8_t i = 0; i < 4; i++)
+            savedDigits[i] = digitShadow[REG_DIG3 + i];
+        savedDecode = decodeShadow & ZONE_LEFT;
+        savedNegLeft = (lightMap & LED_NEG_LEFT_BIT) != 0;
+        activeCommand = command;
+        overlayActive = true;
+
+        SetDecode(ZONE_LEFT, 0);
+        for (uint8_t i = 0; i < 4; i++)
+            WriteDigit(REG_DIG3 + i, CH_BLANK);
+
+        switch (command)
+        {
+            case DISPLAY_BT_PREV:
+                WriteText(prevText, sizeof(prevText), REG_DIG3);
+                break;
+            case DISPLAY_BT_PAUSE:
+                WriteText(pauseText, sizeof(pauseText), REG_DIG3 + 1);
+                break;
+            case DISPLAY_BT_NEXT:
+                WriteText(nextText, sizeof(nextText), REG_DIG3);
+                break;
+            default:
+                overlayActive = false;
+                for (uint8_t i = 0; i < 4; i++)
+                    WriteDigit(REG_DIG3 + i, savedDigits[i]);
+                SetDecode(ZONE_LEFT, savedDecode);
+                return;
+        }
+        Display_SetNegLeftLED(false);
+        return;
+    }
+
+    if (!overlayActive || activeCommand != command)
+        return;
+
+    for (uint8_t i = 0; i < 4; i++)
+        WriteDigit(REG_DIG3 + i, savedDigits[i]);
+    SetDecode(ZONE_LEFT, savedDecode);
+    Display_SetNegLeftLED(savedNegLeft);
+    overlayActive = false;
+}
 
 static uint16_t Magnitude(int16_t v)
 {
@@ -244,7 +323,7 @@ static void WriteNumber(uint16_t value, uint8_t startReg, uint8_t numDigits,
         if (reg == REG_DIG0 && negativeOnDig0)
             data |= SEG_DP;
 
-        AS1115_Write(reg, data);
+        WriteDigit(reg, data);
     }
 }
 
@@ -293,7 +372,7 @@ void AS1115_DisplayPartitionDecimal(int16_t number, uint8_t startReg, uint8_t nu
 // Raw data array (LSD first) written to consecutive registers
 void AS1115_DisplayDataPartition(const uint8_t* data, uint8_t len, uint8_t startReg) {
     for (uint8_t i = 0; i < len; i++) {
-        AS1115_Write(startReg + i, data[i]);
+        WriteDigit(startReg + i, data[i]);
     }
 }
 
@@ -305,7 +384,7 @@ void AS1115_DisplayDataPartition(const uint8_t* data, uint8_t len, uint8_t start
 void DisplaySubEnableDisable(int16_t value)
 {
     SetDecode(ZONE_ALL, 0);
-    switch (value) {
+    switch (value / SUB_PHASE_STEPS_PER_OPTION) {
         case 1:  WRITE_TEXT(TXT_PHASE_0,      REG_DIG0); break;
         case 2:  WRITE_TEXT(TXT_PHASE_180,    REG_DIG0); break;
         default: WRITE_TEXT(TXT_SUB_DISABLED, REG_DIG0); break;
@@ -377,7 +456,7 @@ void DisplayVolume(int16_t value)
 
     SetDecode(ZONE_RIGHT, DEC(2) | DEC(3));
     WriteNumber(dB, 2, 2, false, false);
-    AS1115_Write(REG_DIG0, negative ? (CH_d | SEG_DP) : CH_d);
+    WriteDigit(REG_DIG0, negative ? (CH_d | SEG_DP) : CH_d);
 }
 
 // pos = knob position. Shows how far the quieter channel is turned down (0-99):
@@ -398,37 +477,39 @@ void DisplayBalance(int16_t pos)
     AS1115_DisplayDataPartition(out, 3, REG_DIG0);
 }
 
-// ---- Tone parameters (left zone, DIG3-DIG6; right zone left untouched) --------
-// "x.xdb"  value = dB x 10, sign on the left NEG LED
+// ---- Tone parameters ---------------------------------------------------------
+// Boost/cut values are tenths of a dB, displayed as "-9.0db" or " 9.0db".
 void DisplayBoostCut(int16_t value)
 {
-    SetDecode(ZONE_LEFT, DEC(6) | DEC(7));      // regs 4-5 raw ("db"), 6-7 digits
+    SetDecode(ZONE_LEFT, DEC(6) | DEC(7));
+    Display_SetNegLeftLED(value < 0);
+    WriteNumber(Magnitude(value), 6, 2, true, false);
     WRITE_TEXT(TXT_DB, REG_DIG3);
-    ShowSigned(value, 6, 2, true);
 }
 
-// "22h" ... "999h"
+// "22" ... "999"
 void DisplayFreqLow(int16_t value)
 {
     SetDecode(ZONE_LEFT, DEC(5) | DEC(6) | DEC(7));
-    AS1115_Write(REG_DIG3, CH_h);
+    WriteDigit(REG_DIG3, CH_BLANK);
     ShowSigned(value, 5, 3, false);
 }
 
-// "1.0H" ... "16.0H"  (value = kHz x 10)
+// 1000 ... 16000 Hz, right-aligned across the seven-digit display.
 void DisplayFreqHigh(int16_t value)
 {
-    SetDecode(ZONE_LEFT, DEC(5) | DEC(6) | DEC(7));
-    AS1115_Write(REG_DIG3, CH_H);
-    ShowSigned(value, 5, 3, true);
+    SetDecode(ZONE_ALL, ZONE_ALL);
+    WriteDigit(6, CODE_B_BLANK);
+    WriteDigit(7, CODE_B_BLANK);
+    ShowSigned((int16_t)(value * 100), REG_DIG0, 5, false);
+    Display_SetNegLeftLED(false);
 }
 
-// Q 1..10, right-aligned in DIG3-DIG6
-// (if Q is stored in tenths, use ShowSigned(value, 4, 3, true) for "1.0".."10.0")
+// Q is stored in tenths and displayed as "1.0" ... "10.0".
 void DisplayQ(int16_t value)
 {
     SetDecode(ZONE_LEFT, ZONE_LEFT);
-    ShowSigned(value, REG_DIG3, 4, false);
+    ShowSigned(value, REG_DIG3, 4, true);
 }
 
 /* ============================================================================
@@ -462,7 +543,7 @@ void Display_TestLEDs595(void)
         for (uint8_t bit = 1; bit <= 7; bit++)
         {
             AS1115_DisplayPartition(bit, REG_DIG0, 3);
-            SetExpanderBits(BTN_LED_ALL, (uint16_t)(1u << bit));
+            SetLEDBits(BTN_LED_ALL, (uint16_t)(1u << bit));
             __delay_ms(1000);
         }
     }

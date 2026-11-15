@@ -1,7 +1,5 @@
 #include "audio_control.h"
 #include "shift_register.h"
-#include <xc.h>
-#include "mcc_generated_files\system\clock.h"
 
 void DV1_Toggle(void)  { ToggleExpanderRegister(DV1_MASK); }
 void DV2_Toggle(void)  { ToggleExpanderRegister(DV2_MASK); }
@@ -15,23 +13,17 @@ void SetInputState(uint8_t ISB, uint8_t ISA)
     WriteRegister();
 }
 
-void BluetoothPrev(void)
+void BluetoothPrev(bool pressed)
 {
-    ToggleExpanderRegister(PREV_MASK);
-    __delay_ms(10);
-    ToggleExpanderRegister(PREV_MASK);
+    SetExpanderRegister(PREV_MASK, !pressed);
 }
-void BluetoothPause(void)
+void BluetoothPause(bool pressed)
 {
-    ToggleExpanderRegister(PP_MASK);
-    __delay_ms(10);
-    ToggleExpanderRegister(PP_MASK);
+    SetExpanderRegister(PP_MASK, !pressed);
 }
-void BluetoothNext(void)
+void BluetoothNext(bool pressed)
 {
-    ToggleExpanderRegister(NEXT_MASK);
-    __delay_ms(10);
-    ToggleExpanderRegister(NEXT_MASK);
+    SetExpanderRegister(NEXT_MASK, !pressed);
 }
 
 void AudioControl_SetTone(uint8_t tone)
@@ -44,32 +36,24 @@ void SetSubEn(bool enabled)
 }
 void SetSubEQ(bool enabled)
 {
-    const switch_condition_t *c = enabled ? &SUB_EQ_ENA : &SUB_EQ_DIS;
-    apply_bits(&sswcs_shadow, c->mask, c->value);
-    WriteRegisterAnalog();
+    SetExpanderRegister(SEQ_MASK, enabled ? 1 : 0);
 }
 
 void SetSubPhase(bool inverted)
 {
-    const switch_condition_t *c = inverted ? &PHASE_180 : &PHASE_0;
-    apply_bits(&sswcs_shadow, c->mask, c->value);
-    WriteRegisterAnalog();
+    SetExpanderRegister(PHINV_MASK, inverted ? 1 : 0);
 }
 void SetIODisabled(bool disabled)
 {
-    SetExpanderRegister(IO_DIS_MASK, disabled ? 1 : 0);
+    SetExpanderRegister(OUT_DIS_MASK, disabled ? 1 : 0);
 }
 void SetPhaseCorrect(bool phaseCorrect)
 {
-    const switch_condition_t *c = phaseCorrect ? &PHASE_CORRECT : &PHASE_INCORRECT;
-    apply_bits(&sswcs_shadow, c->mask, c->value);
-    WriteRegisterAnalog();
+    SetExpanderRegister(PHADJ_MASK, phaseCorrect ? 1 : 0);
 }
 void SetSubMute(bool muted)
 {
-    const switch_condition_t *c = muted ? &SUB_MUTE : &SUB_UNMUTE;
-    apply_bits(&sswcs_shadow, c->mask, c->value);
-    WriteRegisterAnalog();
+    SetSubEn(!muted);
 }
 
 bool IsInputOneExpanderBitSet(void)   { return (hc595_shadow & DV1_MASK) != 0; }

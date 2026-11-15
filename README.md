@@ -30,12 +30,14 @@ A microcontroller-based preamplifier with digital signal processing, multi-input
 This project implements the control logic for a hi-fi preamplifier. It manages:
 
 - Four selectable inputs (1, 2, 3, Bluetooth)
+- Bluetooth previous/pause/next outputs are asserted only while their corresponding buttons are held; BT status activity lights the status LED for up to 120 seconds
 - Volume control with left/right balance
 - Low-frequency (LF) and high-frequency (HF) parametric filter bands — each with independent boost/cut, frequency, and Q adjustment
 - Subwoofer enable/disable, phase, EQ, and independent left/right level control
 - IR remote receiver and i2c keypad input in addition to rotary encoders
 - Per-input device power-on delay and power-off settings
 - All encoder positions and switch states persisted to EEPROM
+- EEPROM parameter records use each parameter's configured 1- or 2-byte width; one-byte values are stored as an offset from their minimum, preserving the exact value
 
 ---
 
@@ -145,9 +147,10 @@ Global reset pin for all digipots: `IO_RSET`
 | Sub level (L/R)    | `S-Lr/L 0–99`   |
 | Volume             | `0–100`         |
 | Balance            | `0-9 --- 9-0`   |
-| LF frequency range | `22h–999h`      |
-| HF frequency range | `1.0H–16H`      |
-| Q range            | `1–10`          |
+| LF frequency range | `22–999 Hz`     |
+| HF frequency range | `1,000–16,000 Hz` |
+| Boost/cut range    | `−9.0–+9.0 dB`  |
+| Q range            | `1.0–10.0`      |
 | Power delay on     | `xx 5Ec`        |
 | Power delay off    | `xx nn` / `InF` |
 
@@ -183,9 +186,9 @@ Each filter band (LF and HF) exposes three parameters:
 
 | Parameter   | Display Range          | VRAM Range | Digipot Wipers |
 |-------------|------------------------|------------|----------------|
-| Boost/Cut   | ±6 dB                  | 0–254      | W3             |
-| Frequency   | 22 Hz–999 Hz / 1–16 kHz | 0–254     | W0, W1         |
-| Q           | 1–10                   | 0–254      | W2             |
+| Boost/Cut   | ±9.0 dB                | 0–254      | W3             |
+| Frequency   | 22–999 Hz / 1,000–16,000 Hz | 0–254 | W0, W1         |
+| Q           | 1.0–10.0 in 0.1 steps  | 0–254      | W2             |
 
 All values written to the appropriate digipot CS over SPI and mirrored to VRAM.
 
@@ -196,7 +199,7 @@ Accessed via long press on the Tone button. Uses a 7-digit display.
 | Setting      | Encoder       | Control Pin  |
 |--------------|---------------|--------------|
 | Enable/Disable | Q encoder   | IO_SUBEN     |
-| Phase (0/180°) | Q encoder   | IO_PHASE     |
+| Phase (0/180°) | Q encoder (six encoder state changes per option) | IO_PHASE |
 | EQ In/Out    | Frequency encoder | IO_LFEQ  |
 | L/R Level    | LF/HF encoders | IO_SLCS (digipot) |
 

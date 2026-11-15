@@ -3,7 +3,6 @@
 
 #include <stdbool.h>
 #include <stdint.h>
-#include "parameters.h"
 
 #define KNOB_COUNT 6
 
@@ -24,4 +23,3 @@ int8_t ROTARYENC_Read(PhysicalKnob_t *hw, uint32_t systemTicks, bool *fast);
 
 
 #endif
-

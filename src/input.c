@@ -112,8 +112,8 @@ void InputSwitch(InputType inputType) {
     InputSet(inputType);
     isAnyInputInPowerDelay = true;
     for(uint8_t i = 0; i < 4; i++) {
-        inputs[i]->powerOffStartTime = systemTicks;
-        inputs[i]->powerOnStartTime = systemTicks;
+        inputs[i]->powerOffStartTime = SysTick_Now();
+        inputs[i]->powerOnStartTime = SysTick_Now();
     }
 }
 
@@ -124,7 +124,7 @@ void HandleInputSwitchPower() {
     for (uint8_t i = 0; i < 4; i++) {
         if (inputs[i]->powerOffDelay->value != 254 && inputs[currentInputType] != inputs[i] && inputs[i]->IsOn()) {
              uint32_t requiredDelay = ((uint32_t)inputs[i]->powerOffDelay->value * 99000) / 254;
-             if ((systemTicks - inputs[i]->powerOffStartTime) >= requiredDelay) {
+             if ((SysTick_Now() - inputs[i]->powerOffStartTime) >= requiredDelay) {
                  inputs[i]->TogglePower();
              } else {
                  isAnyInputInPowerDelay = true;
@@ -134,7 +134,7 @@ void HandleInputSwitchPower() {
             if(!inputs[i]->IsOn()) {
                 isAnyInputInPowerDelay = true;
                 uint32_t requiredDelay = ((uint32_t)inputs[i]->powerOnDelay->value * 30000) / 254;
-                if ((systemTicks - inputs[i]->powerOnStartTime) >= requiredDelay) {
+                if ((SysTick_Now() - inputs[i]->powerOnStartTime) >= requiredDelay) {
                     inputs[i]->TogglePower();
                     Mute_ScheduleRelease();
                 }

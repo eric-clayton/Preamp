@@ -7,6 +7,15 @@
 
 #define WIPER_MIN 0
 #define WIPER_MAX 254
+#define SUB_PHASE_STEPS_PER_OPTION 12
+#define SUB_PHASE_OPTION_COUNT 3
+#define SUB_PHASE_MAX_VALUE (SUB_PHASE_STEPS_PER_OPTION * SUB_PHASE_OPTION_COUNT - 1)
+#define SUB_EQ_STEPS_PER_OPTION 12
+#define SUB_EQ_OPTION_COUNT 2
+#define SUB_EQ_MAX_VALUE (SUB_EQ_STEPS_PER_OPTION * SUB_EQ_OPTION_COUNT - 1)
+#define PARAM_STORAGE_1_BYTE 1
+#define PARAM_STORAGE_2_BYTES 2
+
 typedef struct Parameter_t {
     int16_t value;      // current value, in DISPLAY units directly (no more raw pot units)
     int16_t minValue;   // minimum value, in display units
@@ -18,6 +27,7 @@ typedef struct Parameter_t {
     bool isLooping;
     void (*_display)(int16_t value);
     void (*_update)(void);
+    uint8_t storageBytes;
 } Parameter_t;
 
 #define PARAM_COUNT 25U

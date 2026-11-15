@@ -7,33 +7,33 @@
 
 static bool balanceWasCentered = false;
 
-Parameter_t volumeKnob        = { -325, -810,  155,   5,  25, false, false, false, DisplayVolume,           UpdateVolumeWipers};
-Parameter_t balanceKnob       = { BAL_START, BAL_MIN, BAL_MAX, 1, 1, false, false, false, DisplayBalance, UpdateOutputWipers};
-Parameter_t lfBoostKnob       = {    0,  -60,   60,   1,   1, false, false, false, DisplayBoostCut,         UpdateLFBoostWipers};
-Parameter_t hfBoostKnob       = {    0,  -60,   60,   1,   1, false, false, false, DisplayBoostCut,         UpdateHFBoostWipers};
-Parameter_t frequencyKnobLow  = {  511,   22,  999,   4,   4, false, false, false, DisplayFreqLow,          UpdateLFFrequencyWipers};
-Parameter_t frequencyKnobHigh = {   85,   10,  160,   1,   2, false, false, false, DisplayFreqHigh,         UpdateHFFrequencyWipers};
-Parameter_t QKnobLow          = {    6,    1,   10,   1,   1, false, false, false, DisplayQ,                UpdateLFQWipers};
-Parameter_t QKnobHigh         = {    6,    1,   10,   1,   1, false, false, false, DisplayQ,                UpdateHFQWipers};
+Parameter_t volumeKnob        = { -325, -810,  155,   5,  25, false, false, false, DisplayVolume,           UpdateVolumeWipers,      PARAM_STORAGE_2_BYTES};
+Parameter_t balanceKnob       = { BAL_START, BAL_MIN, BAL_MAX, 1, 1, false, false, false, DisplayBalance, UpdateOutputWipers,       PARAM_STORAGE_1_BYTE};
+Parameter_t lfBoostKnob       = {    0,  -90,   90,   1,   1, true,  false, false, DisplayBoostCut,         UpdateLFBoostWipers,     PARAM_STORAGE_1_BYTE};
+Parameter_t hfBoostKnob       = {    0,  -90,   90,   1,   1, true,  false, false, DisplayBoostCut,         UpdateHFBoostWipers,     PARAM_STORAGE_1_BYTE};
+Parameter_t frequencyKnobLow  = {  511,   22,  999,   4,   4, true,  false, false, DisplayFreqLow,          UpdateLFFrequencyWipers, PARAM_STORAGE_2_BYTES};
+Parameter_t frequencyKnobHigh = {   85,   10,  160,   1,   2, true,  false, false, DisplayFreqHigh,         UpdateHFFrequencyWipers, PARAM_STORAGE_1_BYTE};
+Parameter_t QKnobLow          = {   60,   10,  100,   1,   1, true,  false, false, DisplayQ,                UpdateLFQWipers,         PARAM_STORAGE_1_BYTE};
+Parameter_t QKnobHigh         = {   60,   10,  100,   1,   1, true,  false, false, DisplayQ,                UpdateHFQWipers,         PARAM_STORAGE_1_BYTE};
 // Sub
-Parameter_t subPhaseKnob      = {    0,    0,    2,   1,   1, false, false, false, DisplaySubEnableDisable, UpdateSubEnable};
-Parameter_t subEqKnob         = {    0,    0,    1,   1,   1, false, false, false, DisplaySubEQ,            UpdateSubEQ};
-Parameter_t subLevelLeftKnob  = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelLeft,     UpdateSubLevelWipers};
-Parameter_t subLevelRightKnob = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelRight,    UpdateSubLevelWipers};
-Parameter_t subOuputKnob      = {    5,    5,   25,   1,   1, false, false, false, DisplayOutputGain,       UpdateOutputWipers};
+Parameter_t subPhaseKnob      = {    0,    0, SUB_PHASE_MAX_VALUE, 1, 1, false, false, false, DisplaySubEnableDisable, UpdateSubEnable, PARAM_STORAGE_1_BYTE};
+Parameter_t subEqKnob         = {    0,    0,    SUB_EQ_MAX_VALUE,   1,   1, false, false, false, DisplaySubEQ,            UpdateSubEQ,             PARAM_STORAGE_1_BYTE};
+Parameter_t subLevelLeftKnob  = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelLeft,     UpdateSubLevelWipers,    PARAM_STORAGE_1_BYTE};
+Parameter_t subLevelRightKnob = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelRight,    UpdateSubLevelWipers,    PARAM_STORAGE_1_BYTE};
+Parameter_t subOuputKnob      = {    5,    5,   25,   1,   1, false, false, false, DisplayOutputGain,       UpdateOutputWipers,      PARAM_STORAGE_1_BYTE};
 // Inputs
-Parameter_t inputOneOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputOneOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputOneGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
-Parameter_t inputTwoOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputTwoOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputTwoGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
-Parameter_t inputThreeOnKnob  = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputThreeOffKnob = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputThreeGainKnob= {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
-Parameter_t inputBtOnKnob     = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL};
-Parameter_t inputBtOffKnob    = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL};
-Parameter_t inputBtGainKnob   = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers};
+Parameter_t inputOneOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputOneOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputOneGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers,  PARAM_STORAGE_1_BYTE};
+Parameter_t inputTwoOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputTwoOffKnob   = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputTwoGainKnob  = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers,  PARAM_STORAGE_1_BYTE};
+Parameter_t inputThreeOnKnob  = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputThreeOffKnob = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputThreeGainKnob= {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers,  PARAM_STORAGE_1_BYTE};
+Parameter_t inputBtOnKnob     = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputBtOffKnob    = {    0,    0,  100,   1,   1, false, false,  true, DisplayPowerDelayOff,    NULL,                   PARAM_STORAGE_1_BYTE};
+Parameter_t inputBtGainKnob   = {   15,    5,   25,   1,   1, false, false, false, DisplayInputGain,        UpdateInputGainWipers,  PARAM_STORAGE_1_BYTE};
 
 // The Master Array for looping
 Parameter_t* allParameters[] = {

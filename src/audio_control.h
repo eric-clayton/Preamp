@@ -4,9 +4,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-// Logic-level controls. Callers here don't need to know whether a feature
-// is backed by the 74HC595 or the ADG1414 -- that detail lives entirely
-// in shift_register.h/.c.
+// Logic-level controls. Register details live in shift_register.h/.c.
 
 void DV1_Toggle(void);
 void DV2_Toggle(void);
@@ -15,9 +13,9 @@ void DVBT_Toggle(void);
 
 void SetInputState(uint8_t ISB, uint8_t ISA);
 
-void BluetoothPrev(void);
-void BluetoothPause(void);
-void BluetoothNext(void);
+void BluetoothPrev(bool pressed);
+void BluetoothPause(bool pressed);
+void BluetoothNext(bool pressed);
 
 void AudioControl_SetTone(uint8_t tone);   // was Digipot_SetTone -- renamed,
                                             // this drives the 74HC595, not a digipot

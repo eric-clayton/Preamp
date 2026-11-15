@@ -2,6 +2,7 @@
 #define BUTTONS_H
 
 #include <stdbool.h>
+#include <stdint.h>
 
 #define BUTTON_ALL 0xFF 
 
@@ -12,6 +13,8 @@ typedef enum {
 } ButtonType;
 
 typedef enum {
+    BUTTON_EVENT_PRESSED,
+    BUTTON_EVENT_RELEASED,
     BUTTON_EVENT_SHORT_PRESS,
     BUTTON_EVENT_LONG_PRESS
 } ButtonEvent;
@@ -32,5 +35,7 @@ void CheckIfLongPress(void);
 void Button_SetExclusive(ButtonType button);
 void Button_ClearExclusive(void);
 ButtonType Button_GetExclusive(void);
+
+extern volatile uint8_t failedKeyReads;
 
 #endif // BUTTONS_H

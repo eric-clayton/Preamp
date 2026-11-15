@@ -7,19 +7,21 @@
 
 
 #include <xc.h>
+#include <stddef.h>
 #include "as1115.h"
 #include "mcc_generated_files\i2c_host\i2c2.h"
 #include "mcc_generated_files/system/clock.h"
 
-void WaitForBusy()
+volatile uint8_t failedWrites = 0;
+
+static bool WaitForBusy(void)
 {
-    // 2. Simple Wait (Don't use WaitForBusy here if it contains Reset logic)
     uint16_t safety = 1000;
     while(I2C2_IsBusy() && safety > 0) {
         safety--;
         __delay_us(10);
     }
-    return;
+    return !I2C2_IsBusy();
 }
 void AS1115_Init() {
     AS1115_Write(AS1115_REG_SCAN_LIMIT, AS1115_DISPLAY_DIGITS_0_7);
@@ -31,30 +33,37 @@ void AS1115_Init() {
 // Send I2C Commands
 void AS1115_Write(uint8_t reg, uint8_t data) {
     static uint8_t buffer[2];
-    
+
     buffer[0] = reg;
     buffer[1] = data;
 
-    WaitForBusy();
-    
-    I2C2_Write(AS1115_I2C_ADDRESS, buffer, 2);
+    if (!WaitForBusy()) {
+        failedWrites++;
+        return;
+    }
 
-    uint8_t dummy[2];
-    AS1115_ReadKeys(dummy);
+    I2C2_ErrorGet();
+    if (!I2C2_Write(AS1115_I2C_ADDRESS, buffer, 2)) {
+        failedWrites++;
+        return;
+    }
+    if (!WaitForBusy() || I2C2_ErrorGet() != I2C_ERROR_NONE)
+        failedWrites++;
 }
-void AS1115_ReadKeys(uint8_t *buffer) {
-    uint8_t regAddr = 0x1C; // KEYA
+bool AS1115_ReadKeys(uint8_t *buffer) {
+    static uint8_t regAddr;
+    static uint8_t keyData[2];
 
-    WaitForBusy();
+    if (buffer == NULL || !WaitForBusy()) return false;
 
-    I2C2_Write(AS1115_I2C_ADDRESS, &regAddr, 1);
-    
-    WaitForBusy();
+    regAddr = AS1115_REG_KEYA;
+    I2C2_ErrorGet();
+    if (!I2C2_WriteRead(AS1115_I2C_ADDRESS, &regAddr, 1, keyData, sizeof(keyData)))
+        return false;
+    if (!WaitForBusy() || I2C2_ErrorGet() != I2C_ERROR_NONE)
+        return false;
 
-    I2C2_Read(AS1115_I2C_ADDRESS, buffer, 2);
-    
-    WaitForBusy(); 
+    buffer[0] = keyData[0];
+    buffer[1] = keyData[1];
+    return true;
 }
-
-
-

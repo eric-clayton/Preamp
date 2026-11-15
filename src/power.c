@@ -5,6 +5,8 @@
 #include "mcc_generated_files\system\pins.h"
 #include "mcc_generated_files\system\clock.h"
 #include "audio_control.h"
+#include "input.h"
+#include "shift_register.h"
 #include "storage.h"
 
 #include "as1115.h"
@@ -36,6 +38,7 @@ void TurnStandby()
 {
     Display_LEDsStandby(); 
     Mute_Engage();
+    SetExpanderBits(DV1_MASK | DV2_MASK | DV3_MASK | DVBT_MASK, 0);
     POWER_SetLow();
     SetPowerState(0);
     AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_SHUTDOWN);
@@ -59,7 +62,12 @@ void TurnOn()
     Display_LEDsWake(); 
     
     SetPowerState(1);
-    Mute_ScheduleRelease();
+    InputType activeInput = GetInputType();
+    if (activeInput < INPUT_NONE) {
+        InputSwitch(activeInput);
+        if (inputs[activeInput]->IsOn())
+            Mute_ScheduleRelease();
+    }
     AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_NORMAL_OP);
     IOCAFbits.IOCAF4 = 0;
 

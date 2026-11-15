@@ -51,6 +51,8 @@ int main(void) {
 
         CheckIfLongPress();
 
+        Bluetooth_Update();
+
         UI_Manager_HandleBlink();
 
         UpdateEncoders();
@@ -62,9 +64,6 @@ int main(void) {
         Mute_Update();
     }
 }
-
-
-
 
 
 
