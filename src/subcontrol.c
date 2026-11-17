@@ -39,10 +39,10 @@ void UpdateSubEnable(void) {
     }
     else if (isPhase180) {
         SetSubEn(true);
-        SetSubPhase(true);
+        SetSubPhase(false);
     } else {
         SetSubEn(true);
-        SetSubPhase(false);
+        SetSubPhase(true);
     }
 
     // Changing Phase affects the Phase Correct logic

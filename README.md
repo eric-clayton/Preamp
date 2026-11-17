@@ -127,8 +127,7 @@ Encoder focus is maintained for a configurable timeout after the last active inp
 
 #### Sub Level — MCP4232-502E/UN
 - SPI CS: `IO_SLCS`
-- P0W → Right sub level
-- P1W → Left sub level
+- P0W → sub level
 
 Global reset pin for all digipots: `IO_RSET`
 
@@ -176,6 +175,7 @@ The firmware polls three input sources each cycle:
 - Encoder range: 0–254 → scaled to 0–100 for display
 - Left/right volume variables set to 0–245 range
 - Balance uses signed display attenuation (−99 to +99) with a four-click hidden buffer on each side of center; display shows `-nn`, `-0-`, or `nn-`
+- Output gain is displayed in volts (for example, `0.5V`).
 - Balance offset added to volume L/R variables
 - Inverse log applied to both variables before writing to `dvolpots` over SPI
 - Volume encoder value (0–254) also written to VRAM
@@ -201,7 +201,9 @@ Accessed via long press on the Tone button. Uses a 7-digit display.
 | Enable/Disable | Q encoder   | IO_SUBEN     |
 | Phase (0/180°) | Q encoder (six encoder state changes per option) | IO_PHASE |
 | EQ In/Out    | Frequency encoder | IO_LFEQ  |
-| L/R Level    | LF/HF encoders | IO_SLCS (digipot) |
+| Sub level    | LF encoder | IO_SLCS (digipot) |
+
+Short press exits a setup menu or changes the active input. The high-frequency filter display is shifted one digit left. Sub settings are saved when powering down.
 
 ### Device Power Management
 

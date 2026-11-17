@@ -6,6 +6,7 @@
 #include "audio_control.h"
 #include "power.h"
 #include "storage.h"
+#include "tone.h"
 #include "systick.h"
 #include "digipot.h"
 #include <stddef.h>
@@ -40,6 +41,22 @@ static InputType ButtonToInput(ButtonType btn) {
     }
 }
 
+static void ShowInputSubSettings(ButtonType button)
+{
+    if (Button_GetExclusive() == BUTTON_NONE)
+        Display_SubSettingsEnter();
+    Button_SetExclusive(button);
+    UI_Manager_ApplyLayout(&inputLayouts[ButtonToInput(button)]);
+    Display_SubSettingsRefreshLEDs();
+}
+
+static void ExitSubSettings(void)
+{
+    Button_ClearExclusive();
+    UI_Manager_Reset();
+    Display_SubSettingsExit();
+}
+
 LEDType MapInputTypeToLedType(InputType input) {
     const LEDType leds[] = { LED_INPUT_ONE, LED_INPUT_TWO, LED_INPUT_THREE, LED_INPUT_BT };
     return leds[input];
@@ -50,18 +67,22 @@ void Input_ButtonHandler(ButtonType button, ButtonEvent event) {
     InputType type = ButtonToInput(button);
 
     if (event == BUTTON_EVENT_SHORT_PRESS) {
+        if (Button_GetExclusive() != BUTTON_NONE) {
+            if (Button_GetExclusive() == button)
+                ExitSubSettings();
+            else
+                ShowInputSubSettings(button);
+            return;
+        }
         InputSwitch(type);
+        Display_SetInputLED(MapInputTypeToLedType(currentInputType));
+        Display_SetToneLED(isToneOn);
     } 
     else if (event == BUTTON_EVENT_LONG_PRESS) {
         if (Button_GetExclusive() == button) {
-            // EXIT SUB-MODE
-            Button_ClearExclusive();
-            UI_Manager_Reset();
-            Display_SetInputLED(MapInputTypeToLedType(currentInputType));
+            ExitSubSettings();
         } else {
-            // ENTER SUB-MODE
-            Button_SetExclusive(button);
-            UI_Manager_ApplyLayout((UI_Layout*)&inputLayouts[type]);
+            ShowInputSubSettings(button);
         }
     }
 }

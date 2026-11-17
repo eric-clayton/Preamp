@@ -89,7 +89,11 @@ void UpdateButton() {
     else if (pA & (1 << 3)) physicalButton = BUTTON_PAUSE;
     else if (pB & (1 << 3)) physicalButton = BUTTON_NEXT;
 
-    if (exclusiveButton != BUTTON_NONE && physicalButton != exclusiveButton) {
+    bool isSubSettingsButton = physicalButton >= BUTTON_INPUT_ONE &&
+                               physicalButton <= BUTTON_TONE;
+    if (exclusiveButton != BUTTON_NONE &&
+        physicalButton != exclusiveButton &&
+        !isSubSettingsButton) {
         physicalButton = BUTTON_NONE; 
     }
 

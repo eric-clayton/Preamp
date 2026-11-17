@@ -122,7 +122,7 @@ void UpdateHFQWipers(void)
 
 void UpdateSubLevelWipers(void)
 {
-    WriteWiper(&subLevelPot, W0, Parameter_GetWiperValue(&subLevelRightKnob));
+    WriteWiper(&subLevelPot, W0, Parameter_GetWiperValue(&subLevelKnob));
 }
 
 void UpdateOutputWipers(void)

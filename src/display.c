@@ -75,6 +75,7 @@
 #define CH_S     (SEG_A | SEG_C | SEG_D | SEG_F | SEG_G)
 #define CH_t     (SEG_D | SEG_E | SEG_F | SEG_G)
 #define CH_u     (SEG_C | SEG_D | SEG_E)
+#define CH_V     (SEG_B | SEG_C | SEG_D | SEG_E | SEG_F)
 #define CH_O     CH_0                       // same shapes, different names
 #define CH_I     CH_1
 
@@ -89,8 +90,7 @@ static const uint8_t TXT_PHASE_180[]    = { CH_P, CH_H, CH_A, CH_S, CH_1, CH_8, 
 static const uint8_t TXT_SUB_EQ_IN[]    = { CH_S, CH_DASH, CH_E, CH_Q, CH_BLANK, CH_I, CH_n };
 static const uint8_t TXT_SUB_EQ_OUT[]   = { CH_S, CH_DASH, CH_E, CH_Q, CH_O, CH_u, CH_t };
 
-static const uint8_t TXT_SUB_LVL_R[]    = { CH_S, CH_DASH, CH_L, CH_r };
-static const uint8_t TXT_SUB_LVL_L[]    = { CH_S, CH_DASH, CH_L, CH_L };
+static const uint8_t TXT_SUB_LVL[]      = { CH_S, CH_DASH, CH_L, CH_E };
 static const uint8_t TXT_OUT_L[]        = { CH_o, CH_u, CH_t, CH_L };
 static const uint8_t TXT_INP_L[]        = { CH_I, CH_n, CH_P, CH_L };
 static const uint8_t TXT_ON[]           = { CH_BLANK, CH_BLANK, CH_O, CH_n };
@@ -163,26 +163,41 @@ static uint16_t blinkMask595 = 0;
 static bool blinkPhase = true;
 static uint16_t standbyLEDs = 0;
 static bool standbyActive = false;
+static uint16_t subSettingsLEDs = 0;
+static bool subSettingsLEDsSaved = false;
 
 void Display_SetToneLED(uint8_t enabled) {
+    if (subSettingsLEDsSaved) {
+        Display_SubSettingsRefreshLEDs();
+        return;
+    }
     SetLEDRegister(BTN_LED_TONE, enabled);
 }
 void Display_SetInputLED(LEDType ledType) {
+    if (subSettingsLEDsSaved) {
+        Display_SubSettingsRefreshLEDs();
+        return;
+    }
     // Replaces the input LED bits only, so the other input LEDs go off
     SetLEDBits(BTN_LED_INPUTS, Led595Mask(ledType));
 }
 void Display_BlinkLED(void) {
     if (!blinkMask595) return;
     blinkPhase = !blinkPhase;
-    SetLEDBits(blinkMask595, blinkPhase ? blinkMask595 : 0);
+    if (subSettingsLEDsSaved)
+        Display_SubSettingsRefreshLEDs();
+    else
+        SetLEDBits(blinkMask595, blinkPhase ? blinkMask595 : 0);
 }
 void Display_SetBlinkBitIndex(LEDType ledType)
 {
-    if (blinkMask595)
+    if (blinkMask595 && !subSettingsLEDsSaved)
         SetLEDBits(blinkMask595, blinkMask595);
     LEDBlinkType = ledType;
     blinkMask595 = Led595Mask(ledType);
     blinkPhase = true;
+    if (subSettingsLEDsSaved)
+        Display_SubSettingsRefreshLEDs();
 }
 
 // Standby: remember the pattern, then darken every button LED (one write)
@@ -202,7 +217,29 @@ void Display_LEDsWake(void)
     SetLEDBits(BTN_LED_ALL, standbyLEDs | activeLEDs | BTN_LED_POWER);
 }
 void Display_SetBTStatusLED(uint8_t enabled) {
+    if (subSettingsLEDsSaved) {
+        Display_SubSettingsRefreshLEDs();
+        return;
+    }
     SetLEDRegister(BTN_LED_BTSTAT, enabled);
+}
+void Display_SubSettingsEnter(void)
+{
+    if (subSettingsLEDsSaved) return;
+    subSettingsLEDs = led595_shadow & BTN_LED_ALL;
+    subSettingsLEDsSaved = true;
+    Display_SubSettingsRefreshLEDs();
+}
+void Display_SubSettingsRefreshLEDs(void)
+{
+    if (subSettingsLEDsSaved)
+        SetLEDBits(BTN_LED_ALL, BTN_LED_POWER | (blinkPhase ? blinkMask595 : 0));
+}
+void Display_SubSettingsExit(void)
+{
+    if (!subSettingsLEDsSaved) return;
+    SetLEDBits(BTN_LED_ALL, subSettingsLEDs);
+    subSettingsLEDsSaved = false;
 }
 
 /* ============================================================================
@@ -395,25 +432,35 @@ void DisplaySubEnableDisable(int16_t value)
 void DisplaySubEQ(int16_t value)
 {
     SetDecode(ZONE_ALL, 0);
-    if (value == 1) WRITE_TEXT(TXT_SUB_EQ_OUT, REG_DIG0);
+    if (value / SUB_EQ_STEPS_PER_OPTION != 0) WRITE_TEXT(TXT_SUB_EQ_OUT, REG_DIG0);
     else            WRITE_TEXT(TXT_SUB_EQ_IN,  REG_DIG0);
     Display_SetNegLeftLED(false);
 }
 
-void DisplaySubLevelRight(int16_t value)
+void DisplaySubLevel(int16_t value)
 {
-    SHOW_LABELED(value, false, TXT_SUB_LVL_R);
-}
+    uint16_t magnitude = Magnitude(value);
+    uint8_t whole = (uint8_t)(magnitude / 10);
+    uint8_t fraction = (uint8_t)(magnitude % 10);
 
-void DisplaySubLevelLeft(int16_t value)
-{
-    SHOW_LABELED(value, false, TXT_SUB_LVL_L);
+    SetDecode(ZONE_ALL, DEC(2) | DEC(3));
+    WriteDigit(REG_DIG0, value < 0 ? (CH_d | SEG_DP) : CH_d);
+    WriteDigit(REG_DIG0 + 1, fraction);
+    WriteDigit(REG_DIG0 + 2, whole | SEG_DP);
+    WriteText(TXT_SUB_LVL, sizeof(TXT_SUB_LVL), REG_DIG3);
+    Display_SetNegLeftLED(false);
 }
 
 // ---- Gains / power delay (label left, number right) ------------------------
 void DisplayOutputGain(int16_t value)
 {
-    SHOW_LABELED(value, true, TXT_OUT_L);
+    uint16_t magnitude = Magnitude(value);
+    SetDecode(ZONE_ALL, DEC(2) | DEC(3));
+    WriteDigit(REG_DIG0 + 2, (uint8_t)(magnitude / 10) | SEG_DP);
+    WriteDigit(REG_DIG0 + 1, (uint8_t)(magnitude % 10));
+    WriteDigit(REG_DIG0, CH_V);
+    WriteText(TXT_OUT_L, sizeof(TXT_OUT_L), REG_DIG3);
+    Display_SetNegLeftLED(false);
 }
 
 void DisplayInputGain(int16_t value)
@@ -496,13 +543,13 @@ void DisplayFreqLow(int16_t value)
     ShowSigned(value, 5, 3, false);
 }
 
-// 1000 ... 16000 Hz, right-aligned across the seven-digit display.
+// 1000 ... 16000 Hz, shifted one digit left.
 void DisplayFreqHigh(int16_t value)
 {
     SetDecode(ZONE_ALL, ZONE_ALL);
-    WriteDigit(6, CODE_B_BLANK);
+    WriteDigit(REG_DIG0, CODE_B_BLANK);
     WriteDigit(7, CODE_B_BLANK);
-    ShowSigned((int16_t)(value * 100), REG_DIG0, 5, false);
+    ShowSigned((int16_t)(value * 100), REG_DIG0 + 1, 5, false);
     Display_SetNegLeftLED(false);
 }
 

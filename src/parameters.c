@@ -18,8 +18,7 @@ Parameter_t QKnobHigh         = {   60,   10,  100,   1,   1, true,  false, fals
 // Sub
 Parameter_t subPhaseKnob      = {    0,    0, SUB_PHASE_MAX_VALUE, 1, 1, false, false, false, DisplaySubEnableDisable, UpdateSubEnable, PARAM_STORAGE_1_BYTE};
 Parameter_t subEqKnob         = {    0,    0,    SUB_EQ_MAX_VALUE,   1,   1, false, false, false, DisplaySubEQ,            UpdateSubEQ,             PARAM_STORAGE_1_BYTE};
-Parameter_t subLevelLeftKnob  = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelLeft,     UpdateSubLevelWipers,    PARAM_STORAGE_1_BYTE};
-Parameter_t subLevelRightKnob = {    0,    0,   99,   2,   2, false, false, false, DisplaySubLevelRight,    UpdateSubLevelWipers,    PARAM_STORAGE_1_BYTE};
+Parameter_t subLevelKnob       = {    0,  -60,   60,   1,   2, false, false, false, DisplaySubLevel,        UpdateSubLevelWipers,    PARAM_STORAGE_1_BYTE};
 Parameter_t subOuputKnob      = {    5,    5,   25,   1,   1, false, false, false, DisplayOutputGain,       UpdateOutputWipers,      PARAM_STORAGE_1_BYTE};
 // Inputs
 Parameter_t inputOneOnKnob    = {    0,    0,   30,   1,   1, false, false, false, DisplayPowerDelayOn,     NULL,                   PARAM_STORAGE_1_BYTE};
@@ -39,7 +38,7 @@ Parameter_t inputBtGainKnob   = {   15,    5,   25,   1,   1, false, false, fals
 Parameter_t* allParameters[] = {
     &volumeKnob, &balanceKnob, &lfBoostKnob, &frequencyKnobHigh, &QKnobHigh,
     &frequencyKnobLow, &QKnobLow, &hfBoostKnob, &subPhaseKnob, &subEqKnob,
-    &subLevelLeftKnob, &subLevelRightKnob, &subOuputKnob, &inputOneOnKnob, &inputOneOffKnob, &inputOneGainKnob,
+    &subLevelKnob, &subOuputKnob, &inputOneOnKnob, &inputOneOffKnob, &inputOneGainKnob,
     &inputTwoOnKnob, &inputTwoOffKnob, &inputTwoGainKnob, &inputThreeOnKnob, &inputThreeOffKnob, &inputThreeGainKnob,
     &inputBtOnKnob, &inputBtOffKnob, &inputBtGainKnob
 };

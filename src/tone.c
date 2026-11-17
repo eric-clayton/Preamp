@@ -4,29 +4,48 @@
 #include "storage.h"
 #include "ui_manager.h"
 #include "audio_control.h"
+#include "input.h"
 #include "mcc_generated_files\system\pins.h"
+
+uint8_t isToneOn = 0;
 
 // The Tone module simply defines what it needs, it doesn't "command" the mode
 const UI_Layout toneSubModeLayout = {
-    .params = { &subLevelLeftKnob, &subEqKnob, &subPhaseKnob, &subLevelRightKnob, NULL, &subOuputKnob },
+    .params = { &subLevelKnob, &subEqKnob, &subPhaseKnob, NULL, NULL, &subOuputKnob },
     .blinkLed = LED_TONE
 };
+
+static void ShowToneSubSettings(void)
+{
+    if (Button_GetExclusive() == BUTTON_NONE)
+        Display_SubSettingsEnter();
+    Button_SetExclusive(BUTTON_TONE);
+    UI_Manager_ApplyLayout(&toneSubModeLayout);
+    Display_SubSettingsRefreshLEDs();
+}
+
+static void ExitSubSettings(void)
+{
+    Button_ClearExclusive();
+    UI_Manager_Reset();
+    Display_SubSettingsExit();
+}
 
 void Tone_ButtonHandler(ButtonType button, ButtonEvent event) {
     if (event == BUTTON_EVENT_LONG_PRESS) {
         if (Button_GetExclusive() == BUTTON_TONE) {
-            Button_ClearExclusive();
-            UI_Manager_Reset(); // Just tell the UI Manager to go back to default
-            Display_SetToneLED(isToneOn); // Restore the LED state based on the current tone value
+            ExitSubSettings();
         } else {
-            Button_SetExclusive(BUTTON_TONE);
-            UI_Manager_ApplyLayout(&toneSubModeLayout); // Provide the config
+            ShowToneSubSettings();
         }
     }
-    if (event == BUTTON_EVENT_SHORT_PRESS)
-    {
-        if (Button_GetExclusive() == BUTTON_NONE)
-        {
+    if (event == BUTTON_EVENT_SHORT_PRESS) {
+        if (Button_GetExclusive() != BUTTON_NONE) {
+            if (Button_GetExclusive() == BUTTON_TONE)
+                ExitSubSettings();
+            else
+                ShowToneSubSettings();
+        } else {
             ToggleTone();
             Storage_MarkDirty();
         }

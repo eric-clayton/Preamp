@@ -41,6 +41,7 @@ void TurnStandby()
     SetExpanderBits(DV1_MASK | DV2_MASK | DV3_MASK | DVBT_MASK, 0);
     POWER_SetLow();
     SetPowerState(0);
+    Storage_ForceSync();
     AS1115_Write(AS1115_REG_SHUTDOWN, AS1115_SHUTDOWN);
 
     PIE5bits.INT1IE = 0;

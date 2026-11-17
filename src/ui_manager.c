@@ -32,6 +32,7 @@ void UI_Manager_ApplyLayout(const UI_Layout* layout) {
     // 2. Update Blink State
     activeBlinkLed = layout->blinkLed;
     Display_SetBlinkBitIndex(activeBlinkLed); 
+    Display_SetNegLeftLED(false);
     Parameter_Display(activeParameters[0]);
 }
 

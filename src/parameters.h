@@ -30,13 +30,13 @@ typedef struct Parameter_t {
     uint8_t storageBytes;
 } Parameter_t;
 
-#define PARAM_COUNT 25U
+#define PARAM_COUNT 24U
 
 extern Parameter_t volumeKnob, balanceKnob;
 extern Parameter_t lfBoostKnob, frequencyKnobLow, QKnobLow;
 extern Parameter_t hfBoostKnob, frequencyKnobHigh, QKnobHigh;
 extern Parameter_t subPhaseKnob, subEqKnob;
-extern Parameter_t subLevelLeftKnob, subLevelRightKnob;
+extern Parameter_t subLevelKnob;
 extern Parameter_t subOuputKnob;
 extern Parameter_t inputOneOnKnob,   inputOneOffKnob, inputOneGainKnob;
 extern Parameter_t inputTwoOnKnob,   inputTwoOffKnob, inputTwoGainKnob;
