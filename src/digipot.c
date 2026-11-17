@@ -7,11 +7,9 @@
 #include "mcc_generated_files/system/clock.h"
 
 #define OUTPUT_DEFAULT_CENTER 80
-#define KNOB_CENTER 127
 
 #define MASTER_MAX_SHIFT_TOP 45    // how far master can push center up/down from 127 on the top range
 #define MASTER_MAX_SHIFT_BOTTOM 57   // how far master can push center up/down from 127 on the bottom range
-#define BALANCE_DEADZONE_CENTER (254 / 8) // deadzone for balance knob, within this range, the balance is considered centered
 
 static inline void LFFCSSetLow(void)   { LFFCS_SetLow();  }
 static inline void LFFCSSetHigh(void)  { LFFCS_SetHigh(); }
@@ -52,6 +50,12 @@ static const CS_Device_t subLevelPot  = { SLCSSetLow,   SLCSSetHigh };
 static const CS_Device_t outputPotR   = { OGCSRSetLow,   OGCSRSetHigh};
 static const CS_Device_t outputPotL   = { OGCSLSetLow,   OGCSLSetHigh };
 static const CS_Device_t inputGainPot = { IGAINCSSetLow,   IGAINCSSetHigh };
+
+// Index 0 is 0.5 V; each step is 0.1 V through index 20 at 2.5 V.
+static const uint8_t inputGainTable[21] = {
+    254, 235, 189, 154, 127, 108, 93, 80, 69, 59, 51,
+    44, 38, 32, 26, 21, 17, 13, 9, 6, 3
+};
 
 void DigiPot_Init(void)
 {
@@ -123,13 +127,14 @@ void UpdateSubLevelWipers(void)
 
 void UpdateOutputWipers(void)
 {
-    // Map master (0-254) to a small +/- shift around 127
-    int32_t masterDelta = (int32_t)subOuputKnob.value - (int32_t)KNOB_CENTER;
+    int32_t masterWiper = Parameter_GetWiperValue(&subOuputKnob);
+    int32_t masterDelta = masterWiper - 127;
     int32_t max_shift   = masterDelta < 0 ? MASTER_MAX_SHIFT_BOTTOM : MASTER_MAX_SHIFT_TOP;
     int32_t center      = OUTPUT_DEFAULT_CENTER + (masterDelta * max_shift) / 127;
 
-    int32_t balanceDelta = Balance_Offset(balanceKnob.value);            // -BAL_SPAN..+BAL_SPAN
-    int32_t ratio = ((balanceDelta < 0 ? -balanceDelta : balanceDelta) * 127) / BAL_SPAN;   // 0..127
+    int32_t balanceDelta = Balance_Offset(balanceKnob.value);
+    int32_t balanceMagnitude = balanceDelta < 0 ? -balanceDelta : balanceDelta;
+    int32_t ratio = (balanceMagnitude * 127 + BALANCE_DISPLAY_MAX / 2) / BALANCE_DISPLAY_MAX;
 
     // One wiper goes up while the other goes down by the same ratio
     int32_t up   = center + ((int32_t)(WIPER_MAX - center) * ratio) / 127;
@@ -163,5 +168,10 @@ void UpdateInputGainWipers(void)
             return;
     }
 
-    WriteWiper(&inputGainPot, W0, Parameter_GetWiperValue(activeGainKnob));
+    int16_t tableIndex = activeGainKnob->value - activeGainKnob->minValue;
+    if (tableIndex < 0) tableIndex = 0;
+    if (tableIndex >= (int16_t)(sizeof(inputGainTable) / sizeof(inputGainTable[0])))
+        tableIndex = (int16_t)(sizeof(inputGainTable) / sizeof(inputGainTable[0])) - 1;
+
+    WriteWiper(&inputGainPot, W0, inputGainTable[tableIndex]);
 }

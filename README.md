@@ -175,7 +175,7 @@ The firmware polls three input sources each cycle:
 
 - Encoder range: 0–254 → scaled to 0–100 for display
 - Left/right volume variables set to 0–245 range
-- Balance encoder: 0–254 range split as Left 0↔+127 (Lvol) and Right 0↔+127 (Rvol); displayed as `0-9 --- 9-0`
+- Balance uses signed display attenuation (−99 to +99) with a four-click hidden buffer on each side of center; display shows `-nn`, `-0-`, or `nn-`
 - Balance offset added to volume L/R variables
 - Inverse log applied to both variables before writing to `dvolpots` over SPI
 - Volume encoder value (0–254) also written to VRAM

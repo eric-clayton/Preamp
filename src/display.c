@@ -459,12 +459,13 @@ void DisplayVolume(int16_t value)
     WriteDigit(REG_DIG0, negative ? (CH_d | SEG_DP) : CH_d);
 }
 
-// pos = knob position. Shows how far the quieter channel is turned down (0-99):
+// value uses display attenuation units with a hidden center-click buffer:
+// Shows how far the quieter channel is turned down (0-99):
 //   center "-0-" | toward left "-nn" | toward right "nn-"
-void DisplayBalance(int16_t pos)
+void DisplayBalance(int16_t value)
 {
-    int16_t  offset = Balance_Offset(pos);
-    uint8_t att = (uint8_t)((Magnitude(offset) * 99u + (BAL_SPAN / 2u)) / BAL_SPAN);
+    int16_t offset = Balance_Offset(value);
+    uint8_t att = (uint8_t)Magnitude(offset);
     uint8_t  tens   = att / 10;
     uint8_t  ones   = att % 10;
     uint8_t  out[3];                                  // LSD first: reg1 (right), reg2, reg3 (left)
